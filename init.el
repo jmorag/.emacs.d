@@ -1,4 +1,4 @@
-;; Packages
+;;; Code:
 (setq package-enable-at-startup nil)
 (setq package-archives '(("org"       . "http://orgmode.org/elpa/")
                          ("gnu"       . "http://elpa.gnu.org/packages/")
@@ -124,7 +124,7 @@
   (which-key-mode)
   (setq which-key-allow-evil-operators t)
   (setq which-key-show-operator-state-maps t)
-  (setq which-key-idle-delay 0.3))
+  (setq which-key-idle-delay 0.1))
 
 ;; Ivy (taken from "How to make your own Spacemacs")
 (use-package ivy
@@ -188,7 +188,7 @@
   ;; nnoremap <Leader>' gcap
   (general-nmap
     :prefix "SPC" "'"
-    (general-simulate-key ('evil-commentary "a p")
+    (general-simulate-key ('evil-commentary "ap")
       :which-key "Toggle paragraph comment")
   ))
 
@@ -200,5 +200,29 @@
 (use-package magit
   :commands magit-status
   :general
-  (general-nmap :prefix "SPC" "g s" 'magit-status)
+  (general-nmap
+    :prefix "SPC"
+    "g" '(:ignore t :which-key "Magit")
+    "gs" 'magit-status)
+  )
+
+(use-package projectile
+  :config (projectile-mode 1)
+  :general
+  (general-nmap
+    :prefix "SPC"
+    "p" '(projectile-command-map :which-key "Projectile"))
+  )
+
+(use-package counsel-projectile
+  :commands (counsel-projectile projectile-find-file)
+  :after (projectile counsel)
+  :config (counsel-projectile-on)
+  )
+
+(use-package flycheck
+  :init (global-flycheck-mode)
+  :general
+  (general-nmap :prefix "]" "e" 'flycheck-next-error)
+  (general-nmap :prefix "[" "e" 'flycheck-previous-error)
   )
