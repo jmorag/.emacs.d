@@ -186,16 +186,10 @@
   :general
   (general-nvmap "'" 'evil-commentary-line)
   ;; nnoremap <Leader>' gcap
-  (general-nmap
-    :prefix "SPC" "'"
+  (general-nmap "SPC '"
     (general-simulate-key ('evil-commentary "ap")
       :which-key "Toggle paragraph comment")
   ))
-
-;; General windowing commands live under SPC w
-(general-nmap
-  :prefix "SPC"
-  "w" (general-simulate-key "C-w" :which-key "Window commands"))
 
 (use-package magit
   :commands magit-status
@@ -209,9 +203,7 @@
 (use-package projectile
   :config (projectile-mode 1)
   :general
-  (general-nmap
-    :prefix "SPC"
-    "p" '(projectile-command-map :which-key "Projectile"))
+  (general-nmap "SPC p" '(projectile-command-map :which-key "Projectile"))
   )
 
 (use-package counsel-projectile
@@ -223,10 +215,11 @@
 (use-package flycheck
   :init (global-flycheck-mode)
   :general
-  (general-nmap :prefix "]" "e" 'flycheck-next-error)
-  (general-nmap :prefix "[" "e" 'flycheck-previous-error)
-  (general-nmap :prefix "SPC" "at"
-    #'(global-flycheck-mode :which-key "Toggle flycheck mode"))
+  (general-nmap "]e" 'flycheck-next-error)
+  (general-nmap "[e" 'flycheck-previous-error)
+  (general-nmap :prefix "SPC"
+    "a" (general-simulate-key "C-c !" :which-key "Flycheck"))
+  (general-nmap "C-c ! t" '(flycheck-mode :which-key "Toggle flycheck in current buffer"))
   )
 
 (provide 'init)
