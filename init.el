@@ -225,4 +225,9 @@
   :general
   (general-nmap :prefix "]" "e" 'flycheck-next-error)
   (general-nmap :prefix "[" "e" 'flycheck-previous-error)
+  (general-nmap :prefix "SPC" "at"
+    #'(global-flycheck-mode :which-key "Toggle flycheck mode"))
   )
+
+(provide 'init)
+;;; init.el ends here
