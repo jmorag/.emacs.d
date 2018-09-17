@@ -68,6 +68,7 @@
   (setq evil-want-Y-yank-to-eol t)
   (setq evil-want-C-u-scroll t)
   (setq evil-want-C-d-scroll t)
+  (setq evil-want-minibuffer t)
   :config
   (evil-mode 1))
 
@@ -134,8 +135,12 @@
   (setq ivy-use-virtual-buffers t)   ; extend searching to bookmarks and …
   (setq ivy-height 10)               ; set height of the ivy window
   (setq ivy-count-format "(%d/%d) ") ; count format, from the ivy help page
-  (setq ivy-re-builders-alist '((t . ivy--regex-fuzzy))) ;; enable fuzziness in ivy
-  )
+  :general
+  (general-imap
+   :keymap '(ivy-mode-map counsel-mode-map)
+   "C-j" 'ivy-next-line
+   "C-k" 'ivy-previous-line
+   "C-a" 'ivy-toggle-fuzzy))
 
 ;; Counsel (same as Ivy above)
 (use-package counsel
@@ -152,13 +157,51 @@
 ;; Swiper
 (use-package swiper
   :commands swiper
+  :general
+  (general-nmap "/" 'swiper)
   )
 
 ;; Company
 (use-package company
   :config
   (global-company-mode 1)
+  (setq company-minimum-prefix-length 2)
+  :general
+  (general-define-key
+   :states '(insert emacs)
+   :keymaps '(company-active-map
+	      company-filter-map
+	      company-search-map
+	      company-template-field-map
+	      company-template-nav-map)
+   "TAB" nil
+  ))
+
+;; Yasnipet
+(use-package yasnippet
+  :config
+  (yas-global-mode 1)
+  :general
+  (general-imap "TAB" 'yas-expand-from-trigger-key)
   )
+
+(use-package yasnippet-snippets
+  :after yasnippet)
+
+;; https://emacs.stackexchange.com/questions/10431/get-company-to-show-suggestions-for-yasnippet-names
+;; Add yasnippet support for all company backends
+;; https://github.com/syl20bnr/spacemacs/pull/179
+(defvar company-mode/enable-yas t
+  "Enable yasnippet for all backends.")
+
+(defun company-mode/backend-with-yas (backend)
+  (if (or (not company-mode/enable-yas)
+	  (and (listp backend) (member 'company-yasnippet backend)))
+      backend
+    (append (if (consp backend) backend (list backend))
+            '(:with company-yasnippet))))
+
+(setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
 
 (use-package avy
   :commands
@@ -196,9 +239,14 @@
   :general
   (general-nmap
     :prefix "SPC"
-    "g" '(:ignore t :which-key "Magit")
-    "gs" 'magit-status)
+    "g" '(magit-status :which-key "Magit"))
   )
+
+(use-package magithub
+  :after magit
+  :config
+  (magithub-feature-autoinject t)
+  (setq magithub-clone-default-directory "~/Code"))
 
 (use-package projectile
   :config (projectile-mode 1)
@@ -221,6 +269,29 @@
     "a" (general-simulate-key "C-c !" :which-key "Flycheck"))
   (general-nmap "C-c ! t" '(flycheck-mode :which-key "Toggle flycheck in current buffer"))
   )
+
+(use-package evil-multiedit
+  :config (evil-multiedit-default-keybinds))
+
+(use-package expand-region
+  :general
+  (general-vmap "]" 'er/expand-region
+	        "[" 'er/contract-region))
+
+(use-package evil-goggles
+  :config
+  (evil-goggles-mode)
+  (setq evil-goggles-blocking-duration 0.010))
+
+(general-vmap "SPC e"
+  '(lambda ()
+    (interactive)
+    (eval-region (region-beginning) (region-end))
+    (evil-normal-state)))
+
+(general-nmap "SPC e" 'eval-last-sexp)
+
+;; Haskell config
 
 (provide 'init)
 ;;; init.el ends here
