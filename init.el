@@ -75,78 +75,9 @@
 
 (defalias 'yes-or-no-p #'y-or-n-p)
 
-;; Evil
-(use-package evil
-  :init
-  (setq evil-want-integration t)
-  (setq evil-want-keybinding nil)
-  (setq evil-want-Y-yank-to-eol t)
-  (setq evil-want-C-u-scroll t)
-  (setq evil-want-C-d-scroll t)
-  (setq evil-want-minibuffer t)
-  (setq evil-disable-insert-state-bindings t)
-  :config
-  (evil-mode 1)
-  (hl-line-mode)
-  (add-hook 'evil-insert-state-entry-hook (lambda () (hl-line-mode -1)))
-  (add-hook 'evil-insert-state-exit-hook (lambda () (hl-line-mode +1)))
-  ;; Reclaim this since we take "gx" for evil-exchange
-  (define-key evil-normal-state-map "gr" 'browse-url-at-point)
-  )
-
-(use-package evil-collection
-  :after evil
-  :custom (evil-collection-setup-minibuffer t)
-  :init
-  (evil-collection-init))
-
-(evil-collection-swap-key nil 'evil-motion-state-map
-  ";" ":")
-
-(use-package evil-surround
-  :after evil
-  :config (global-evil-surround-mode))
-
-(use-package evil-indent-textobject)
-
-;; General
-(use-package general
-  :after evil
-  :config (general-evil-setup))
-
-;; Bind fd escape
-(general-define-key
- :state '(normal visual replace)
- "f" (general-key-dispatch 'self-insert-command
-       :timeout 0.25
-       "d" 'evil-normal-state))
-
-;; Comma to save
-(general-nmap "," 'save-buffer)
-
-;; vnoremap < <gv
-(general-vmap "<"
-  '(lambda ()
-     (interactive)
-     (evil-shift-left (region-beginning) (region-end))
-     (evil-normal-state)
-     (evil-visual-restore)))
-
-;; vnoremap > >gv
-(general-vmap ">"
-  '(lambda ()
-     (interactive)
-     (evil-shift-right (region-beginning) (region-end))
-     (evil-normal-state)
-     (evil-visual-restore)))
-
-(general-nmap "H" 'evil-first-non-blank)
-(general-nmap "L" 'evil-end-of-line)
-
 (use-package which-key
   :config
   (which-key-mode)
-  (setq which-key-allow-evil-operators t)
   (setq which-key-show-operator-state-maps t)
   (setq which-key-idle-delay 0.1))
 
@@ -162,14 +93,9 @@
   (setq ivy-use-virtual-buffers t)   ; extend searching to bookmarks and …
   (setq ivy-height 10)               ; set height of the ivy window
   (setq ivy-count-format "(%d/%d) ") ; count format, from the ivy help page
-  :general
-  (general-imap
-    :keymap '(ivy-mode-map counsel-mode-map)
-    "C-j" 'ivy-next-line
-    "C-k" 'ivy-previous-line
-    "C-a" 'ivy-toggle-fuzzy)
-  (general-nmap "SPC b" 'ivy-switch-buffer)
-  )
+  :bind (("C-j" . 'ivy-next-line)
+         ("C-k" . 'ivy-previous-line)
+         ("C-a" . 'ivy-toggle-fuzzy)))
 
 ;; Counsel (same as Ivy above)
 (use-package counsel
@@ -200,29 +126,14 @@
 (use-package swiper
   :after (ivy ivy-hydra)
   :commands swiper
-  :general
-  ;; cannibalize evil search command
-  ;; for some reason, the search direction is set to backwards by default, so the behavior of
-  ;; "n" and "N" are switched until you actually perform an evil forward search.
-  ;; I literally never use backward search, so this behavior is useless to me.
-  ;; Hence the following hack to fix this.
-  ;; TODO: come up with a better use for ?
-  (general-nmap "/" 'swiper
-    "n" 'evil-search-previous
-    "N" 'evil-search-next
-    "?" nil)
   )
 
 ;; Company
 (use-package company
   :config
   (global-company-mode 1)
+  (company-tng-configure-default)
   (setq company-minimum-prefix-length 2)
-  ;; For some reason, these bindings don't work with general
-  (define-key company-active-map (kbd "TAB") nil)
-  (define-key company-active-map (kbd "<tab>") nil)
-  (define-key company-active-map (kbd "C-j") 'company-select-next)
-  (define-key company-active-map (kbd "C-k") 'company-select-previous)
   )
 
 ;; Add fuzzy backend to company
@@ -232,14 +143,17 @@
   (with-eval-after-load 'company
     (company-flx-mode +1))
   (setq company-flx-limit 250)
+  :bind (:map company-active-map
+	 ("C-j" . 'company-select-next)
+	 ("C-k" . 'company-select-previous)
+	 ("TAB" . nil)
+	 ("<tab>" . nil))
   )
 
 ;; Yasnipet
 (use-package yasnippet
   :config
   (yas-global-mode 1)
-  :general
-  (general-imap "TAB" 'yas-expand-from-trigger-key)
   )
 
 ;; https://emacs.stackexchange.com/questions/10431/get-company-to-show-suggestions-for-yasnippet-names
@@ -249,6 +163,7 @@
   "Enable yasnippet for all backends.")
 
 (defun company-mode/backend-with-yas (backend)
+  "Add yasnippets to a company mode backend"
   (if (or (not company-mode/enable-yas)
 	  (and (listp backend) (member 'company-yasnippet backend)))
       backend
@@ -265,45 +180,10 @@
   :config
   (setq avy-background t)
   (setq avy-all-windows t)
-  :general
-  (general-mmap "f" 'avy-goto-char-in-line)
-  (general-define-key :states '(normal insert emacs)
-		      "C-f" 'avy-goto-char-timer))
-
-;; Make "j" and "k" traverse visual lines
-(general-mmap "j" 'evil-next-visual-line
-  "k" 'evil-previous-visual-line)
-
-;; Bind = to the upgraded emacs align regexp
-(general-mmap "=" 'align-regexp)
-
-;; Better window moving
-(general-nmap "C-h" 'evil-window-left)
-(general-nmap "C-j" 'evil-window-down)
-(general-nmap "C-k" 'evil-window-up)
-(general-nmap "C-l" 'evil-window-right)
-(general-nmap "SPC w" 'evil-window-map)
-;; Replace stolen C-h command
-(general-nvmap :prefix "SPC" "h" 'help-command)
-
-(use-package evil-commentary
-  :after evil
-  :config (evil-commentary-mode)
-  :commands (evil-commentary-line evil-commentary)
-  :general
-  (general-nvmap "'" 'evil-commentary-line)
-  ;; nnoremap <Leader>' gcap
-  (general-nmap "SPC '"
-    (general-simulate-key "gcap" :state 'normal
-      :which-key "Toggle paragraph comment")
-    ))
+  )
 
 (use-package magit
   :commands magit-status
-  :general
-  (general-nmap
-    :prefix "SPC"
-    "g" '(magit-status :which-key "Magit"))
   )
 
 (use-package evil-magit
@@ -327,8 +207,6 @@
   :config
   (projectile-mode 1)
   (setq projectile-completion-system 'ivy)
-  :general
-  (general-nmap "SPC p" '(projectile-command-map :which-key "Projectile"))
   )
 
 (use-package counsel-projectile
@@ -339,43 +217,16 @@
 
 (use-package flycheck
   :init (global-flycheck-mode)
-  :general
-  (general-nmap "]e" 'flycheck-next-error)
-  (general-nmap "[e" 'flycheck-previous-error)
-  (general-nmap :prefix "SPC"
-    "a" (general-simulate-key "C-c !" :which-key "Flycheck"))
-  (general-nmap "C-c ! t" '(flycheck-mode :which-key "Toggle flycheck in current buffer"))
   )
 
-(use-package evil-multiedit
-  :config (evil-multiedit-default-keybinds))
+(use-package expand-region)
 
-(use-package expand-region
-  :general
-  (general-vmap "v" 'er/expand-region
-    "V" 'er/contract-region))
-
-(use-package evil-goggles
-  :config
-  (evil-goggles-mode)
-  (setq evil-goggles-blocking-duration 0.010))
-
-(general-vmap "SPC e"
-  '(lambda ()
-     (interactive)
-     (eval-region (region-beginning) (region-end))
-     (evil-normal-state)))
-
-(general-nmap "SPC e" 'eval-last-sexp)
 
 ;; Tabs
 (use-package eyebrowse
   :init
   (eyebrowse-setup-opinionated-keys)
   (eyebrowse-mode))
-
-(use-package evil-vimish-fold
-  :config (evil-vimish-fold-mode 1))
 
 ;; Smartparens is very heavy and weird. This stays more or less out of the way
 (electric-pair-mode 1)
@@ -389,46 +240,6 @@
   (global-aggressive-indent-mode 1)
   (add-to-list 'aggressive-indent-excluded-modes 'haskell-mode)
   (add-to-list 'aggressive-indent-excluded-modes 'python-mode)
-  )
-
-(use-package evil-exchange
-  :after evil
-  :config
-  (evil-exchange-install))
-
-;; Copied from evil-unimpaired which is not on melpa for some reason
-(defun evil-unimpaired-paste-above ()
-  (interactive)
-  (evil-insert-newline-above)
-  (evil-paste-after 1))
-
-(defun evil-unimpaired-paste-below ()
-  (interactive)
-  (evil-insert-newline-below)
-  (evil-paste-after 1))
-
-(defun evil-unimpaired-insert-space-above (count)
-  (interactive "p")
-  (dotimes (_ count) (save-excursion (evil-insert-newline-above))))
-
-(defun evil-unimpaired-insert-space-below (count)
-  (interactive "p")
-  (dotimes (_ count) (save-excursion (evil-insert-newline-below))))
-
-(general-nmap "[p" 'evil-unimpaired-paste-above)
-(general-nmap "]p" 'evil-unimpaired-paste-below)
-
-(general-nmap "[ SPC" 'evil-unimpaired-insert-space-above)
-(general-nmap "] SPC" 'evil-unimpaired-insert-space-below)
-
-;; File navigation
-(use-package ranger
-  :config
-  (ranger-override-dired-mode t)
-  (setq ranger-cleanup-on-disable t)
-  :general
-  (general-nmap "SPC d" 'ranger-minimal-toggle)
-  (general-nmap "SPC D" 'ranger)
   )
 
 (use-package treemacs
@@ -485,20 +296,10 @@
         ("C-x t B"   . treemacs-bookmark)
         ("C-x t C-t" . treemacs-find-file)
         ("C-x t M-t" . treemacs-find-tag))
-  :commands treemacs
-  :general
-  (general-mmap
-    :keymap '(global evil-treemacs-state-map)
-    "-" 'treemacs))
-
-(use-package treemacs-evil
-  :after (treemacs evil)
-  )
+  :commands treemacs)
 
 (use-package treemacs-projectile
   :after treemacs projectile)
-
-(provide 'init)
 
 ;; Language specific
 (use-package haskell-mode
@@ -509,18 +310,6 @@
   :config
   (add-hook 'haskell-mode-hook 'intero-mode))
 
-;; hindent
-(use-package hindent
-  :config
-  (add-hook 'haskell-mode-hook #'hindent-mode)
-  (setq hindent-style "johan-tibell")
-  :general
-  (general-define-key
-   :states '(normal visual)
-   :keymap 'hindent-mode-map
-   "SPC =" 'hindent-reformat-buffer)
-  )
-
 (use-package hasky-stack)
 (use-package shakespeare-mode)
 
@@ -528,4 +317,5 @@
   :config
   (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
 
+(provide 'init)
 ;;; init.el ends here
