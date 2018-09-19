@@ -4,8 +4,6 @@
                          ("gnu"       . "http://elpa.gnu.org/packages/")
                          ("melpa"     . "https://melpa.org/packages/")))
 
-(package-initialize)
-
 ;; Use command as meta on mac
 (when (eq system-type 'darwin)
   (setq mac-command-modifier 'meta)
@@ -16,6 +14,7 @@
 (load custom-file)
 
 ;; Bootstrap `use-package'
+(package-initialize)
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
@@ -56,7 +55,6 @@
 (use-package doom-modeline
   :config
   (doom-modeline-init)
-  (setq doom-one-brighter-modeline t)
   )
 
 ;; Fix some defaults
@@ -266,6 +264,7 @@
 (general-nmap "C-j" 'evil-window-down)
 (general-nmap "C-k" 'evil-window-up)
 (general-nmap "C-l" 'evil-window-right)
+(general-nmap "SPC w" 'evil-window-map)
 ;; Replace stolen C-h command
 (general-nvmap :prefix "SPC" "h" 'help-command)
 
@@ -298,7 +297,8 @@
   (setq magithub-clone-default-directory "~/Code"))
 
 (use-package projectile
-  :config (projectile-mode 1)
+  :config
+  (projectile-mode 1)
   :general
   (general-nmap "SPC p" '(projectile-command-map :which-key "Projectile"))
   )
@@ -306,7 +306,7 @@
 (use-package counsel-projectile
   :commands (counsel-projectile projectile-find-file)
   :after (projectile counsel)
-  :config (counsel-projectile-on)
+  :config (counsel-projectile-mode)
   )
 
 (use-package flycheck
@@ -450,14 +450,16 @@
         ("C-x t t"   . treemacs)
         ("C-x t B"   . treemacs-bookmark)
         ("C-x t C-t" . treemacs-find-file)
-        ("C-x t M-t" . treemacs-find-tag)))
-
-(use-package treemacs-evil
-  :after treemacs evil
+        ("C-x t M-t" . treemacs-find-tag))
+  :commands treemacs
   :general
   (general-mmap
     :keymaps '(global evil-treemacs-state-map)
     "-" 'treemacs))
+
+(use-package treemacs-evil
+  :after (treemacs evil)
+  )
 
 (use-package treemacs-projectile
   :after treemacs projectile)
