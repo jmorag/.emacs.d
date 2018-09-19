@@ -3,7 +3,7 @@
 (setq package-archives '(("org"       . "http://orgmode.org/elpa/")
                          ("gnu"       . "http://elpa.gnu.org/packages/")
                          ("melpa"     . "https://melpa.org/packages/")))
-                        
+
 (package-initialize)
 
 ;; Use command as meta on mac
@@ -27,7 +27,7 @@
 (use-package exec-path-from-shell
   :config
   (when (memq window-system '(mac ns x))
-  (exec-path-from-shell-initialize)))
+    (exec-path-from-shell-initialize)))
 
 
 ;; Visual stuff
@@ -109,6 +109,10 @@
   (general-key-dispatch 'self-insert-command
     :timeout 0.25
     "d" 'evil-normal-state))
+(general-define-key :state 'replace "f"
+		    (general-key-dispatch 'self-insert-command
+		      :timeout 0.25
+		      "d" 'evil-normal-state))
 
 ;; Comma to save
 (general-nmap "," 'save-buffer)
@@ -116,18 +120,18 @@
 ;; vnoremap < <gv
 (general-vmap "<"
   '(lambda ()
-    (interactive)
-    (evil-shift-left (region-beginning) (region-end))
-    (evil-normal-state)
-    (evil-visual-restore)))
+     (interactive)
+     (evil-shift-left (region-beginning) (region-end))
+     (evil-normal-state)
+     (evil-visual-restore)))
 
 ;; vnoremap > >gv
 (general-vmap ">"
   '(lambda ()
-    (interactive)
-    (evil-shift-right (region-beginning) (region-end))
-    (evil-normal-state)
-    (evil-visual-restore)))
+     (interactive)
+     (evil-shift-right (region-beginning) (region-end))
+     (evil-normal-state)
+     (evil-visual-restore)))
 
 (general-nmap "H" 'evil-first-non-blank)
 (general-nmap "L" 'evil-end-of-line)
@@ -149,10 +153,10 @@
   (setq ivy-count-format "(%d/%d) ") ; count format, from the ivy help page
   :general
   (general-imap
-   :keymap '(ivy-mode-map counsel-mode-map)
-   "C-j" 'ivy-next-line
-   "C-k" 'ivy-previous-line
-   "C-a" 'ivy-toggle-fuzzy)
+    :keymap '(ivy-mode-map counsel-mode-map)
+    "C-j" 'ivy-next-line
+    "C-k" 'ivy-previous-line
+    "C-a" 'ivy-toggle-fuzzy)
   (general-nmap "SPC b" 'ivy-switch-buffer)
   )
 
@@ -173,7 +177,7 @@
   (general-nmap "SPC /" 'counsel-rg)
   :config
   (setq counsel-rg-base-command
-      "rg -i -M 120 --follow --glob \"!.git/*\" --no-heading --ignore-case\
+	"rg -i -M 120 --follow --glob \"!.git/*\" --no-heading --ignore-case\
       --line-number --column --color never %s .")
   )
 
@@ -210,7 +214,7 @@
   :after company
   :config
   (with-eval-after-load 'company
-  (company-flx-mode +1))
+    (company-flx-mode +1))
   (setq company-flx-limit 250)
   )
 
@@ -221,9 +225,6 @@
   :general
   (general-imap "TAB" 'yas-expand-from-trigger-key)
   )
-
-(use-package yasnippet-snippets
-  :after yasnippet)
 
 ;; https://emacs.stackexchange.com/questions/10431/get-company-to-show-suggestions-for-yasnippet-names
 ;; Add yasnippet support for all company backends
@@ -251,11 +252,11 @@
   :general
   (general-mmap "f" 'avy-goto-char-in-line)
   (general-define-key :states '(normal insert emacs)
-    "C-f" 'avy-goto-char-timer))
+		      "C-f" 'avy-goto-char-timer))
 
 ;; Make "j" and "k" traverse visual lines
 (general-mmap "j" 'evil-next-visual-line
-              "k" 'evil-previous-visual-line)
+  "k" 'evil-previous-visual-line)
 
 ;; Bind = to the upgraded emacs align regexp
 (general-mmap "=" 'align-regexp)
@@ -277,7 +278,7 @@
   (general-nmap "SPC '"
     (general-simulate-key "gcap" :state 'normal
       :which-key "Toggle paragraph comment")
-  ))
+    ))
 
 (use-package magit
   :commands magit-status
@@ -324,7 +325,7 @@
 (use-package expand-region
   :general
   (general-vmap "v" 'er/expand-region
-	        "V" 'er/contract-region))
+    "V" 'er/contract-region))
 
 (use-package evil-goggles
   :config
@@ -333,9 +334,9 @@
 
 (general-vmap "SPC e"
   '(lambda ()
-    (interactive)
-    (eval-region (region-beginning) (region-end))
-    (evil-normal-state)))
+     (interactive)
+     (eval-region (region-beginning) (region-end))
+     (evil-normal-state)))
 
 (general-nmap "SPC e" 'eval-last-sexp)
 
@@ -348,15 +349,118 @@
 (use-package evil-vimish-fold
   :config (evil-vimish-fold-mode 1))
 
+;; Be strict about parens and indentation
 (use-package smartparens
   :config
-  (smartparens-strict-mode))
+  (smartparens-mode))
 
 (use-package evil-smartparens
-  :after smartparens
+  :after (smartparens evil)
   :config
   (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode)
   (setq evil-smartparens-threshold 1250))
+
+(use-package aggressive-indent
+  :config
+  (global-aggressive-indent-mode 1))
+
+(use-package evil-exchange
+  :after evil
+  :config
+  (evil-exchange-install))
+
+;; Copied from evil-unimpaired which is not on melpa for some reason
+(defun evil-unimpaired-paste-above ()
+  (interactive)
+  (evil-insert-newline-above)
+  (evil-paste-after 1))
+
+(defun evil-unimpaired-paste-below ()
+  (interactive)
+  (evil-insert-newline-below)
+  (evil-paste-after 1))
+
+(defun evil-unimpaired-insert-space-above (count)
+  (interactive "p")
+  (dotimes (_ count) (save-excursion (evil-insert-newline-above))))
+
+(defun evil-unimpaired-insert-space-below (count)
+  (interactive "p")
+  (dotimes (_ count) (save-excursion (evil-insert-newline-below))))
+
+(general-nmap "[p" 'evil-unimpaired-paste-above)
+(general-nmap "]p" 'evil-unimpaired-paste-below)
+
+(general-nmap "[ SPC" 'evil-unimpaired-insert-space-above)
+(general-nmap "] SPC" 'evil-unimpaired-insert-space-below)
+
+;; File navigation
+(use-package ranger
+  :config (ranger-override-dired-mode t))
+
+(use-package treemacs
+  :defer t
+  :init
+  (with-eval-after-load 'winum
+    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
+  :config
+  (progn
+    (setq treemacs-collapse-dirs              (if (executable-find "python") 3 0)
+          treemacs-deferred-git-apply-delay   0.5
+          treemacs-display-in-side-window     t
+          treemacs-file-event-delay           5000
+          treemacs-file-follow-delay          0.2
+          treemacs-follow-after-init          t
+          treemacs-follow-recenter-distance   0.1
+          treemacs-goto-tag-strategy          'refetch-index
+          treemacs-indentation                2
+          treemacs-indentation-string         " "
+          treemacs-is-never-other-window      nil
+          treemacs-no-png-images              nil
+          treemacs-project-follow-cleanup     nil
+          treemacs-persist-file               (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
+          treemacs-recenter-after-file-follow nil
+          treemacs-recenter-after-tag-follow  nil
+          treemacs-show-hidden-files          t
+          treemacs-silent-filewatch           nil
+          treemacs-silent-refresh             nil
+          treemacs-sorting                    'alphabetic-desc
+          treemacs-space-between-root-nodes   t
+          treemacs-tag-follow-cleanup         t
+          treemacs-tag-follow-delay           1.5
+          treemacs-width                      35)
+
+    ;; The default width and height of the icons is 22 pixels. If you are
+    ;; using a Hi-DPI display, uncomment this to double the icon size.
+    ;;(treemacs-resize-icons 44)
+
+    (treemacs-follow-mode t)
+    (treemacs-filewatch-mode t)
+    (treemacs-fringe-indicator-mode t)
+    (pcase (cons (not (null (executable-find "git")))
+                 (not (null (executable-find "python3"))))
+      (`(t . t)
+       (treemacs-git-mode 'extended))
+      (`(t . _)
+       (treemacs-git-mode 'simple))))
+  :bind
+  (:map global-map
+        ("M-0"       . treemacs-select-window)
+        ("C-x t 1"   . treemacs-delete-other-windows)
+        ("C-x t t"   . treemacs)
+        ("C-x t B"   . treemacs-bookmark)
+        ("C-x t C-t" . treemacs-find-file)
+        ("C-x t M-t" . treemacs-find-tag)))
+
+(use-package treemacs-evil
+  :after treemacs evil
+  :general
+  (general-mmap
+    :keymaps '(global evil-treemacs-state-map)
+    "-" 'treemacs))
+
+(use-package treemacs-projectile
+  :after treemacs projectile)
 
 (provide 'init)
 ;;; init.el ends here
