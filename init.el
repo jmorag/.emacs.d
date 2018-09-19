@@ -23,10 +23,18 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
+;; Fix path on mac
+(use-package exec-path-from-shell
+  :config
+  (when (memq window-system '(mac ns x))
+  (exec-path-from-shell-initialize)))
+
+
 ;; Visual stuff
 (set-scroll-bar-mode 'nil)
 (tool-bar-mode -1)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
+(column-number-mode 1)
 
 (when (version<= "26.0.50" emacs-version )
   (global-display-line-numbers-mode))
@@ -97,6 +105,10 @@
   (general-key-dispatch 'self-insert-command
     :timeout 0.25
     "d" 'evil-normal-state))
+(general-vmap "f"
+  (general-key-dispatch 'self-insert-command
+    :timeout 0.25
+    "d" 'evil-normal-state))
 
 ;; Comma to save
 (general-nmap "," 'save-buffer)
@@ -140,7 +152,9 @@
    :keymap '(ivy-mode-map counsel-mode-map)
    "C-j" 'ivy-next-line
    "C-k" 'ivy-previous-line
-   "C-a" 'ivy-toggle-fuzzy))
+   "C-a" 'ivy-toggle-fuzzy)
+  (general-nmap "SPC b" 'ivy-switch-buffer)
+  )
 
 ;; Counsel (same as Ivy above)
 (use-package counsel
@@ -152,13 +166,31 @@
    counsel-git-grep  ; search for regexp in git repo
    counsel-ag        ; search for regexp in git repo using ag
    counsel-locate)   ; search for files or else using locate
+  :general
+  (general-nmap "SPC ;" 'counsel-M-x)
+  (general-nmap "SPC f" 'counsel-find-file)
+  (general-nmap "C-p" 'counsel-yank-pop)
+  (general-nmap "SPC /" 'counsel-rg)
+  :config
+  (setq counsel-rg-base-command
+      "rg -i -M 120 --follow --glob \"!.git/*\" --no-heading --ignore-case\
+      --line-number --column --color never %s .")
   )
 
 ;; Swiper
 (use-package swiper
   :commands swiper
   :general
-  (general-nmap "/" 'swiper)
+  ;; cannibalize evil search command
+  ;; for some reason, the search direction is set to backwards by default, so the behavior of
+  ;; "n" and "N" are switched until you actually perform an evil forward search.
+  ;; I literally never use backward search, so this behavior is useless to me.
+  ;; Hence the following hack to fix this.
+  ;; TODO: come up with a better use for ?
+  (general-nmap "/" 'swiper
+    "n" 'evil-search-previous
+    "N" 'evil-search-next
+    "?" nil)
   )
 
 ;; Company
@@ -166,16 +198,21 @@
   :config
   (global-company-mode 1)
   (setq company-minimum-prefix-length 2)
-  :general
-  (general-define-key
-   :states '(insert emacs)
-   :keymaps '(company-active-map
-	      company-filter-map
-	      company-search-map
-	      company-template-field-map
-	      company-template-nav-map)
-   "TAB" nil
-  ))
+  ;; For some reason, these bindings don't work with general
+  (define-key company-active-map (kbd "TAB") nil)
+  (define-key company-active-map (kbd "<tab>") nil)
+  (define-key company-active-map (kbd "C-j") 'company-select-next)
+  (define-key company-active-map (kbd "C-k") 'company-select-previous)
+  )
+
+;; Add fuzzy backend to company
+(use-package company-flx
+  :after company
+  :config
+  (with-eval-after-load 'company
+  (company-flx-mode +1))
+  (setq company-flx-limit 250)
+  )
 
 ;; Yasnipet
 (use-package yasnippet
@@ -223,6 +260,14 @@
 ;; Bind = to the upgraded emacs align regexp
 (general-mmap "=" 'align-regexp)
 
+;; Better window moving
+(general-nmap "C-h" 'evil-window-left)
+(general-nmap "C-j" 'evil-window-down)
+(general-nmap "C-k" 'evil-window-up)
+(general-nmap "C-l" 'evil-window-right)
+;; Replace stolen C-h command
+(general-nvmap :prefix "SPC" "h" 'help-command)
+
 (use-package evil-commentary
   :after evil
   :config (evil-commentary-mode)
@@ -230,7 +275,7 @@
   (general-nvmap "'" 'evil-commentary-line)
   ;; nnoremap <Leader>' gcap
   (general-nmap "SPC '"
-    (general-simulate-key ('evil-commentary "ap")
+    (general-simulate-key "gcap" :state 'normal
       :which-key "Toggle paragraph comment")
   ))
 
@@ -241,6 +286,9 @@
     :prefix "SPC"
     "g" '(magit-status :which-key "Magit"))
   )
+
+(use-package evil-magit
+  :after magit)
 
 (use-package magithub
   :after magit
@@ -275,8 +323,8 @@
 
 (use-package expand-region
   :general
-  (general-vmap "]" 'er/expand-region
-	        "[" 'er/contract-region))
+  (general-vmap "v" 'er/expand-region
+	        "V" 'er/contract-region))
 
 (use-package evil-goggles
   :config
@@ -291,7 +339,24 @@
 
 (general-nmap "SPC e" 'eval-last-sexp)
 
-;; Haskell config
+;; Tabs
+(use-package eyebrowse
+  :init
+  (eyebrowse-setup-opinionated-keys)
+  (eyebrowse-mode))
+
+(use-package evil-vimish-fold
+  :config (evil-vimish-fold-mode 1))
+
+(use-package smartparens
+  :config
+  (smartparens-strict-mode))
+
+(use-package evil-smartparens
+  :after smartparens
+  :config
+  (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode)
+  (setq evil-smartparens-threshold 1250))
 
 (provide 'init)
 ;;; init.el ends here
