@@ -179,6 +179,9 @@
       --line-number --column --color never %s .")
   )
 
+(use-package smex
+  :after (counsel ivy swiper))
+
 ;; Swiper
 (use-package swiper
   :commands swiper
@@ -352,7 +355,9 @@
 ;; Be strict about parens and indentation
 (use-package smartparens
   :config
-  (smartparens-mode))
+  (add-hook 'prog-mode-hook #'smartparens-strict-mode)
+  ;; For some reason the quote was not already disabled in elisp
+  (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil))
 
 (use-package evil-smartparens
   :after (smartparens evil)
