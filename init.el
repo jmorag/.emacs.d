@@ -470,4 +470,18 @@
   :after treemacs projectile)
 
 (provide 'init)
+
+;; Language specific
+(use-package haskell-mode)
+(use-package intero
+  :config
+  (add-hook 'haskell-mode-hook 'intero-mode))
+;; hindent
+(use-package hindent)
+(add-hook 'haskell-mode-hook #'hindent-mode)
+(setq hindent-style "johan-tibell")
+(setq haskell-process-type 'stack-ghci)
+
+(use-package hasky-stack)
+
 ;;; init.el ends here
