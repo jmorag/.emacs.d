@@ -299,12 +299,12 @@
   :after magit
   :config
   (add-hook 'with-editor-mode-hook 'evil-insert-state)
-  :general
-  (general-nmap
-    :keymap 'with-editor-mode-map
-    "RET" 'with-editor-finish
-    "<escape>" 'with-editor-cancel)
   )
+
+;; For some reason, the general version of this screws up enter elsewhere
+(evil-define-key 'normal with-editor-mode-map
+  (kbd "RET") 'with-editor-finish
+  [escape] 'with-editor-cancel)
 
 (use-package magithub
   :after magit
@@ -365,18 +365,8 @@
 (use-package evil-vimish-fold
   :config (evil-vimish-fold-mode 1))
 
-;; Be strict about parens and indentation
-(use-package smartparens
-  :config
-  (add-hook 'prog-mode-hook #'smartparens-strict-mode)
-  ;; For some reason the quote was not already disabled in elisp
-  (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil))
-
-(use-package evil-smartparens
-  :after (smartparens evil)
-  :config
-  (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode)
-  (setq evil-smartparens-threshold 1250))
+;; Smartparens is very heavy and weird. This stays more or less out of the way
+(electric-pair-mode 1)
 
 (use-package rainbow-delimiters
   :config
