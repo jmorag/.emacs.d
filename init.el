@@ -105,18 +105,11 @@
   :config (general-evil-setup))
 
 ;; Bind fd escape
-(general-imap "f"
-  (general-key-dispatch 'self-insert-command
-    :timeout 0.25
-    "d" 'evil-normal-state))
-(general-vmap "f"
-  (general-key-dispatch 'self-insert-command
-    :timeout 0.25
-    "d" 'evil-normal-state))
-(general-define-key :state 'replace "f"
-		    (general-key-dispatch 'self-insert-command
-		      :timeout 0.25
-		      "d" 'evil-normal-state))
+(general-define-key
+ :state '(normal visual replace)
+ "f" (general-key-dispatch 'self-insert-command
+       :timeout 0.25
+       "d" 'evil-normal-state))
 
 ;; Comma to save
 (general-nmap "," 'save-buffer)
@@ -303,7 +296,8 @@
   :general
   (general-nmap
     :keymap 'with-editor-mode-map
-    "RET" 'with-editor-finish)
+    "RET" 'with-editor-finish
+    "<escape>" 'with-editor-cancel)
   )
 
 (use-package magithub
