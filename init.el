@@ -77,6 +77,7 @@
   (setq evil-want-C-u-scroll t)
   (setq evil-want-C-d-scroll t)
   (setq evil-want-minibuffer t)
+  (setq evil-disable-insert-state-bindings t)
   :config
   (evil-mode 1)
   (hl-line-mode)
@@ -141,7 +142,10 @@
   (setq which-key-idle-delay 0.1))
 
 ;; Ivy (taken from "How to make your own Spacemacs")
+(use-package ivy-hydra)
+
 (use-package ivy
+  :after ivy-hydra
   :diminish (ivy-mode . "") ; does not display ivy in the modeline
   :init (ivy-mode 1)        ; enable ivy globally at startup
   :config
@@ -159,6 +163,7 @@
 
 ;; Counsel (same as Ivy above)
 (use-package counsel
+  :after (ivy ivy-hydra)
   :commands          ; Load counsel when any of these commands are invoked
   (counsel-M-x       ; M-x use counsel
    counsel-find-file ; C-x C-f use counsel-find-file
@@ -183,6 +188,7 @@
 
 ;; Swiper
 (use-package swiper
+  :after (ivy ivy-hydra)
   :commands swiper
   :general
   ;; cannibalize evil search command
