@@ -55,6 +55,8 @@
 (use-package doom-modeline
   :config
   (doom-modeline-init)
+  (doom-themes-treemacs-config)
+  (doom-themes-org-config)
   )
 
 ;; Fix some defaults
@@ -76,7 +78,11 @@
   (setq evil-want-C-d-scroll t)
   (setq evil-want-minibuffer t)
   :config
-  (evil-mode 1))
+  (evil-mode 1)
+  (hl-line-mode)
+  (add-hook 'evil-insert-state-entry-hook (lambda () (hl-line-mode -1)))
+  (add-hook 'evil-insert-state-exit-hook (lambda () (hl-line-mode +1)))
+  )
 
 (use-package evil-collection
   :after evil
@@ -371,6 +377,10 @@
   :config
   (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode)
   (setq evil-smartparens-threshold 1250))
+
+(use-package rainbow-delimiters
+  :config
+  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 
 (use-package aggressive-indent
   :config
