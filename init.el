@@ -291,7 +291,14 @@
   )
 
 (use-package evil-magit
-  :after magit)
+  :after magit
+  :config
+  (add-hook 'with-editor-mode-hook 'evil-insert-state)
+  :general
+  (general-nmap
+    :keymap 'with-editor-mode-map
+    "RET" 'with-editor-finish
+    [escape] 'with-editor-cancel))
 
 (use-package magithub
   :after magit
@@ -459,7 +466,7 @@
   :commands treemacs
   :general
   (general-mmap
-    :keymaps '(global evil-treemacs-state-map)
+    :keymap '(global evil-treemacs-state-map)
     "-" 'treemacs))
 
 (use-package treemacs-evil
