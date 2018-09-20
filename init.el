@@ -303,8 +303,8 @@
   :general
   (general-nmap
     :keymap 'with-editor-mode-map
-    "RET" 'with-editor-finish
-    [escape] 'with-editor-cancel))
+    "RET" 'with-editor-finish)
+  )
 
 (use-package magithub
   :after magit
