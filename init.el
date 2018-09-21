@@ -34,12 +34,17 @@
 (tool-bar-mode -1)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 (column-number-mode 1)
+(set-face-font 'default "-*-Menlo-normal-normal-normal-*-14-*-*-*-m-0-iso10646-1")
 
 (when (version<= "26.0.50" emacs-version )
   (global-display-line-numbers-mode))
 
 (use-package doom-themes
-  :config (load-theme 'doom-one t))
+  :config
+  (load-theme 'doom-one t)
+  (doom-themes-treemacs-config)
+  (doom-themes-org-config)
+  )
 
 ;; Nice start screen
 (use-package dashboard
@@ -55,8 +60,6 @@
 (use-package doom-modeline
   :config
   (doom-modeline-init)
-  (doom-themes-treemacs-config)
-  (doom-themes-org-config)
   )
 
 ;; Fix some defaults
@@ -279,6 +282,7 @@
 (use-package evil-commentary
   :after evil
   :config (evil-commentary-mode)
+  :commands (evil-commentary-line evil-commentary)
   :general
   (general-nvmap "'" 'evil-commentary-line)
   ;; nnoremap <Leader>' gcap
@@ -315,6 +319,7 @@
 (use-package projectile
   :config
   (projectile-mode 1)
+  (setq projectile-completion-system 'ivy)
   :general
   (general-nmap "SPC p" '(projectile-command-map :which-key "Projectile"))
   )
@@ -408,7 +413,13 @@
 
 ;; File navigation
 (use-package ranger
-  :config (ranger-override-dired-mode t))
+  :config
+  (ranger-override-dired-mode t)
+  (setq ranger-cleanup-on-disable t)
+  :general
+  (general-nmap "SPC d" 'ranger-minimal-toggle)
+  (general-nmap "SPC D" 'ranger)
+  )
 
 (use-package treemacs
   :defer t
@@ -454,7 +465,8 @@
       (`(t . t)
        (treemacs-git-mode 'extended))
       (`(t . _)
-       (treemacs-git-mode 'simple))))
+       (treemacs-git-mode 'simple)))
+    (treemacs-reset-icons))
   :bind
   (:map global-map
         ("M-0"       . treemacs-select-window)
@@ -490,5 +502,6 @@
 (setq haskell-process-type 'stack-ghci)
 
 (use-package hasky-stack)
+(use-package shakespeare-mode)
 
 ;;; init.el ends here
