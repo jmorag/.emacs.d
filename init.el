@@ -381,7 +381,10 @@
 
 (use-package aggressive-indent
   :config
-  (global-aggressive-indent-mode 1))
+  (global-aggressive-indent-mode 1)
+  (add-to-list 'aggressive-indent-excluded-modes 'haskell-mode)
+  (add-to-list 'aggressive-indent-excluded-modes 'python-mode)
+  )
 
 (use-package evil-exchange
   :after evil
