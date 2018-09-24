@@ -36,6 +36,10 @@
 (column-number-mode 1)
 (set-face-font 'default "-*-Menlo-normal-normal-normal-*-14-*-*-*-m-0-iso10646-1")
 
+(use-package eshell-git-prompt
+  :config
+  (eshell-git-prompt-use-theme 'powerline))
+
 (when (version<= "26.0.50" emacs-version )
   (global-display-line-numbers-mode))
 
@@ -148,6 +152,7 @@
 
 ;; Ivy (taken from "How to make your own Spacemacs")
 (use-package ivy-hydra)
+(use-package wgrep)
 
 (use-package ivy
   :after ivy-hydra
