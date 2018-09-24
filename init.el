@@ -491,17 +491,31 @@
 (provide 'init)
 
 ;; Language specific
-(use-package haskell-mode)
+(use-package haskell-mode
+  :config
+  (setq haskell-process-type 'stack-ghci))
+
 (use-package intero
   :config
   (add-hook 'haskell-mode-hook 'intero-mode))
+
 ;; hindent
-(use-package hindent)
-(add-hook 'haskell-mode-hook #'hindent-mode)
-(setq hindent-style "johan-tibell")
-(setq haskell-process-type 'stack-ghci)
+(use-package hindent
+  :config
+  (add-hook 'haskell-mode-hook #'hindent-mode)
+  (setq hindent-style "johan-tibell")
+  :general
+  (general-define-key
+   :states '(normal visual)
+   :keymap 'hindent-mode-map
+   "SPC =" 'hindent-reformat-buffer)
+  )
 
 (use-package hasky-stack)
 (use-package shakespeare-mode)
+
+(use-package yaml-mode
+  :config
+  (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
 
 ;;; init.el ends here
