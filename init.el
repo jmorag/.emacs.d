@@ -86,6 +86,8 @@
   (hl-line-mode)
   (add-hook 'evil-insert-state-entry-hook (lambda () (hl-line-mode -1)))
   (add-hook 'evil-insert-state-exit-hook (lambda () (hl-line-mode +1)))
+  ;; Reclaim this since we take "gx" for evil-exchange
+  (define-key evil-normal-state-map "gr" 'browse-url-at-point)
   )
 
 (use-package evil-collection
