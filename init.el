@@ -1,4 +1,7 @@
 ;;; Code:
+;; Start off with giant gc threshold
+(setq gc-cons-threshold most-positive-fixnum)
+
 (setq package-enable-at-startup nil)
 (setq package-archives '(("org"       . "http://orgmode.org/elpa/")
                          ("gnu"       . "http://elpa.gnu.org/packages/")
@@ -12,6 +15,18 @@
 ;; Don't dump custom variables into init.el
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
+
+;; Be fast - from aaron bieber
+(defun my-minibuffer-setup-hook ()
+  "Increase GC cons threshold."
+  (setq gc-cons-threshold most-positive-fixnum))
+
+(defun my-minibuffer-exit-hook ()
+  "Set GC cons threshold to its default value."
+  (setq gc-cons-threshold 1000000))
+
+(add-hook 'minibuffer-setup-hook #'my-minibuffer-setup-hook)
+(add-hook 'minibuffer-exit-hook #'my-minibuffer-exit-hook)
 
 ;; Bootstrap `use-package'
 (package-initialize)
@@ -316,6 +331,9 @@
 (use-package yaml-mode
   :config
   (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
+
+;; Revert garbage collection to default after loading init
+(setq gc-cons-threshold 1000000)
 
 (provide 'init)
 ;;; init.el ends here
