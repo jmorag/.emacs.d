@@ -108,9 +108,9 @@
   (setq ivy-use-virtual-buffers t)   ; extend searching to bookmarks and …
   (setq ivy-height 10)               ; set height of the ivy window
   (setq ivy-count-format "(%d/%d) ") ; count format, from the ivy help page
-  :bind (("C-j" . 'ivy-next-line)
-         ("C-k" . 'ivy-previous-line)
-         ("C-a" . 'ivy-toggle-fuzzy)))
+  (define-key ivy-minibuffer-map "\C-j" 'ivy-next-line)
+  (define-key ivy-minibuffer-map "\C-k" 'ivy-previous-line)
+  )
 
 ;; Counsel (same as Ivy above)
 (use-package counsel
@@ -123,11 +123,6 @@
    counsel-git-grep  ; search for regexp in git repo
    counsel-ag        ; search for regexp in git repo using ag
    counsel-locate)   ; search for files or else using locate
-  :general
-  (general-nmap "SPC ;" 'counsel-M-x)
-  (general-nmap "SPC f" 'counsel-find-file)
-  (general-nmap "C-p" 'counsel-yank-pop)
-  (general-nmap "SPC /" 'counsel-rg)
   :config
   (setq counsel-rg-base-command
 	"rg -i -M 120 --follow --glob \"!.git/*\" --no-heading --ignore-case\
@@ -149,6 +144,11 @@
   (global-company-mode 1)
   (company-tng-configure-default)
   (setq company-minimum-prefix-length 2)
+  (define-key company-active-map "\C-j" 'company-select-next)
+  (define-key company-active-map "\C-k" 'company-select-previous)
+  ;; This is apparently how you bind tab...
+  (define-key company-active-map (kbd "TAB") nil)
+  (define-key company-active-map (kbd "<tab>") nil)
   )
 
 ;; Add fuzzy backend to company
@@ -158,11 +158,6 @@
   (with-eval-after-load 'company
     (company-flx-mode +1))
   (setq company-flx-limit 250)
-  :bind (:map company-active-map
-	 ("C-j" . 'company-select-next)
-	 ("C-k" . 'company-select-previous)
-	 ("TAB" . nil)
-	 ("<tab>" . nil))
   )
 
 ;; Yasnipet
@@ -178,7 +173,7 @@
   "Enable yasnippet for all backends.")
 
 (defun company-mode/backend-with-yas (backend)
-  "Add yasnippets to a company mode backend"
+  "Add yasnippets to a company mode BACKEND."
   (if (or (not company-mode/enable-yas)
 	  (and (listp backend) (member 'company-yasnippet backend)))
       backend
@@ -200,17 +195,6 @@
 (use-package magit
   :commands magit-status
   )
-
-(use-package evil-magit
-  :after magit
-  :config
-  (add-hook 'with-editor-mode-hook 'evil-insert-state)
-  )
-
-;; For some reason, the general version of this screws up enter elsewhere
-(evil-define-key 'normal with-editor-mode-map
-  (kbd "RET") 'with-editor-finish
-  [escape] 'with-editor-cancel)
 
 (use-package magithub
   :after magit
@@ -236,13 +220,6 @@
 
 (use-package expand-region)
 
-
-;; Tabs
-(use-package eyebrowse
-  :init
-  (eyebrowse-setup-opinionated-keys)
-  (eyebrowse-mode))
-
 ;; Smartparens is very heavy and weird. This stays more or less out of the way
 (electric-pair-mode 1)
 
@@ -256,65 +233,6 @@
   (add-to-list 'aggressive-indent-excluded-modes 'haskell-mode)
   (add-to-list 'aggressive-indent-excluded-modes 'python-mode)
   )
-
-(use-package treemacs
-  :defer t
-  :init
-  (with-eval-after-load 'winum
-    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
-  :config
-  (progn
-    (setq treemacs-collapse-dirs              (if (executable-find "python") 3 0)
-          treemacs-deferred-git-apply-delay   0.5
-          treemacs-display-in-side-window     t
-          treemacs-file-event-delay           5000
-          treemacs-file-follow-delay          0.2
-          treemacs-follow-after-init          t
-          treemacs-follow-recenter-distance   0.1
-          treemacs-goto-tag-strategy          'refetch-index
-          treemacs-indentation                2
-          treemacs-indentation-string         " "
-          treemacs-is-never-other-window      nil
-          treemacs-no-png-images              nil
-          treemacs-project-follow-cleanup     nil
-          treemacs-persist-file               (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
-          treemacs-recenter-after-file-follow nil
-          treemacs-recenter-after-tag-follow  nil
-          treemacs-show-hidden-files          t
-          treemacs-silent-filewatch           nil
-          treemacs-silent-refresh             nil
-          treemacs-sorting                    'alphabetic-desc
-          treemacs-space-between-root-nodes   t
-          treemacs-tag-follow-cleanup         t
-          treemacs-tag-follow-delay           1.5
-          treemacs-width                      35)
-
-    ;; The default width and height of the icons is 22 pixels. If you are
-    ;; using a Hi-DPI display, uncomment this to double the icon size.
-    ;;(treemacs-resize-icons 44)
-
-    (treemacs-follow-mode t)
-    (treemacs-filewatch-mode t)
-    (treemacs-fringe-indicator-mode t)
-    (pcase (cons (not (null (executable-find "git")))
-                 (not (null (executable-find "python3"))))
-      (`(t . t)
-       (treemacs-git-mode 'extended))
-      (`(t . _)
-       (treemacs-git-mode 'simple)))
-    (treemacs-reset-icons))
-  :bind
-  (:map global-map
-        ("M-0"       . treemacs-select-window)
-        ("C-x t 1"   . treemacs-delete-other-windows)
-        ("C-x t t"   . treemacs)
-        ("C-x t B"   . treemacs-bookmark)
-        ("C-x t C-t" . treemacs-find-file)
-        ("C-x t M-t" . treemacs-find-tag))
-  :commands treemacs)
-
-(use-package treemacs-projectile
-  :after treemacs projectile)
 
 ;; Language specific
 (use-package haskell-mode
