@@ -10,7 +10,7 @@
  '(evil-collection-setup-minibuffer t)
  '(package-selected-packages
    (quote
-    (eshell-git-prompt wgrep solarized-theme yaml-mode shakespeare-mode smex ivy-hydra which-key rainbow-delimiters rainbow-delimeters hasky-stack hindent intero treemacs-projectile treemacs-evil treemacs ranger aggressive-indent aggressive-indent-mode evil-unimpaired evil-exchange evil-smartparens exec-path-from-shell smartparens evil-magit evil-vimish-fold company-flx eyebrowse haskell-mode yasnippet-snippets yasnippet evil-goggles expand-region evil-multiedit magithub flycheck counsel-projectile magit evil-commentary avy company helm evil-indent-textobject evil-surround counsel ivy doom-modeline powerline telephone-line dashboard general doom-themes evil-collection evil use-package)))
+    (key-chord modalka eshell-git-prompt wgrep solarized-theme yaml-mode shakespeare-mode smex ivy-hydra which-key rainbow-delimiters rainbow-delimeters hasky-stack hindent intero treemacs-projectile treemacs-evil treemacs ranger aggressive-indent aggressive-indent-mode evil-unimpaired evil-exchange evil-smartparens exec-path-from-shell smartparens evil-magit evil-vimish-fold company-flx eyebrowse haskell-mode yasnippet-snippets yasnippet evil-goggles expand-region evil-multiedit magithub flycheck counsel-projectile magit evil-commentary avy company helm evil-indent-textobject evil-surround counsel ivy doom-modeline powerline telephone-line dashboard general doom-themes evil-collection evil use-package)))
  '(safe-local-variable-values
    (quote
     ((haskell-indent-spaces . 2)

@@ -90,11 +90,91 @@
 
 (defalias 'yes-or-no-p #'y-or-n-p)
 
+;; Introduce keybindings
 (use-package which-key
   :config
   (which-key-mode)
   (setq which-key-show-operator-state-maps t)
   (setq which-key-idle-delay 0.1))
+
+(use-package key-chord
+  :config
+  (key-chord-mode +1))
+
+(use-package modalka
+  :after key-chord
+  :config
+  (setq-default cursor-type '(bar . 1))
+  (setq modalka-cursor-type 'box)
+  (add-hook 'text-mode-hook #'modalka-mode)
+  (add-hook 'prog-mode-hook #'modalka-mode)
+  )
+
+;; A super light and incomplete implementation of vi using modalka
+(key-chord-define-global "fd"
+   '(lambda () (interactive) (modalka-mode 1) (overwrite-mode -1)))
+(define-key modalka-mode-map "i" '(lambda () (interactive) (modalka-mode -1)))
+(define-key modalka-mode-map "a"
+   '(lambda () (interactive) (forward-char 1) (modalka-mode -1)))
+(define-key modalka-mode-map "A"
+  '(lambda () (interactive)
+     (move-end-of-line 1)
+     (modalka-mode -1)))
+(modalka-define-kbd "h" "C-b")
+(modalka-define-kbd "j" "C-n")
+(modalka-define-kbd "k" "C-p")
+(modalka-define-kbd "l" "C-f")
+(modalka-define-kbd "w" "M-f")
+(modalka-define-kbd "b" "M-b")
+(modalka-define-kbd "H" "C-a")
+(modalka-define-kbd "L" "C-e")
+(modalka-define-kbd "C-d" "C-v")
+(modalka-define-kbd "C-u" "M-v")
+(modalka-define-kbd "x" "C-d")
+(modalka-define-kbd "v" "C-SPC")
+(modalka-define-kbd "e" "C-x C-e")
+(modalka-define-kbd "d" "C-w")
+(define-key modalka-mode-map "c"
+  '(lambda () (interactive)
+     (kill-region (region-beginning) (region-end))
+     (modalka-mode -1)))
+(modalka-define-kbd "D" "C-k")
+(modalka-define-kbd "y" "M-w")
+(modalka-define-kbd "p" "C-y")
+(modalka-define-kbd "u" "C-/")
+(modalka-define-kbd "," "C-x C-s")
+;; This one needs to be done like this
+;; because modalka doesn't deal with recursive mappings well
+(define-key modalka-mode-map "x" 'delete-char)
+
+(modalka-define-kbd "0" "C-0")
+(modalka-define-kbd "1" "C-1")
+(modalka-define-kbd "2" "C-2")
+(modalka-define-kbd "3" "C-3")
+(modalka-define-kbd "4" "C-4")
+(modalka-define-kbd "5" "C-5")
+(modalka-define-kbd "6" "C-6")
+(modalka-define-kbd "7" "C-7")
+(modalka-define-kbd "8" "C-8")
+(modalka-define-kbd "9" "C-9")
+(define-key modalka-mode-map "/" 'swiper)
+(define-key modalka-mode-map "J"
+  '(lambda () (interactive) (join-line 1)))
+(define-key modalka-mode-map "R"
+  '(lambda () (interactive)
+     (overwrite-mode 1)
+     (modalka-mode -1)))
+(define-key modalka-mode-map "o"
+  '(lambda (&optional count) (interactive "P")
+     (move-end-of-line nil)
+     (newline count)
+     (modalka-mode -1)))
+(define-key modalka-mode-map "O"
+  '(lambda (&optional count) (interactive "P")
+     (move-beginning-of-line nil)
+     (newline count)
+     (previous-line count)
+     (modalka-mode -1)))
 
 ;; Ivy (taken from "How to make your own Spacemacs")
 (use-package ivy-hydra)
