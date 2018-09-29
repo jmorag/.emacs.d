@@ -95,7 +95,7 @@
   :config
   (which-key-mode)
   (setq which-key-show-operator-state-maps t)
-  (setq which-key-idle-delay 0.1))
+  (setq which-key-idle-delay 0.3))
 
 (use-package key-chord
   :config
@@ -126,7 +126,7 @@
 (modalka-define-kbd "l" "C-f")
 (modalka-define-kbd "w" "M-f")
 (modalka-define-kbd "b" "M-b")
-(modalka-define-kbd "H" "C-a")
+(modalka-define-kbd "H" "M-m")
 (modalka-define-kbd "L" "C-e")
 (modalka-define-kbd "C-d" "C-v")
 (modalka-define-kbd "C-u" "M-v")
@@ -185,6 +185,7 @@
   :diminish (ivy-mode . "") ; does not display ivy in the modeline
   :init (ivy-mode 1)        ; enable ivy globally at startup
   :config
+  ;(setq ivy-re-builders-alist '((t. ivy--regex-fuzzy))) ; fuzzy by default
   (setq ivy-use-virtual-buffers t)   ; extend searching to bookmarks and …
   (setq ivy-height 10)               ; set height of the ivy window
   (setq ivy-count-format "(%d/%d) ") ; count format, from the ivy help page
@@ -226,7 +227,6 @@
   (setq company-minimum-prefix-length 2)
   (define-key company-active-map "\C-j" 'company-select-next)
   (define-key company-active-map "\C-k" 'company-select-previous)
-  ;; This is apparently how you bind tab...
   (define-key company-active-map (kbd "TAB") nil)
   (define-key company-active-map (kbd "<tab>") nil)
   )
