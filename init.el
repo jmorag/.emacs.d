@@ -5,12 +5,13 @@
 (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+;;;; Fonts and scrolling 
 (column-number-mode 1)
 (set-face-font 'default "-*-Menlo-normal-normal-normal-*-14-*-*-*-m-0-iso10646-1")
 ;; Make scrolling work more like vim's
 (scroll-lock-mode 1)
 
-;; Start off with giant gc threshold
+;;;; Start off with giant gc threshold
 (setq gc-cons-threshold most-positive-fixnum)
 
 ;;; Bootstrap package management
@@ -45,7 +46,7 @@
 (straight-use-package 'use-package)
 (setq straight-use-package-by-default t)
 
-;;; Setup keybinding facilities
+;;; Core editor facilities
 ;; This sets up basic text editing commands
 ;;;; Key chord
 (use-package use-package-chords
@@ -618,18 +619,15 @@ Version 2017-04-19"
   :after (projectile counsel)
   :config (counsel-projectile-mode))
 
-(use-package flycheck
-  :ryo
-  ("SPC a" (("t" flycheck-mode))))
-
-
+;;; General programming concerns 
+;;;; Parentheses 
 ;; Smartparens is very heavy and weird. This stays more or less out of the way
 (electric-pair-mode 1)
-
 (use-package rainbow-delimiters
   :config
   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 
+;;;; Indentation 
 (use-package aggressive-indent
   :config
   (global-aggressive-indent-mode 1)
@@ -637,9 +635,13 @@ Version 2017-04-19"
   (add-to-list 'aggressive-indent-excluded-modes 'python-mode)
   )
 
-;; Language specific
+;;;; Linting 
+(use-package flycheck
+  :ryo
+  ("SPC a" (("t" flycheck-mode))))
 
-;; Haskell - (should rethink to lsp)
+;;; Language specific programming concerns 
+;;;; Haskell - (should rethink to lsp)
 (use-package haskell-mode
   :config
   (setq haskell-process-type 'stack-ghci))
@@ -651,12 +653,13 @@ Version 2017-04-19"
 (use-package hasky-stack)
 (use-package shakespeare-mode)
 
-;; yaml
+;;;; Yaml
 (use-package yaml-mode
   :config
   (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
 
-;; Lisps - (since all of my time is spent in emacs, I should have a lisp plugin)
+;;;; Lisps 
+;; (since all of my time is spent in emacs, I should have a lisp plugin)
 ;; There is a choice between lispy, paredit, smart-parens, and parinfer
 (use-package lispy
   :config
@@ -668,8 +671,9 @@ Version 2017-04-19"
                   (lispy-mode 1))))))
 
 
+;;; End 
 ;; Revert garbage collection to default after loading init
 (setq gc-cons-threshold 1000000)
 
 (provide 'init)
-;;; init.el ends here
+;; init.el ends here
