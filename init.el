@@ -133,11 +133,6 @@ but I like this behavior better."
   (dotimes (_ count) (save-excursion (yank)))
   )
 
-;; Sane undo and redo
-(use-package undo-tree
-  :config
-  (global-undo-tree-mode))
-
 (defun jm/comment-region-or-line (count) (interactive "p")
        (if (use-region-p)
 	   (comment-or-uncomment-region (region-beginning) (region-end))
@@ -319,8 +314,6 @@ Version 2017-04-19"
    ("s" mc/mark-all-in-region-regexp)
    ("t" kak/select-to-char :first '(set-mark-here))
    ("T" kak/select-to-char :first '(set-mark-if-inactive))
-   ("u" undo-tree-undo)
-   ("U" undo-tree-redo)
    ("v" er/expand-region)
    ("V" set-rectangular-region-anchor)
    ("w" forward-same-syntax :first '(set-mark-here))
@@ -362,6 +355,20 @@ Version 2017-04-19"
    ("7" "M-7" :norepeat t)
    ("8" "M-8" :norepeat t)
    ("9" "M-9" :norepeat t)))
+
+;;;; Sane undo and redo
+(use-package undo-tree
+  :config
+  (global-undo-tree-mode)
+  :ryo
+  ("u" undo-tree-undo)
+  ("U" undo-tree-redo)
+  ("SPC u" undo-tree-visualize)
+  :bind (:map undo-tree-visualizer-mode-map
+	      ("h" . undo-tree-visualize-switch-branch-left)
+	      ("j" . undo-tree-visualize-redo)
+	      ("k" . undo-tree-visualize-undo)
+	      ("l" . undo-tree-visualize-switch-branch-right)))
 
 ;;; Mac specific
 (use-package exec-path-from-shell
@@ -596,7 +603,8 @@ Version 2017-04-19"
 (use-package projectile
   :config
   (projectile-mode 1)
-  (setq projectile-completion-system 'ivy))
+  (setq projectile-completion-system 'ivy)
+  (define-key ryo-modal-mode-map (kbd "SPC p") 'projectile-command-map))
 
 (use-package counsel-projectile
   :commands (counsel-projectile projectile-find-file)
