@@ -558,8 +558,8 @@ Version 2017-04-19"
 (use-package magit
   :ryo
   ("SPC g" magit-status)
-  ("RET" with-editor-finish :mode 'with-editor-mode)
   :config
+  ;; Stolen from magnars whattheemacs.d
   (defadvice magit-status (around magit-fullscreen activate)
     (window-configuration-to-register :magit-fullscreen)
     ad-do-it
@@ -568,6 +568,11 @@ Version 2017-04-19"
     (interactive)
     (kill-buffer)
     (jump-to-register :magit-fullscreen))
+  (defun with-editor-finish-if-ryo ()
+    (interactive)
+    (if (ryo-modal-mode)
+	(with-editor-finish nil)
+      (newline)))
   :bind
   (:map magit-status-mode-map
 	("j" . magit-section-forward)
@@ -593,7 +598,8 @@ Version 2017-04-19"
 	:map magit-hunk-section-map
 	("C-j" . magit-section-forward-sibling)
 	("C-k" . magit-section-backward-sibling)
-	))
+	:map with-editor-mode-map
+	("RET" . with-editor-finish-if-ryo)))
 
 (use-package magithub
   :after magit
@@ -605,19 +611,16 @@ Version 2017-04-19"
 (use-package projectile
   :config
   (projectile-mode 1)
-  (setq projectile-completion-system 'ivy)
-  )
+  (setq projectile-completion-system 'ivy))
 
 (use-package counsel-projectile
   :commands (counsel-projectile projectile-find-file)
   :after (projectile counsel)
-  :config (counsel-projectile-mode)
-  )
+  :config (counsel-projectile-mode))
 
 (use-package flycheck
   :ryo
-  ("SPC a" (("t" flycheck-mode)))
-  )
+  ("SPC a" (("t" flycheck-mode))))
 
 
 ;; Smartparens is very heavy and weird. This stays more or less out of the way
