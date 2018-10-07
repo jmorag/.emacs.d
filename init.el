@@ -14,6 +14,10 @@
 ;;;; Start off with giant gc threshold
 (setq gc-cons-threshold most-positive-fixnum)
 
+;;;; Don't dump custom variables into init.el
+(setq custom-file "~/.emacs.d/custom.el")
+(load custom-file)
+
 ;;; Bootstrap package management
 (setq package-enable-at-startup nil)
 (setq package-archives '(("org"       . "http://orgmode.org/elpa/")
@@ -58,7 +62,6 @@
 (global-unset-key (kbd "M-<down-mouse-1>"))
 (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click)
 (use-package expand-region)
-
 
 ;;;; General utilities
 (defun ryo-enter () (interactive) (ryo-modal-mode +1))
@@ -360,27 +363,6 @@ Version 2017-04-19"
    ("8" "M-8" :norepeat t)
    ("9" "M-9" :norepeat t)))
 
-;;;; Surround
-(use-package emacs-surround
-  :straight (emacs-surround :type git :host github :repo "ganmacs/emacs-surround")
-  :config
-  (add-to-list 'emacs-surround-alist '("<" . ("<" . ">")))
-  (add-to-list 'emacs-surround-alist '(">" . ("< " . " >")))
-  (add-to-list 'emacs-surround-alist '(")" . ("( " . " )")))
-  (add-to-list 'emacs-surround-alist '("}" . ("{ " . " }")))
-  :ryo
-  ("S" emacs-surround))
-
-;;; Organization
-(use-package outshine
-  :config
-  (add-hook 'outline-minor-mode-hook 'outshine-hook-function)
-  (add-hook 'prog-mode-hook 'outline-minor-mode))
-
-;;; Don't dump custom variables into init.el
-(setq custom-file "~/.emacs.d/custom.el")
-(load custom-file)
-
 ;;; Mac specific
 (use-package exec-path-from-shell
   :config
@@ -591,6 +573,8 @@ Version 2017-04-19"
 	("g p u" . magit-jump-to-unpushed-to-upstream)
 	("g f p" . magit-jump-to-unpulled-from-pushremote)
 	("g f u" . magit-jump-to-unpulled-from-upstream)
+	("p" . magit-push-popup)
+	("P" . magit-pull-popup)
 	;; It seems as if we will have to repeat ourselves
 	;; or learn how macros work...
 	:map magit-file-section-map
@@ -623,9 +607,20 @@ Version 2017-04-19"
 ;;;; Parentheses 
 ;; Smartparens is very heavy and weird. This stays more or less out of the way
 (electric-pair-mode 1)
+
 (use-package rainbow-delimiters
   :config
   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+
+(use-package emacs-surround
+  :straight (emacs-surround :type git :host github :repo "ganmacs/emacs-surround")
+  :config
+  (add-to-list 'emacs-surround-alist '("<" . ("<" . ">")))
+  (add-to-list 'emacs-surround-alist '(">" . ("< " . " >")))
+  (add-to-list 'emacs-surround-alist '(")" . ("( " . " )")))
+  (add-to-list 'emacs-surround-alist '("}" . ("{ " . " }")))
+  :ryo
+  ("S" emacs-surround))
 
 ;;;; Indentation 
 (use-package aggressive-indent
@@ -639,6 +634,12 @@ Version 2017-04-19"
 (use-package flycheck
   :ryo
   ("SPC a" (("t" flycheck-mode))))
+
+;;;; Organization
+(use-package outshine
+  :config
+  (add-hook 'outline-minor-mode-hook 'outshine-hook-function)
+  (add-hook 'prog-mode-hook 'outline-minor-mode))
 
 ;;; Language specific programming concerns 
 ;;;; Haskell - (should rethink to lsp)
