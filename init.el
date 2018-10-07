@@ -1,56 +1,398 @@
-;;; Code:
+;; Code:
+
+;;; Startup improvements
+;;;; Turn off mouse interface early in startup to avoid momentary display
+(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+(column-number-mode 1)
+(set-face-font 'default "-*-Menlo-normal-normal-normal-*-14-*-*-*-m-0-iso10646-1")
+;; Make scrolling work more like vim's
+(scroll-lock-mode 1)
+
 ;; Start off with giant gc threshold
 (setq gc-cons-threshold most-positive-fixnum)
 
+;;; Bootstrap package management
 (setq package-enable-at-startup nil)
 (setq package-archives '(("org"       . "http://orgmode.org/elpa/")
                          ("gnu"       . "http://elpa.gnu.org/packages/")
                          ("melpa"     . "https://melpa.org/packages/")))
+
+;;;; Bootstrap `use-package'
+;; (package-initialize)
+;; (unless (package-installed-p 'use-package)
+;;   (package-refresh-contents)
+;;   (package-install 'use-package))
+
+;; (require 'use-package)
+;; (setq use-package-always-ensure t)
+
+;;;; Bootstrap straight.el
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
+(straight-use-package 'use-package)
+(setq straight-use-package-by-default t)
+
+;;; Setup keybinding facilities
+;; This sets up basic text editing commands
+;;;; Key chord
+(use-package use-package-chords
+  :config
+  (key-chord-mode 1))
+
+;;;; Multiple cursors and expand region
+(use-package multiple-cursors)
+(global-unset-key (kbd "M-<down-mouse-1>"))
+(global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click)
+(use-package expand-region)
+
+
+;;;; General utilities
+(defun ryo-enter () (interactive) (ryo-modal-mode +1))
+(defun ryo-leave () (interactive) (ryo-modal-mode -1))
+(defun ryo-tbd () (interactive) (message "Key not assigned"))
+(defun set-mark-if-inactive () (interactive)
+       (unless (use-region-p) (set-mark (point))))
+(defun set-mark-here () (interactive) (set-mark (point)))
+(defun unset-mark () (interactive) (deactivate-mark))
+
+(defun backward-same-syntax (count)
+  (interactive "p")
+  (forward-same-syntax (- count)))
+
+(defun kak/select-to-char (arg char)
+  "Select up to, but not including ARGth occurrence of CHAR.
+Case is ignored if `case-fold-search' is non-nil in the current buffer.
+Goes backward if ARG is negative; error if CHAR not found.
+Ignores CHAR at point."
+  (interactive "p\ncSelect to char: ")
+  (let ((direction (if (>= arg 0) 1 -1)))
+    (progn
+      (forward-char direction)
+      (unwind-protect
+	  (search-forward (char-to-string char) nil nil arg)
+	(backward-char direction))
+      (point))))
+
+(defun kak/select-up-to-char (arg char)
+  "Select up to and including ARGth occurrence of CHAR.
+Case is ignored if `case-fold-search' is non-nil in the current buffer.
+Goes backward if ARG is negative; error if CHAR not found."
+  (interactive (list (prefix-numeric-value current-prefix-arg)
+		     (read-char "Select to char: " t)))
+  ;; Avoid "obsolete" warnings for translation-table-for-input.
+  (with-no-warnings
+    (if (char-table-p translation-table-for-input)
+	(setq char (or (aref translation-table-for-input char) char))))
+  (search-forward (char-to-string char) nil nil arg)
+  (point))
+
+(defun kak/x (&optional count)
+  "Select COUNT lines from the current line.
+
+Note that kakoune's x doesn't behave exactly like this,
+but I like this behavior better."
+  (interactive "p")
+  (beginning-of-line)
+  (set-mark (point))
+  (forward-line count))
+
+(defun kak/X (&optional count)
+  "Extend COUNT lines from the current line."
+  (interactive "p")
+  (beginning-of-line)
+  (unless (use-region-p) (set-mark (point)))
+  (forward-line count))
+
+(defun kak/d ()
+  "Kill selected text."
+  (interactive)
+  (if (use-region-p)
+      (kill-region (region-beginning) (region-end))
+    (delete-char 1 t)))
+
+(defun kak/p (&optional count)
+  "Yank COUNT times after the point."
+  (interactive "p")
+  (dotimes (_ count) (save-excursion (yank)))
+  )
+
+;; Sane undo and redo
+(use-package undo-tree
+  :config
+  (global-undo-tree-mode))
+
+(defun jm/comment-region-or-line (count) (interactive "p")
+       (if (use-region-p)
+	   (comment-or-uncomment-region (region-beginning) (region-end))
+	 (save-excursion (comment-line count))))
+
+(defun insert-line-below (&optional count)
+  "Insert COUNT empty lines below the current line."
+  (interactive "p")
+  (save-excursion
+    (end-of-line)
+    (open-line count)))
+
+(defun insert-line-above (&optional count)
+  "Insert COUNT empty lines above the current line."
+  (interactive "p")
+  (save-excursion
+    (end-of-line 0)
+    (open-line count)))
+
+(defun paste-above (&optional count)
+  "Paste (yank) COUNT times above the current line."
+  (interactive "p")
+  (save-excursion
+    (dotimes (_ count) (end-of-line 0)
+	     (newline)
+	     (yank))))
+
+(defun paste-below (&optional count)
+  "Paste (yank) COUNT times below the current line."
+  (interactive "p")
+  (save-excursion
+    (dotimes (_ count) (end-of-line)
+	     (newline)
+	     (yank))))
+
+(defun kak/downcase ()
+  "Downcase region."
+  (interactive)
+  (if (use-region-p)
+      (downcase-region (region-beginning) (region-end))
+    (downcase-region (point) (+ 1 (point)))
+    ))
+
+(defun kak/upcase ()
+  "Upcase region."
+  (interactive)
+  (if (use-region-p)
+      (upcase-region (region-beginning) (region-end))
+    (upcase-region (point) (1+ (point)))
+    ))
+
+(defun kak/replace-char (char)
+  "Replace selection with CHAR."
+  (interactive "cReplace with char: ")
+  (if (use-region-p)
+      (progn (let ((region-size (- (region-end) (region-beginning))))
+	       (delete-region (region-beginning) (region-end))
+	       (save-excursion
+		 (insert-char char region-size t))))
+    (progn (delete-region (point) (1+ (point)))
+	   (save-excursion
+	     (insert-char char)))
+    ))
+
+(defun kak/replace-selection ()
+  "Replace selection with killed text."
+  (interactive)
+  (if (use-region-p)
+      (progn (delete-region (region-beginning) (region-end))
+	     (yank))
+    (progn (delete-region (point) (1+ (point)))
+	   (yank))
+    ))
+
+(defun kak/o (count)
+  (interactive "p")
+  (end-of-line)
+  (dotimes (_ count) (electric-newline-and-maybe-indent))
+  )
+
+(defun kak/O (count)
+  (interactive "p")
+  (beginning-of-line)
+  (dotimes (_ count)
+    (newline)
+    (forward-line -1)
+    ))
+
+(defun kak/join ()
+  "Join the next line to the current one."
+  (interactive) (join-line 1))
+
+(defun xah-toggle-letter-case ()
+  "Toggle the letter case of current word or text selection.
+Always cycle in this order: Init Caps, ALL CAPS, all lower.
+
+URL `http://ergoemacs.org/emacs/modernization_upcase-word.html'
+Version 2017-04-19"
+  (interactive)
+  (let (
+        (deactivate-mark nil)
+        $p1 $p2)
+    (if (use-region-p)
+        (setq $p1 (region-beginning)
+              $p2 (region-end))
+      (save-excursion
+        (skip-chars-backward "[:alnum:]-_")
+        (setq $p1 (point))
+        (skip-chars-forward "[:alnum:]-_")
+        (setq $p2 (point))))
+    (when (not (eq last-command this-command))
+      (put this-command 'state 0))
+    (cond
+     ((equal 0 (get this-command 'state))
+      (upcase-initials-region $p1 $p2)
+      (put this-command 'state 1))
+     ((equal 1  (get this-command 'state))
+      (upcase-region $p1 $p2)
+      (put this-command 'state 2))
+     ((equal 2 (get this-command 'state))
+      (downcase-region $p1 $p2)
+      (put this-command 'state 0)))))
+
+
+;;;; Basic keybindings
+(use-package ryo-modal
+  :chords ("fd" . ryo-enter)
+  :config
+  (setq-default cursor-type '(bar . 1))
+  (setq ryo-modal-cursor-type 'box)
+  (add-hook 'prog-mode-hook 'ryo-modal-mode)
+  (ryo-modal-keys
+   ("a" forward-char :exit t)
+   ("A" move-end-of-line :exit t)
+   ("b" backward-same-syntax :first '(set-mark-here))
+   ("B" backward-same-syntax :first '(set-mark-if-inactive))
+   ("c" kak/d :exit t)
+   ("C" kill-line :exit t)
+   ("d" kak/d)
+   ("D" kill-line)
+   ("e" ryo-tbd)
+   ("E" ryo-tbd)
+   ;; try replacing with avy
+   ;; ("f" kak/select-up-to-char :first (set-mark-here))
+   ;; ("F" kak/select-up-to-char :first (set-mark-if-inactive))
+   ("g" (("h" beginning-of-line)
+	 ("j" end-of-buffer)
+	 ("k" beginning-of-buffer)
+	 ("g" beginning-of-buffer)
+	 ("l" end-of-line)
+	 ("i" back-to-indentation)) :first '(deactivate-mark))
+   ("G" (("h" beginning-of-line)
+	 ("j" end-of-buffer)
+	 ("k" beginning-of-buffer)
+	 ("g" beginning-of-buffer)
+	 ("l" end-of-line)
+	 ("i" back-to-indentation)) :first '(set-mark-if-inactive))
+   ("h" backward-char :first '(deactivate-mark))
+   ("H" backward-char :first '(set-mark-if-inactive))
+   ("i" ryo-leave)
+   ("I" back-to-indentation :exit t)
+   ("j" next-line :first '(deactivate-mark))
+   ("J" next-line :first '(set-mark-if-inactive))
+   ("k" previous-line :first '(deactivate-mark))
+   ("K" previous-line :first '(set-mark-if-inactive))
+   ("l" forward-char :first '(deactivate-mark))
+   ("L" forward-char :first '(set-mark-if-inactive))
+   ("m" mc/mark-next-like-this)
+   ("M" mc/skip-to-next-like-this)
+   ("n" mc/mark-previous-like-this)
+   ("N" mc/skip-to-previous-like-this)
+   ("o" kak/o :exit t)
+   ("O" kak/O :exit t)
+   ("p" kak/p)
+   ("P" yank-pop)
+   ("q" ryo-tbd)
+   ("Q" ryo-tbd)
+   ("r" kak/replace-char)
+   ("R" kak/replace-selection)
+   ("s" mc/mark-all-in-region-regexp)
+   ("t" kak/select-to-char :first '(set-mark-here))
+   ("T" kak/select-to-char :first '(set-mark-if-inactive))
+   ("u" undo-tree-undo)
+   ("U" undo-tree-redo)
+   ("v" er/expand-region)
+   ("V" set-rectangular-region-anchor)
+   ("w" forward-same-syntax :first '(set-mark-here))
+   ("W" forward-same-syntax :first '(set-mark-if-inactive))
+   ("x" kak/x)
+   ("X" kak/X)
+   ("y" kill-ring-save)
+   ("Y" ryo-tbd)
+   ("z" ryo-tbd)
+   ("Z" ryo-tbd)
+   ("." ryo-modal-repeat)
+   ("," save-buffer)
+   ("'" jm/comment-region-or-line)
+   (";" unset-mark)
+   ("M-;" exchange-point-and-mark)
+   ("*" ryo-tbd)
+   ("`" kak/downcase)
+   ("~" kak/upcase)
+   ("%" mark-whole-buffer)
+   ("\\"  ryo-tbd)
+   ("M-`" xah-toggle-letter-case)
+   ("M-j" kak/join)
+   ("C-e" eval-last-sexp)
+   ("[" (("SPC" insert-line-above)
+	 ("b" previous-buffer)
+	 ("p" paste-above)))
+   ("]" (("SPC" insert-line-below)
+	 ("b" next-buffer)
+	 ("p" paste-below)))
+   ("C-u" scroll-down-command :first '(deactivate-mark))
+   ("C-d" scroll-up-command :first '(deactivate-mark))
+   ("0" "M-0" :norepeat t)
+   ("1" "M-1" :norepeat t)
+   ("2" "M-2" :norepeat t)
+   ("3" "M-3" :norepeat t)
+   ("4" "M-4" :norepeat t)
+   ("5" "M-5" :norepeat t)
+   ("6" "M-6" :norepeat t)
+   ("7" "M-7" :norepeat t)
+   ("8" "M-8" :norepeat t)
+   ("9" "M-9" :norepeat t)))
+
+;;;; Surround
+(use-package emacs-surround
+  :straight (emacs-surround :type git :host github :repo "ganmacs/emacs-surround")
+  :config
+  (add-to-list 'emacs-surround-alist '("<" . ("<" . ">")))
+  (add-to-list 'emacs-surround-alist '(">" . ("< " . " >")))
+  (add-to-list 'emacs-surround-alist '(")" . ("( " . " )")))
+  (add-to-list 'emacs-surround-alist '("}" . ("{ " . " }")))
+  :ryo
+  ("S" emacs-surround))
+
+;;; Organization
+(use-package outshine
+  :config
+  (add-hook 'outline-minor-mode-hook 'outshine-hook-function)
+  (add-hook 'prog-mode-hook 'outline-minor-mode))
+
+;;; Don't dump custom variables into init.el
+(setq custom-file "~/.emacs.d/custom.el")
+(load custom-file)
+
+;;; Mac specific
+(use-package exec-path-from-shell
+  :config
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize)))
 
 ;; Use command as meta on mac
 (when (eq system-type 'darwin)
   (setq mac-command-modifier 'meta)
   (setq mac-option-modifier nil))
 
-;; Don't dump custom variables into init.el
-(setq custom-file "~/.emacs.d/custom.el")
-(load custom-file)
-
-;; Be fast - from aaron bieber
-(defun my-minibuffer-setup-hook ()
-  "Increase GC cons threshold."
-  (setq gc-cons-threshold most-positive-fixnum))
-
-(defun my-minibuffer-exit-hook ()
-  "Set GC cons threshold to its default value."
-  (setq gc-cons-threshold 1000000))
-
-(add-hook 'minibuffer-setup-hook #'my-minibuffer-setup-hook)
-(add-hook 'minibuffer-exit-hook #'my-minibuffer-exit-hook)
-
-;; Bootstrap `use-package'
-(package-initialize)
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-
-(require 'use-package)
-(setq use-package-always-ensure t)
-
-;; Fix path on mac
-(use-package exec-path-from-shell
-  :config
-  (when (memq window-system '(mac ns x))
-    (exec-path-from-shell-initialize)))
-
-
-;; Visual stuff
-(set-scroll-bar-mode 'nil)
-(tool-bar-mode -1)
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
-(column-number-mode 1)
-(set-face-font 'default "-*-Menlo-normal-normal-normal-*-14-*-*-*-m-0-iso10646-1")
-
+;;; Visual improvements 
 (use-package eshell-git-prompt
   :config
   (eshell-git-prompt-use-theme 'powerline))
@@ -75,106 +417,33 @@
 (use-package page-break-lines
   :config (global-page-break-lines-mode))
 
+;; Start fullscreen
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+
 ;; Modeline
 (use-package doom-modeline
   :config
   (doom-modeline-init)
   )
 
+;;; Saner defaults
 ;; Fix some defaults
 (setq-default
  make-backup-files                nil ;; I don't want directory pollution
  ring-bell-function               'ignore ;; Stop ringing bell
- sentence-end-double-space        nil ; I prefer single space
+ sentence-end-double-space        nil	  ; I prefer single space
  )
 
 (defalias 'yes-or-no-p #'y-or-n-p)
 
-;; Introduce keybindings
+;;; Interface management with ivy, which-key, and friends
 (use-package which-key
   :config
   (which-key-mode)
   (setq which-key-show-operator-state-maps t)
-  (setq which-key-idle-delay 0.3))
-
-(use-package key-chord
-  :config
-  (key-chord-mode +1))
-
-(use-package modalka
-  :after key-chord
-  :config
-  (setq-default cursor-type '(bar . 1))
-  (setq modalka-cursor-type 'box)
-  (add-hook 'text-mode-hook #'modalka-mode)
-  (add-hook 'prog-mode-hook #'modalka-mode)
-  )
-
-;; A super light and incomplete implementation of vi using modalka
-(key-chord-define-global "fd"
-   '(lambda () (interactive) (modalka-mode 1) (overwrite-mode -1)))
-(define-key modalka-mode-map "i" '(lambda () (interactive) (modalka-mode -1)))
-(define-key modalka-mode-map "a"
-   '(lambda () (interactive) (forward-char 1) (modalka-mode -1)))
-(define-key modalka-mode-map "A"
-  '(lambda () (interactive)
-     (move-end-of-line 1)
-     (modalka-mode -1)))
-(modalka-define-kbd "h" "C-b")
-(modalka-define-kbd "j" "C-n")
-(modalka-define-kbd "k" "C-p")
-(modalka-define-kbd "l" "C-f")
-(modalka-define-kbd "w" "M-f")
-(modalka-define-kbd "b" "M-b")
-(modalka-define-kbd "H" "M-m")
-(modalka-define-kbd "L" "C-e")
-(modalka-define-kbd "C-d" "C-v")
-(modalka-define-kbd "C-u" "M-v")
-(modalka-define-kbd "x" "C-d")
-(modalka-define-kbd "v" "C-SPC")
-(modalka-define-kbd "e" "C-x C-e")
-(modalka-define-kbd "d" "C-w")
-(define-key modalka-mode-map "c"
-  '(lambda () (interactive)
-     (kill-region (region-beginning) (region-end))
-     (modalka-mode -1)))
-(modalka-define-kbd "D" "C-k")
-(modalka-define-kbd "y" "M-w")
-(modalka-define-kbd "p" "C-y")
-(modalka-define-kbd "u" "C-/")
-(modalka-define-kbd "," "C-x C-s")
-;; This one needs to be done like this
-;; because modalka doesn't deal with recursive mappings well
-(define-key modalka-mode-map "x" 'delete-char)
-
-(modalka-define-kbd "0" "C-0")
-(modalka-define-kbd "1" "C-1")
-(modalka-define-kbd "2" "C-2")
-(modalka-define-kbd "3" "C-3")
-(modalka-define-kbd "4" "C-4")
-(modalka-define-kbd "5" "C-5")
-(modalka-define-kbd "6" "C-6")
-(modalka-define-kbd "7" "C-7")
-(modalka-define-kbd "8" "C-8")
-(modalka-define-kbd "9" "C-9")
-(define-key modalka-mode-map "/" 'swiper)
-(define-key modalka-mode-map "J"
-  '(lambda () (interactive) (join-line 1)))
-(define-key modalka-mode-map "R"
-  '(lambda () (interactive)
-     (overwrite-mode 1)
-     (modalka-mode -1)))
-(define-key modalka-mode-map "o"
-  '(lambda (&optional count) (interactive "P")
-     (move-end-of-line nil)
-     (newline count)
-     (modalka-mode -1)))
-(define-key modalka-mode-map "O"
-  '(lambda (&optional count) (interactive "P")
-     (move-beginning-of-line nil)
-     (newline count)
-     (previous-line count)
-     (modalka-mode -1)))
+  (setq which-key-idle-delay 0.3)
+  ;; Fix ryo commands' names
+  (push '((nil . "ryo:.*:") . (nil . "")) which-key-replacement-alist))
 
 ;; Ivy (taken from "How to make your own Spacemacs")
 (use-package ivy-hydra)
@@ -185,12 +454,12 @@
   :diminish (ivy-mode . "") ; does not display ivy in the modeline
   :init (ivy-mode 1)        ; enable ivy globally at startup
   :config
-  ;(setq ivy-re-builders-alist '((t. ivy--regex-fuzzy))) ; fuzzy by default
   (setq ivy-use-virtual-buffers t)   ; extend searching to bookmarks and …
   (setq ivy-height 10)               ; set height of the ivy window
   (setq ivy-count-format "(%d/%d) ") ; count format, from the ivy help page
   (define-key ivy-minibuffer-map "\C-j" 'ivy-next-line)
   (define-key ivy-minibuffer-map "\C-k" 'ivy-previous-line)
+  (define-key ivy-minibuffer-map (kbd "C-SPC") 'ivy-toggle-fuzzy)
   )
 
 ;; Counsel (same as Ivy above)
@@ -207,19 +476,22 @@
   :config
   (setq counsel-rg-base-command
 	"rg -i -M 120 --follow --glob \"!.git/*\" --no-heading --ignore-case\
-      --line-number --column --color never %s .")
-  )
-
-(use-package smex
-  :after (counsel ivy swiper))
+      --line-number --column --color never %s ."))
 
 ;; Swiper
 (use-package swiper
   :after (ivy ivy-hydra)
   :commands swiper
-  )
+  :ryo ("/" swiper))
 
-;; Company
+;; Remeber searches
+(use-package prescient
+  :config (prescient-persist-mode))
+(use-package ivy-prescient
+  :config (ivy-prescient-mode))
+
+;;; Autocompletion 
+;;;; Compnay 
 (use-package company
   :config
   (global-company-mode 1)
@@ -228,8 +500,7 @@
   (define-key company-active-map "\C-j" 'company-select-next)
   (define-key company-active-map "\C-k" 'company-select-previous)
   (define-key company-active-map (kbd "TAB") nil)
-  (define-key company-active-map (kbd "<tab>") nil)
-  )
+  (define-key company-active-map (kbd "<tab>") nil))
 
 ;; Add fuzzy backend to company
 (use-package company-flx
@@ -237,14 +508,17 @@
   :config
   (with-eval-after-load 'company
     (company-flx-mode +1))
-  (setq company-flx-limit 250)
-  )
+  (setq company-flx-limit 250))
 
-;; Yasnipet
-(use-package yasnippet
-  :config
-  (yas-global-mode 1)
-  )
+;; Make company prettier
+;; (use-package company-box
+;;   :hook (company-mode . company-box-mode))
+(use-package company-posframe
+  :config (company-posframe-mode 1))
+
+;; Remember completions
+(use-package company-prescient
+  :config (company-prescient-mode))
 
 ;; https://emacs.stackexchange.com/questions/10431/get-company-to-show-suggestions-for-yasnippet-names
 ;; Add yasnippet support for all company backends
@@ -262,16 +536,26 @@
 
 (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
 
+;;;; Snippets 
+;; Yasnipet
+(use-package yasnippet
+  :config
+  (yas-global-mode 1)
+  )
+
+;;; In buffer navigation 
 (use-package avy
-  :commands
-  (avy-goto-char-timer
-   avy-goto-char-in-line
-   avy-ivy)
   :config
   (setq avy-background t)
   (setq avy-all-windows t)
+  :ryo
+  ("f" avy-goto-char-in-line :first '(set-mark-here))
+  ("F" avy-goto-char-in-line :first '(set-mark-if-inactive))
+  ("C-f" avy-goto-char-timer :first '(deactivate-mark))
   )
 
+;;; Project management
+;;;; Magit 
 (use-package magit
   :commands magit-status
   )
@@ -282,6 +566,7 @@
   (magithub-feature-autoinject t)
   (setq magithub-clone-default-directory "~/Code"))
 
+;;;; Projectile 
 (use-package projectile
   :config
   (projectile-mode 1)
@@ -295,10 +580,10 @@
   )
 
 (use-package flycheck
-  :init (global-flycheck-mode)
+  :ryo
+  ("SPC a" (("t" flycheck-mode)))
   )
 
-(use-package expand-region)
 
 ;; Smartparens is very heavy and weird. This stays more or less out of the way
 (electric-pair-mode 1)
@@ -315,6 +600,8 @@
   )
 
 ;; Language specific
+
+;; Haskell - (should rethink to lsp)
 (use-package haskell-mode
   :config
   (setq haskell-process-type 'stack-ghci))
@@ -326,9 +613,22 @@
 (use-package hasky-stack)
 (use-package shakespeare-mode)
 
+;; yaml
 (use-package yaml-mode
   :config
   (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
+
+;; Lisps - (since all of my time is spent in emacs, I should have a lisp plugin)
+;; There is a choice between lispy, paredit, smart-parens, and parinfer
+(use-package lispy
+  :config
+  (add-hook 'ryo-modal-mode-hook
+	    (lambda ()
+	      (when (eq major-mode 'emacs-lisp-mode)
+		(if ryo-modal-mode
+                    (lispy-mode -1)
+                  (lispy-mode 1))))))
+
 
 ;; Revert garbage collection to default after loading init
 (setq gc-cons-threshold 1000000)
