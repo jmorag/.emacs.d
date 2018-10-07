@@ -195,8 +195,7 @@ but I like this behavior better."
 		 (insert-char char region-size t))))
     (progn (delete-region (point) (1+ (point)))
 	   (save-excursion
-	     (insert-char char)))
-    ))
+	     (insert-char char)))))
 
 (defun kak/replace-selection ()
   "Replace selection with killed text."
@@ -205,14 +204,14 @@ but I like this behavior better."
       (progn (delete-region (region-beginning) (region-end))
 	     (yank))
     (progn (delete-region (point) (1+ (point)))
-	   (yank))
-    ))
+	   (yank))))
 
 (defun kak/o (count)
   (interactive "p")
   (end-of-line)
-  (dotimes (_ count) (electric-newline-and-maybe-indent))
-  )
+  (dotimes (_ count)
+    (electric-newline-and-maybe-indent)
+    (indent-for-tab-command)))
 
 (defun kak/O (count)
   (interactive "p")
@@ -220,7 +219,7 @@ but I like this behavior better."
   (dotimes (_ count)
     (newline)
     (forward-line -1)
-    ))
+    (indent-for-tab-command)))
 
 (defun kak/join ()
   "Join the next line to the current one."
@@ -557,8 +556,44 @@ Version 2017-04-19"
 ;;; Project management
 ;;;; Magit 
 (use-package magit
-  :commands magit-status
-  )
+  :ryo
+  ("SPC g" magit-status)
+  ("RET" with-editor-finish :mode 'with-editor-mode)
+  :config
+  (defadvice magit-status (around magit-fullscreen activate)
+    (window-configuration-to-register :magit-fullscreen)
+    ad-do-it
+    (delete-other-windows))
+  (defun magit-quit-session ()
+    (interactive)
+    (kill-buffer)
+    (jump-to-register :magit-fullscreen))
+  :bind
+  (:map magit-status-mode-map
+	("j" . magit-section-forward)
+	("k" . magit-section-backward)
+	("C-j" . magit-section-forward-sibling)
+	("C-k" . magit-section-backward-sibling)
+	("g r" . magit-refresh)
+	("q" . magit-quit-session)
+	("g n" . magit-jump-to-untracked)
+	("g s" . magit-jump-to-staged)
+	("g t" . magit-jump-to-tracked)
+	("g u" . magit-jump-to-unstaged)
+	("g z" . magit-jump-to-stashes)
+	("g p p" . magit-jump-to-unpushed-to-pushremote)
+	("g p u" . magit-jump-to-unpushed-to-upstream)
+	("g f p" . magit-jump-to-unpulled-from-pushremote)
+	("g f u" . magit-jump-to-unpulled-from-upstream)
+	;; It seems as if we will have to repeat ourselves
+	;; or learn how macros work...
+	:map magit-file-section-map
+	("C-j" . magit-section-forward-sibling)
+	("C-k" . magit-section-backward-sibling)
+	:map magit-hunk-section-map
+	("C-j" . magit-section-forward-sibling)
+	("C-k" . magit-section-backward-sibling)
+	))
 
 (use-package magithub
   :after magit

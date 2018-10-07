@@ -20,6 +20,7 @@
 	kak/k
 	kak/l
 	kak/r
+	kak/replace-char
 	kak/tilde
 	kak/w
 	kak/x
@@ -29,14 +30,20 @@
 	lispy-kill
 	lispy-parens
 	lispy-quotes
+	lispy-space
 	modalka-translation
 	outshine-self-insert-command
 	ryo-enter
 	ryo-leave
+	ryo:07a1551edff338532c86f629c151f7d4:next-line
 	ryo:3384a614304dd5324a6aa723d5ed9e5e:previous-line
+	ryo:3d738d4315c2c23e69c7a6b7358e52f2:forward-char
 	ryo:4ba44c9869d838fd0f93ea2dabc09909:backward-char
 	ryo:6b7f269a0c9f62ded5e6ef76672f3722:forward-same-syntax
 	ryo:8ab5d0830a9c4685f6b642216b9c72bd:forward-char
+	ryo:a147c9a24b4efc5e3424c4618b0aa58a:end-of-line
+	ryo:e4fe141b0e119b6d1fa1fce3dfa14784:end-of-line
+	ryo:fc7eefa7332e9195f27e3ba02ec62ae7:beginning-of-line
 	special-digit-argument
 	special-lh-knight/body
 	special-lispy-ace-char
@@ -106,6 +113,7 @@
 	special-lispy-widen
 	special-lispy-x
 	special-pop-tag-mark
+	unset-mark
 	))
 
 (setq mc/cmds-to-run-once
@@ -114,6 +122,7 @@
 	describe-key
 	eldoc-eval-expression
 	lispy-cursor-down
+	lispy-delete-backward
 	ryo:bd01dafd864b73f282864790f7d77e3c:kak/d
 	special-lispy-move-down
 	))
