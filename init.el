@@ -24,7 +24,7 @@
                          ("gnu"       . "http://elpa.gnu.org/packages/")
                          ("melpa"     . "https://melpa.org/packages/")))
 
-;;;; Bootstrap `use-package'
+;;;; Bootstrap `use-package' -- deprecated package.el
 ;; (package-initialize)
 ;; (unless (package-installed-p 'use-package)
 ;;   (package-refresh-contents)
@@ -356,6 +356,12 @@ Version 2017-04-19"
    ("8" "M-8" :norepeat t)
    ("9" "M-9" :norepeat t)))
 
+(define-key help-mode-map "j" 'next-line)
+(define-key help-mode-map "k" 'previous-line)
+(define-key help-mode-map "\C-d" 'scroll-up-command)
+(define-key help-mode-map "\C-u" 'scroll-down-command)
+(define-key help-mode-map "o" 'other-window)
+
 ;;;; Sane undo and redo
 (use-package undo-tree
   :config
@@ -381,7 +387,7 @@ Version 2017-04-19"
   (setq mac-command-modifier 'meta)
   (setq mac-option-modifier nil))
 
-;;; Visual improvements 
+;;; Visual improvements
 (use-package eshell-git-prompt
   :config
   (eshell-git-prompt-use-theme 'powerline))
@@ -393,8 +399,7 @@ Version 2017-04-19"
   :config
   (load-theme 'doom-one t)
   (doom-themes-treemacs-config)
-  (doom-themes-org-config)
-  )
+  (doom-themes-org-config))
 
 ;; Nice start screen
 (use-package dashboard
@@ -425,7 +430,7 @@ Version 2017-04-19"
 
 (defalias 'yes-or-no-p #'y-or-n-p)
 
-;;; Interface management with ivy, which-key, and friends
+;;; Interface management with ivy and which-key
 (use-package which-key
   :config
   (which-key-mode)
@@ -479,7 +484,7 @@ Version 2017-04-19"
 (use-package ivy-prescient
   :config (ivy-prescient-mode))
 
-;;; Autocompletion 
+;;; Autocompletion
 ;;;; Compnay 
 (use-package company
   :config
@@ -532,7 +537,7 @@ Version 2017-04-19"
   (yas-global-mode 1)
   )
 
-;;; In buffer navigation 
+;;; In buffer navigation
 (use-package avy
   :config
   (setq avy-background t)
@@ -680,7 +685,7 @@ Version 2017-04-19"
                   (lispy-mode 1))))))
 
 
-;;; End 
+;;; End
 ;; Revert garbage collection to default after loading init
 (setq gc-cons-threshold 1000000)
 
