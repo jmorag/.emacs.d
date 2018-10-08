@@ -24,6 +24,7 @@
 	kak/tilde
 	kak/w
 	kak/x
+	lispy-backtick
 	lispy-braces
 	lispy-brackets
 	lispy-delete
@@ -31,17 +32,21 @@
 	lispy-parens
 	lispy-quotes
 	lispy-space
+	lispy-tick
 	modalka-translation
 	outshine-self-insert-command
 	ryo-enter
 	ryo-leave
 	ryo:07a1551edff338532c86f629c151f7d4:next-line
 	ryo:3384a614304dd5324a6aa723d5ed9e5e:previous-line
+	ryo:3bb381c903c6cfa663a851920ee9f42e:undo-tree-undo
 	ryo:3d738d4315c2c23e69c7a6b7358e52f2:forward-char
 	ryo:4ba44c9869d838fd0f93ea2dabc09909:backward-char
 	ryo:6b7f269a0c9f62ded5e6ef76672f3722:forward-same-syntax
+	ryo:852c571a517d85538a1f9b56f60a68f3:backward-same-syntax
 	ryo:8ab5d0830a9c4685f6b642216b9c72bd:forward-char
 	ryo:a147c9a24b4efc5e3424c4618b0aa58a:end-of-line
+	ryo:bd01dafd864b73f282864790f7d77e3c:kak/d
 	ryo:e4fe141b0e119b6d1fa1fce3dfa14784:end-of-line
 	ryo:fc7eefa7332e9195f27e3ba02ec62ae7:beginning-of-line
 	special-digit-argument
@@ -79,6 +84,7 @@
 	special-lispy-join
 	special-lispy-left
 	special-lispy-mark-list
+	special-lispy-move-down
 	special-lispy-move-left
 	special-lispy-move-right
 	special-lispy-move-up
@@ -118,11 +124,8 @@
 
 (setq mc/cmds-to-run-once
       '(
-	comment-dwim
 	describe-key
 	eldoc-eval-expression
-	lispy-cursor-down
-	lispy-delete-backward
-	ryo:bd01dafd864b73f282864790f7d77e3c:kak/d
-	special-lispy-move-down
+	ryo:4c795c327d46eee6c51f2df1e7698c37:mc/mark-previous-like-this
+	ryo:73ac12fcb39da89064b04736b28f5f0f:mc/mark-next-like-this
 	))

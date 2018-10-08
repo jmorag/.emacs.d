@@ -57,12 +57,6 @@
   :config
   (key-chord-mode 1))
 
-;;;; Multiple cursors and expand region
-(use-package multiple-cursors)
-(global-unset-key (kbd "M-<down-mouse-1>"))
-(global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click)
-(use-package expand-region)
-
 ;;;; General utilities
 (defun ryo-enter () (interactive) (ryo-modal-mode +1))
 (defun ryo-leave () (interactive) (ryo-modal-mode -1))
@@ -299,10 +293,6 @@ Version 2017-04-19"
    ("K" previous-line :first '(set-mark-if-inactive))
    ("l" forward-char :first '(deactivate-mark))
    ("L" forward-char :first '(set-mark-if-inactive))
-   ("m" mc/mark-next-like-this)
-   ("M" mc/skip-to-next-like-this)
-   ("n" mc/mark-previous-like-this)
-   ("N" mc/skip-to-previous-like-this)
    ("o" kak/o :exit t)
    ("O" kak/O :exit t)
    ("p" kak/p)
@@ -311,11 +301,8 @@ Version 2017-04-19"
    ("Q" ryo-tbd)
    ("r" kak/replace-char)
    ("R" kak/replace-selection)
-   ("s" mc/mark-all-in-region-regexp)
    ("t" kak/select-to-char :first '(set-mark-here))
    ("T" kak/select-to-char :first '(set-mark-if-inactive))
-   ("v" er/expand-region)
-   ("V" set-rectangular-region-anchor)
    ("w" forward-same-syntax :first '(set-mark-here))
    ("W" forward-same-syntax :first '(set-mark-if-inactive))
    ("x" kak/x)
@@ -356,11 +343,44 @@ Version 2017-04-19"
    ("8" "M-8" :norepeat t)
    ("9" "M-9" :norepeat t)))
 
-(define-key help-mode-map "j" 'next-line)
-(define-key help-mode-map "k" 'previous-line)
-(define-key help-mode-map "\C-d" 'scroll-up-command)
-(define-key help-mode-map "\C-u" 'scroll-down-command)
-(define-key help-mode-map "o" 'other-window)
+(defun vimlike-navigation (keymap)
+  "Add basic navigation bindings to a KEYMAP."
+  (progn
+    (define-key keymap "j" 'next-line)
+    (define-key keymap "k" 'previous-line)
+    (define-key keymap "\C-d" 'scroll-up-command)
+    (define-key keymap "\C-u" 'scroll-down-command)
+    (define-key keymap "o" 'other-window)
+    ))
+
+;; Help mode bindings
+(vimlike-navigation help-mode-map)
+(define-key ryo-modal-mode-map (kbd "SPC h") 'help-command)
+;; Package mode bindings
+(add-hook 'package-menu-mode-hook #'(vimlike-navigation package-menu-mode-map))
+
+;;;; Multiple cursors and expand region
+(use-package multiple-cursors
+  :ryo
+  ("m" mc/mark-next-like-this)
+  ("M" mc/skip-to-next-like-this)
+  ("n" mc/mark-previous-like-this)
+  ("N" mc/skip-to-previous-like-this)
+  ;; ("s" mc/mark-all-in-region-regexp)
+  ("V" set-rectangular-region-anchor)
+  :config
+  (global-unset-key (kbd "M-<down-mouse-1>"))
+  (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click))
+
+(use-package expand-region
+  :ryo
+  ("v" er/expand-region))
+
+(use-package visual-regexp
+  :ryo
+  ("s" vr/mc-mark)
+  ("?" vr/replace)
+  ("M-/" vr/query-replace))
 
 ;;;; Sane undo and redo
 (use-package undo-tree
@@ -549,8 +569,25 @@ Version 2017-04-19"
   :ryo
   ("f" avy-goto-char-in-line :first '(set-mark-here))
   ("F" avy-goto-char-in-line :first '(set-mark-if-inactive))
-  ("C-f" avy-goto-char-timer :first '(deactivate-mark))
-  )
+  ("C-f" avy-goto-char-timer :first '(deactivate-mark)))
+
+(use-package outshine
+  :config
+  (add-hook 'outline-minor-mode-hook 'outshine-hook-function)
+  (add-hook 'prog-mode-hook 'outline-minor-mode))
+
+(use-package navi-mode
+  :ryo ("-" outshine-navi)
+  :bind (:map navi-mode-map
+	      ("j" . occur-next)
+	      ("k" . occur-prev)
+	      ("d" . navi-kill-thing-at-point)
+	      ("C-d" . scroll-up-command)
+	      ("C-u" . scroll-down-command)
+	      ("SPC" . occur-mode-display-occurrence)))
+
+(use-package goto-last-change
+  :ryo ("g ;" goto-last-change))
 
 ;;; Project management
 ;;;; Magit 
@@ -650,25 +687,9 @@ Version 2017-04-19"
 ;;;; Linting 
 (use-package flycheck
   :ryo
-  ("SPC" (("a t" flycheck-mode)))
+  ("SPC" (("a t" flycheck-mode :name "Flycheck toggle")))
   ("] e" flycheck-next-error :first '(deactivate-mark))
   ("[ e" flycheck-previous-error :first '(deactivate-mark)))
-
-;;;; Organization
-(use-package outshine
-  :config
-  (add-hook 'outline-minor-mode-hook 'outshine-hook-function)
-  (add-hook 'prog-mode-hook 'outline-minor-mode))
-
-(use-package navi-mode
-  :ryo ("-" outshine-navi)
-  :bind (:map navi-mode-map
-	      ("j" . occur-next)
-	      ("k" . occur-prev)
-	      ("d" . navi-kill-thing-at-point)
-	      ("C-d" . scroll-up-command)
-	      ("C-u" . scroll-down-command)
-	      ("SPC" . occur-mode-display-occurrence)))
 
 ;;; Language specific programming concerns
 ;;;; Haskell - (should rethink to lsp)
