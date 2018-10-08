@@ -510,12 +510,13 @@ Version 2017-04-19"
 ;; Make company prettier
 ;; (use-package company-box
 ;;   :hook (company-mode . company-box-mode))
-(use-package company-posframe
-  :config (company-posframe-mode 1))
+;; Not ready for prime-time. Too laggy
+;; (use-package company-posframe
+;;   :config (company-posframe-mode 1))
 
-;; Remember completions
-(use-package company-prescient
-  :config (company-prescient-mode))
+;; Remember completions - this is good for ivy but less for company
+;; (use-package company-prescient
+;;   :config (company-prescient-mode))
 
 ;; https://emacs.stackexchange.com/questions/10431/get-company-to-show-suggestions-for-yasnippet-names
 ;; Add yasnippet support for all company backends
