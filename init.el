@@ -646,7 +646,9 @@ Version 2017-04-19"
 ;;;; Linting 
 (use-package flycheck
   :ryo
-  ("SPC a" (("t" flycheck-mode))))
+  ("SPC" (("a t" flycheck-mode)))
+  ("] e" flycheck-next-error :first '(deactivate-mark))
+  ("[ e" flycheck-previous-error :first '(deactivate-mark)))
 
 ;;;; Organization
 (use-package outshine
