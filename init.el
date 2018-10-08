@@ -417,8 +417,11 @@ Version 2017-04-19"
 ;; Modeline
 (use-package doom-modeline
   :config
-  (doom-modeline-init)
-  )
+  (doom-modeline-init))
+
+(use-package ace-popup-menu
+  :config
+  (ace-popup-menu-mode 1))
 
 ;;; Saner defaults
 ;; Fix some defaults
