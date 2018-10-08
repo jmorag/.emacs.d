@@ -660,7 +660,17 @@ Version 2017-04-19"
   (add-hook 'outline-minor-mode-hook 'outshine-hook-function)
   (add-hook 'prog-mode-hook 'outline-minor-mode))
 
-;;; Language specific programming concerns 
+(use-package navi-mode
+  :ryo ("-" outshine-navi)
+  :bind (:map navi-mode-map
+	      ("j" . occur-next)
+	      ("k" . occur-prev)
+	      ("d" . navi-kill-thing-at-point)
+	      ("C-d" . scroll-up-command)
+	      ("C-u" . scroll-down-command)
+	      ("SPC" . occur-mode-display-occurrence)))
+
+;;; Language specific programming concerns
 ;;;; Haskell - (should rethink to lsp)
 (use-package haskell-mode
   :config
