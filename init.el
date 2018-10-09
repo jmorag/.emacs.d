@@ -508,12 +508,13 @@ Version 2017-04-19"
   :config (ivy-prescient-mode))
 
 ;;; Autocompletion
-;;;; Compnay 
+;;;; Company
 (use-package company
   :config
   (global-company-mode 1)
   (company-tng-configure-default)
   (setq company-minimum-prefix-length 2)
+  (setq company-idle-delay 0.1)
   (define-key company-active-map "\C-j" 'company-select-next)
   (define-key company-active-map "\C-k" 'company-select-previous)
   (define-key company-active-map (kbd "TAB") nil)
@@ -530,13 +531,18 @@ Version 2017-04-19"
 ;; Make company prettier
 ;; (use-package company-box
 ;;   :hook (company-mode . company-box-mode))
-;; Not ready for prime-time. Too laggy
-;; (use-package company-posframe
-;;   :config (company-posframe-mode 1))
 
-;; Remember completions - this is good for ivy but less for company
-;; (use-package company-prescient
-;;   :config (company-prescient-mode))
+;; Remember completions
+(use-package company-prescient
+  :config (company-prescient-mode))
+
+;; Add help to compnay
+(use-package company-quickhelp
+  :after (company pos-tip)
+  :config
+  (use-package pos-tip)
+  (company-quickhelp-mode)
+  (setq company-quickhelp-delay 1))
 
 ;; https://emacs.stackexchange.com/questions/10431/get-company-to-show-suggestions-for-yasnippet-names
 ;; Add yasnippet support for all company backends
@@ -552,12 +558,7 @@ Version 2017-04-19"
     (append (if (consp backend) backend (list backend))
             '(:with company-yasnippet))))
 
-(setq company-backends '(mapcar #'company-mode/backend-with-yas company-backends))
-(setq company-frontends
-      '(company-box-frontend
-	company-tng-frontend
-	company-echo-metadata-frontend
-	company-quickhelp-frontend))
+(setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
 
 ;;;; Snippets 
 ;; Yasnipet
