@@ -36,12 +36,13 @@
 ;;;; Bootstrap straight.el
 (defvar bootstrap-version)
 (let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+       (expand-file-name
+	"straight/repos/straight.el/bootstrap.el" user-emacs-directory))
       (bootstrap-version 5))
   (unless (file-exists-p bootstrap-file)
     (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+	(url-retrieve-synchronously
+	 "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
          'silent 'inhibit-cookies)
       (goto-char (point-max))
       (eval-print-last-sexp)))
@@ -412,7 +413,7 @@ Version 2017-04-19"
   :config
   (eshell-git-prompt-use-theme 'powerline))
 
-(when (version<= "26.0.50" emacs-version )
+(when (version<= "26.0.50" emacs-version)
   (global-display-line-numbers-mode))
 
 (use-package doom-themes
@@ -476,8 +477,7 @@ Version 2017-04-19"
   (setq ivy-count-format "(%d/%d) ") ; count format, from the ivy help page
   (define-key ivy-minibuffer-map "\C-j" 'ivy-next-line)
   (define-key ivy-minibuffer-map "\C-k" 'ivy-previous-line)
-  (define-key ivy-minibuffer-map (kbd "C-SPC") 'ivy-toggle-fuzzy)
-  )
+  (define-key ivy-minibuffer-map (kbd "C-SPC") 'ivy-toggle-fuzzy))
 
 ;; Counsel (same as Ivy above)
 (use-package counsel
@@ -552,14 +552,18 @@ Version 2017-04-19"
     (append (if (consp backend) backend (list backend))
             '(:with company-yasnippet))))
 
-(setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
+(setq company-backends '(mapcar #'company-mode/backend-with-yas company-backends))
+(setq company-frontends
+      '(company-box-frontend
+	company-tng-frontend
+	company-echo-metadata-frontend
+	company-quickhelp-frontend))
 
 ;;;; Snippets 
 ;; Yasnipet
 (use-package yasnippet
   :config
-  (yas-global-mode 1)
-  )
+  (yas-global-mode 1))
 
 ;;; In buffer navigation
 (use-package avy
@@ -721,6 +725,8 @@ Version 2017-04-19"
                     (lispy-mode -1)
                   (lispy-mode 1))))))
 
+(use-package elisp-slime-nav
+  :hook emacs-lisp-mode)
 
 ;;; End
 ;; Revert garbage collection to default after loading init
