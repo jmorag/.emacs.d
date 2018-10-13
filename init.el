@@ -359,6 +359,10 @@ Version 2017-04-19"
 (define-key ryo-modal-mode-map (kbd "SPC h") 'help-command)
 ;; Package mode bindings
 (add-hook 'package-menu-mode-hook #'(vimlike-navigation package-menu-mode-map))
+;; Dired mode bindings
+;(define-key dired-mode-map "j" 'dired-next-line)
+;(define-key dired-mode-map "k" 'dired-previous-line)
+;(define-key dired-mode-map "K" 'dired-do-kill-lines)
 
 ;;;; Multiple cursors and expand region
 (use-package multiple-cursors
@@ -382,6 +386,10 @@ Version 2017-04-19"
   ("s" vr/mc-mark)
   ("?" vr/replace)
   ("M-/" vr/query-replace))
+
+(use-package phi-search
+  :bind (("C-s" . phi-search)
+	 ("C-r" . phi-search-backward)))
 
 ;;;; Sane undo and redo
 (use-package undo-tree
@@ -422,23 +430,25 @@ Version 2017-04-19"
   (doom-themes-treemacs-config)
   (doom-themes-org-config))
 
+;; Required for dashboard
+(use-package page-break-lines
+  :config (global-page-break-lines-mode))
+
 ;; Nice start screen
 (use-package dashboard
   :after page-break-lines
   :config
-  (dashboard-setup-startup-hook))
-
-;; Required for dashboard
-(use-package page-break-lines
-  :config (global-page-break-lines-mode))
+  (dashboard-setup-startup-hook)
+  :bind (:map dashboard-mode-map
+	      ("j" . widget-forward)
+	      ("k" . widget-backward)))
 
 ;; Start fullscreen
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
 ;; Modeline
 (use-package doom-modeline
-  :config
-  (doom-modeline-init))
+  :hook (after-init . doom-modeline-init))
 
 (use-package ace-popup-menu
   :config
@@ -727,7 +737,9 @@ Version 2017-04-19"
                   (lispy-mode 1))))))
 
 (use-package elisp-slime-nav
-  :hook emacs-lisp-mode)
+  :config
+  (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook))
+    (add-hook hook 'turn-on-elisp-slime-nav-mode)))
 
 ;;; End
 ;; Revert garbage collection to default after loading init
