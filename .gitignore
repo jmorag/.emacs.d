@@ -1,11 +1,13 @@
 .cache/
 auto-save-list/
+bookmarks
 elpa/
 eshell/
 magithub/
 projectile-bookmarks.eld
 projectile.cache
 recentf
+recentf~
 smex-items
 straight/
 backups/

@@ -458,13 +458,14 @@ Version 2017-04-19"
 
 ;; Required for dashboard
 (use-package page-break-lines
+  :demand t
   :config (global-page-break-lines-mode))
 
 ;; Nice start screen
 (use-package dashboard
   :straight (dashboard :type git :host github :repo "rakanalh/emacs-dashboard")
   :after page-break-lines
-  :defer nil
+  :demand t
   :config
   (dashboard-setup-startup-hook)
   :bind (:map dashboard-mode-map
@@ -574,10 +575,13 @@ Version 2017-04-19"
   (define-key ivy-minibuffer-map (kbd "C-SPC") 'ivy-toggle-fuzzy))
 
 (use-package ivy-rich
+  :after (counsel)
   :config (ivy-rich-mode 1))
 
 ;; Counsel (same as Ivy above)
 (use-package counsel
+  :init
+  (counsel-mode 1)
   :commands      ; Load counsel when any of these commands are invoked
   (counsel-M-x   ; M-x use counsel
    counsel-find-file          ; C-x C-f use counsel-find-file
@@ -591,7 +595,6 @@ Version 2017-04-19"
   (setq counsel-rg-base-command
 	"rg -i -M 120 --follow --glob \"!.git/*\" --no-heading --ignore-case\
       --line-number --column --color never %s .")
-  (counsel-mode 1)
   :ryo
   (":" counsel-M-x)
   ("SPC" (("f f" counsel-find-file)
@@ -667,7 +670,8 @@ Version 2017-04-19"
 ;; Yasnipet
 (use-package yasnippet
   :config
-  (yas-global-mode 1))
+  (yas-global-mode 1)
+  (global-set-key (kbd "C-c C-s") 'company-yasnippet))
 
 ;;; In buffer navigation
 (use-package avy
