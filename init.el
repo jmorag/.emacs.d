@@ -599,8 +599,8 @@ Version 2017-04-19"
   (setq company-flx-limit 250))
 
 ;; Make company prettier
-(use-package company-box
-  :hook (company-mode . company-box-mode))
+;; (use-package company-box
+;;   :hook (company-mode . company-box-mode))
 
 ;; Remember completions
 (use-package company-prescient
