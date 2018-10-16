@@ -8,4 +8,7 @@ projectile.cache
 recentf
 smex-items
 straight/
+backups/
+semanticdb/
+var/
 *#
