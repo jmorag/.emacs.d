@@ -396,8 +396,7 @@ Version 2017-04-19"
   ("M" mc/skip-to-next-like-this)
   ("n" mc/mark-previous-like-this)
   ("N" mc/skip-to-previous-like-this)
-  ;; ("s" mc/mark-all-in-region-regexp)
-  ("V" set-rectangular-region-anchor)
+  ("C-v" set-rectangular-region-anchor)
   :config
   (global-unset-key (kbd "M-<down-mouse-1>"))
   (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click))
@@ -734,6 +733,45 @@ Version 2017-04-19"
   :commands (counsel-projectile projectile-find-file)
   :after (projectile counsel)
   :config (counsel-projectile-mode))
+
+;;;; Org mode install
+;; Installing org mode with straight is annoying
+;; https://github.com/raxod502/straight.el#installing-org-with-straightel
+(require 'subr-x)
+(straight-use-package 'git)
+
+(defun org-git-version ()
+  "The Git version of org-mode.
+Inserted by installing org-mode or when a release is made."
+  (require 'git)
+  (let ((git-repo (expand-file-name
+                   "straight/repos/org/" user-emacs-directory)))
+    (string-trim
+     (git-run "describe"
+              "--match=release\*"
+              "--abbrev=6"
+              "HEAD"))))
+
+(defun org-release ()
+  "The release version of org-mode.
+Inserted by installing org-mode or when a release is made."
+  (require 'git)
+  (let ((git-repo (expand-file-name
+                   "straight/repos/org/" user-emacs-directory)))
+    (string-trim
+     (string-remove-prefix
+      "release_"
+      (git-run "describe" "--match=release\*" "--abbrev=0"
+               "HEAD")))))
+
+(provide 'org-version)
+
+;;;; Org config 
+(use-package org
+  :ryo
+  (:mode 'org-mode)
+  (">" org-demote-subtree)
+  ("<" org-promote-subtree))
 
 ;;; File management
 (use-package ranger
