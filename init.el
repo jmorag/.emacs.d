@@ -725,6 +725,7 @@ Version 2017-04-19"
   :config
   (projectile-mode 1)
   (setq projectile-completion-system 'ivy)
+  ;; (setq projectile-require-project-root nil)
   (define-key ryo-modal-mode-map (kbd "SPC p") 'projectile-command-map)
   :ryo
   ("SPC SPC" projectile-find-file))
@@ -820,9 +821,9 @@ Inserted by installing org-mode or when a release is made."
   :config
   (setq haskell-process-type 'stack-ghci))
 
-(use-package intero
-  :config
-  (add-hook 'haskell-mode-hook 'intero-mode))
+;; (use-package intero
+;;   :config
+;;   (add-hook 'haskell-mode-hook 'intero-mode))
 
 (use-package hasky-stack)
 (use-package shakespeare-mode)
