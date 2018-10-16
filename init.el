@@ -250,6 +250,20 @@ Version 2017-04-19"
       (downcase-region $p1 $p2)
       (put this-command 'state 0)))))
 
+;; Macros - https://www.emacswiki.org/emacs/KeyboardMacros
+(defun toggle-kbd-macro-recording-on ()
+  "One-key keyboard macros: turn recording on."
+  (interactive)
+  (define-key global-map (this-command-keys)
+    'toggle-kbd-macro-recording-off)
+  (start-kbd-macro nil))
+
+(defun toggle-kbd-macro-recording-off ()
+  "One-key keyboard macros: turn recording off."
+  (interactive)
+  (define-key global-map (this-command-keys)
+    'toggle-kbd-macro-recording-on)
+  (end-kbd-macro))
 
 ;;;; Basic keybindings
 (use-package ryo-modal
@@ -297,8 +311,8 @@ Version 2017-04-19"
    ("O" kak/O :exit t)
    ("p" kak/p)
    ("P" yank-pop)
-   ("q" ryo-tbd)
-   ("Q" ryo-tbd)
+   ("q" kmacro-call-macro)
+   ("Q" toggle-kbd-macro-recording-on)
    ("r" kak/replace-char)
    ("R" kak/replace-selection)
    ("t" kak/select-to-char :first '(set-mark-here))
