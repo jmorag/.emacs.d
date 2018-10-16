@@ -253,6 +253,8 @@ Version 2017-04-19"
 
 ;;;; Basic keybindings
 (use-package ryo-modal
+  :straight (ryo-modal :type git :host github :repo "Kungsgeten/ryo-modal"
+		       :fork (:host github :repo "jmorag/ryo-modal"))
   :chords ("fd" . ryo-enter)
   :config
   (setq-default cursor-type '(bar . 1))
@@ -269,9 +271,6 @@ Version 2017-04-19"
    ("D" kill-line)
    ("e" ryo-tbd)
    ("E" ryo-tbd)
-   ;; try replacing with avy
-   ;; ("f" kak/select-up-to-char :first (set-mark-here))
-   ;; ("F" kak/select-up-to-char :first (set-mark-if-inactive))
    ("g" (("h" beginning-of-line)
 	 ("j" end-of-buffer)
 	 ("k" beginning-of-buffer)
@@ -343,6 +342,8 @@ Version 2017-04-19"
    ("7" "M-7" :norepeat t)
    ("8" "M-8" :norepeat t)
    ("9" "M-9" :norepeat t)))
+;; Register bindings
+(define-key ryo-modal-mode-map (kbd "\"") ctl-x-r-map)
 
 (defun vimlike-navigation (keymap)
   "Add basic navigation bindings to a KEYMAP."
@@ -358,11 +359,21 @@ Version 2017-04-19"
 (vimlike-navigation help-mode-map)
 (define-key ryo-modal-mode-map (kbd "SPC h") 'help-command)
 ;; Package mode bindings
-(add-hook 'package-menu-mode-hook #'(vimlike-navigation package-menu-mode-map))
-;; Dired mode bindings
-;(define-key dired-mode-map "j" 'dired-next-line)
-;(define-key dired-mode-map "k" 'dired-previous-line)
-;(define-key dired-mode-map "K" 'dired-do-kill-lines)
+(eval-after-load 'package '(vimlike-navigation package-menu-mode-map))
+;; Ibuffer mode bindings
+(eval-after-load 'ibuffer
+  '(progn
+     (define-key ibuffer-mode-map (kbd "j") 'ibuffer-forward-line)
+     (define-key ibuffer-mode-map (kbd "k") 'ibuffer-backward-line)
+     (define-key ibuffer-mode-map (kbd "K") 'ibuffer-do-kill-lines)))
+
+;; ;; Dired mode bindings
+;; (use-package dired
+;;   :straight nil
+;;   :bind (:map dired-mode-map
+;; 	      ("j" . dired-next-line)
+;; 	      ("k" . dired-previous-line)
+;; 	      ("K" . dired-do-kill-lines)))
 
 ;;;; Multiple cursors and expand region
 (use-package multiple-cursors
@@ -414,7 +425,9 @@ Version 2017-04-19"
 ;; Use command as meta on mac
 (when (eq system-type 'darwin)
   (setq mac-command-modifier 'meta)
-  (setq mac-option-modifier nil))
+  (setq mac-option-modifier nil)
+  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+  (add-to-list 'default-frame-alist '(ns-appearance . dark)))
 
 ;;; Visual improvements
 (use-package eshell-git-prompt
@@ -436,7 +449,9 @@ Version 2017-04-19"
 
 ;; Nice start screen
 (use-package dashboard
+  :straight (dashboard :type git :host github :repo "rakanalh/emacs-dashboard")
   :after page-break-lines
+  :defer nil
   :config
   (dashboard-setup-startup-hook)
   :bind (:map dashboard-mode-map
@@ -448,7 +463,10 @@ Version 2017-04-19"
 
 ;; Modeline
 (use-package doom-modeline
-  :hook (after-init . doom-modeline-init))
+  :hook (after-init . doom-modeline-init)
+  :config
+  (setq doom-modeline-height 30)
+  (setq doom-modeline-bar-width 4))
 
 (use-package ace-popup-menu
   :config
@@ -457,12 +475,32 @@ Version 2017-04-19"
 ;;; Saner defaults
 ;; Fix some defaults
 (setq-default
- make-backup-files                nil ;; I don't want directory pollution
  ring-bell-function               'ignore ;; Stop ringing bell
  sentence-end-double-space        nil	  ; I prefer single space
  )
 
 (defalias 'yes-or-no-p #'y-or-n-p)
+
+;; Lifted from technomancy's better-defaults package
+(require 'uniquify)
+(setq uniquify-buffer-name-style 'forward)
+
+(require 'saveplace)
+(setq-default save-place t)
+
+(global-set-key (kbd "C-x C-b") 'ibuffer)
+
+(show-paren-mode 1)
+(setq-default indent-tabs-mode nil)
+(setq save-interprogram-paste-before-kill t
+      apropos-do-all t
+      mouse-yank-at-point t
+      require-final-newline t
+      load-prefer-newer t
+      ediff-window-setup-function 'ediff-setup-windows-plain
+      save-place-file (concat user-emacs-directory "places")
+      backup-directory-alist `(("." . ,(concat user-emacs-directory
+                                               "backups"))))
 
 ;;; Interface management with ivy and which-key
 (use-package which-key
@@ -475,11 +513,11 @@ Version 2017-04-19"
 
 ;; Ivy (taken from "How to make your own Spacemacs")
 (use-package ivy-hydra)
-(use-package wgrep)
+(use-package wgrep
+  :commands
+  (wgrep-change-to-wgrep-mode))
 
 (use-package ivy
-  :after ivy-hydra
-  :diminish (ivy-mode . "") ; does not display ivy in the modeline
   :init (ivy-mode 1)        ; enable ivy globally at startup
   :config
   (setq ivy-use-virtual-buffers t)   ; extend searching to bookmarks and …
@@ -489,21 +527,30 @@ Version 2017-04-19"
   (define-key ivy-minibuffer-map "\C-k" 'ivy-previous-line)
   (define-key ivy-minibuffer-map (kbd "C-SPC") 'ivy-toggle-fuzzy))
 
+(use-package ivy-rich
+  :config (ivy-rich-mode 1))
+
 ;; Counsel (same as Ivy above)
 (use-package counsel
-  :after (ivy ivy-hydra)
-  :commands          ; Load counsel when any of these commands are invoked
-  (counsel-M-x       ; M-x use counsel
-   counsel-find-file ; C-x C-f use counsel-find-file
-   counsel-recentf   ; search recently edited files
-   counsel-git       ; search for files in git repo
-   counsel-git-grep  ; search for regexp in git repo
-   counsel-ag        ; search for regexp in git repo using ag
-   counsel-locate)   ; search for files or else using locate
+  :commands      ; Load counsel when any of these commands are invoked
+  (counsel-M-x   ; M-x use counsel
+   counsel-find-file          ; C-x C-f use counsel-find-file
+   counsel-recentf            ; search recently edited files
+   counsel-git                ; search for files in git repo
+   counsel-git-grep           ; search for regexp in git repo
+   counsel-ag                 ; search for regexp in git repo using ag
+   counsel-locate             ; search for files or else using locate
+   counsel-rg)                ; search for regexp in git repo using 
   :config
   (setq counsel-rg-base-command
 	"rg -i -M 120 --follow --glob \"!.git/*\" --no-heading --ignore-case\
-      --line-number --column --color never %s ."))
+      --line-number --column --color never %s .")
+  (counsel-mode 1)
+  :ryo
+  (":" counsel-M-x)
+  ("SPC" (("f f" counsel-find-file)
+          ("f r" counsel-recentf)
+          ("/" counsel-rg))))
 
 ;; Swiper
 (use-package swiper
@@ -539,8 +586,8 @@ Version 2017-04-19"
   (setq company-flx-limit 250))
 
 ;; Make company prettier
-;; (use-package company-box
-;;   :hook (company-mode . company-box-mode))
+(use-package company-box
+  :hook (company-mode . company-box-mode))
 
 ;; Remember completions
 (use-package company-prescient
@@ -548,7 +595,7 @@ Version 2017-04-19"
 
 ;; Add help to compnay
 (use-package company-quickhelp
-  :after (company pos-tip)
+  :after company
   :config
   (use-package pos-tip)
   (company-quickhelp-mode)
@@ -582,7 +629,7 @@ Version 2017-04-19"
   (setq avy-background t)
   (setq avy-all-windows t)
   :ryo
-  ("f" avy-goto-char-in-line :first '(set-mark-here))
+  ("f" avy-goto-char-in-line :first '(deactivate-mark))
   ("F" avy-goto-char-in-line :first '(set-mark-if-inactive))
   ("C-f" avy-goto-char-timer :first '(deactivate-mark)))
 
@@ -665,14 +712,23 @@ Version 2017-04-19"
   :config
   (projectile-mode 1)
   (setq projectile-completion-system 'ivy)
-  (define-key ryo-modal-mode-map (kbd "SPC p") 'projectile-command-map))
+  (define-key ryo-modal-mode-map (kbd "SPC p") 'projectile-command-map)
+  :ryo
+  ("SPC SPC" projectile-find-file))
 
 (use-package counsel-projectile
   :commands (counsel-projectile projectile-find-file)
   :after (projectile counsel)
   :config (counsel-projectile-mode))
 
-;;; General programming concerns 
+;;; File management
+(use-package ranger
+  :config
+  (ranger-override-dired-mode t)
+  (setq ranger-cleanup-on-disable t)
+  (setq ranger-show-hidden t))
+
+;;; General programming concerns
 ;;;; Parentheses 
 ;; Smartparens is very heavy and weird. This stays more or less out of the way
 (electric-pair-mode 1)
