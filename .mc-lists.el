@@ -27,6 +27,7 @@
         lispy-backtick
         lispy-braces
         lispy-brackets
+        lispy-comment
         lispy-delete
         lispy-delete-backward
         lispy-kill
@@ -38,8 +39,11 @@
         outshine-self-insert-command
         ryo-enter
         ryo-leave
+        ryo-modal-repeat
+        ryo:05cf1b18d95ef5a653397ec40f07e7e6:forward-same-syntax
         ryo:07a1551edff338532c86f629c151f7d4:next-line
         ryo:3384a614304dd5324a6aa723d5ed9e5e:previous-line
+        ryo:3a8ba329f32aa4ca26aedb4e0096966d:backward-char
         ryo:3bb381c903c6cfa663a851920ee9f42e:undo-tree-undo
         ryo:3d738d4315c2c23e69c7a6b7358e52f2:forward-char
         ryo:4ba44c9869d838fd0f93ea2dabc09909:backward-char
@@ -47,7 +51,9 @@
         ryo:852c571a517d85538a1f9b56f60a68f3:backward-same-syntax
         ryo:8ab5d0830a9c4685f6b642216b9c72bd:forward-char
         ryo:a147c9a24b4efc5e3424c4618b0aa58a:end-of-line
+        ryo:b219ebd046736cb61e7239c837f2a722:emacs-surround
         ryo:bd01dafd864b73f282864790f7d77e3c:kak/d
+        ryo:c44301a1d93e869c777c4e24d9131cb5:er/expand-region
         ryo:e4fe141b0e119b6d1fa1fce3dfa14784:end-of-line
         ryo:fc7eefa7332e9195f27e3ba02ec62ae7:beginning-of-line
         special-digit-argument
@@ -125,6 +131,7 @@
 
 (setq mc/cmds-to-run-once
       '(
+        counsel-M-x
         describe-key
         eldoc-eval-expression
         ryo:4c795c327d46eee6c51f2df1e7698c37:mc/mark-previous-like-this

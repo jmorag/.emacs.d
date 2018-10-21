@@ -267,7 +267,7 @@ Version 2017-04-19"
 
 ;;;; Basic keybindings
 (use-package ryo-modal
-  :straight (ryo-modal :type git :host github :repo "Kungsgeten/ryo-modal"
+  :straight (ryo-modal :host github :repo "Kungsgeten/ryo-modal"
 		       :fork (:host github :repo "jmorag/ryo-modal"))
   :chords ("fd" . ryo-enter)
   :config
@@ -323,7 +323,6 @@ Version 2017-04-19"
    ("X" kak/X)
    ("y" kill-ring-save)
    ("Y" ryo-tbd)
-   ("z" ryo-tbd)
    ("Z" ryo-tbd)
    ("." ryo-modal-repeat)
    ("," save-buffer)
@@ -344,6 +343,10 @@ Version 2017-04-19"
    ("]" (("SPC" insert-line-below)
 	 ("b" next-buffer)
 	 ("p" paste-below)))
+   ("[ [" backward-paragraph :first '(set-mark-here))
+   ("{ [" backward-paragraph :first '(set-mark-if-inactive))
+   ("] ]" forward-paragraph :first '(set-mark-here))
+   ("} ]" forward-paragraph :first '(set-mark-if-inactive))
    ("C-u" scroll-down-command :first '(deactivate-mark))
    ("C-d" scroll-up-command :first '(deactivate-mark))
    ("0" "M-0" :norepeat t)
@@ -358,6 +361,12 @@ Version 2017-04-19"
    ("9" "M-9" :norepeat t)))
 ;; Register bindings
 (define-key ryo-modal-mode-map (kbd "\"") ctl-x-r-map)
+
+;; Access all C-x bindings easily
+(define-key ryo-modal-mode-map (kbd "z") ctl-x-map)
+
+;; We have better ways to open lines
+(global-set-key (kbd "C-o") 'other-window)
 
 (defun vimlike-navigation (keymap)
   "Add basic navigation bindings to a KEYMAP."
@@ -463,7 +472,7 @@ Version 2017-04-19"
 
 ;; Nice start screen
 (use-package dashboard
-  :straight (dashboard :type git :host github :repo "rakanalh/emacs-dashboard")
+  :straight (dashboard :host github :repo "rakanalh/emacs-dashboard")
   :after page-break-lines
   :demand t
   :config
@@ -488,36 +497,34 @@ Version 2017-04-19"
 
 ;; Make popup windows behave
 ;; https://github.com/kaushalmodi/.emacs.d/blob/master/setup-files/setup-shackle.el
-(use-package shackle
-  :if (not (bound-and-true-p disable-pkg-shackle))
-  :config
-  (progn
-    (setq shackle-lighter "")
-    (setq shackle-select-reused-windows nil) ; default nil
-    (setq shackle-default-alignment 'below) ; default below
-    (setq shackle-default-size 0.4) ; default 0.5
+;; (use-package shackle
+;;   :if (not (bound-and-true-p disable-pkg-shackle))
+;;   :config
+;;   (progn
+;;     (setq shackle-lighter "")
+;;     (setq shackle-select-reused-windows nil) ; default nil
+;;     (setq shackle-default-alignment 'below) ; default below
+;;     (setq shackle-default-size 0.4) ; default 0.5
 
-    (setq shackle-rules
-          ;; CONDITION(:regexp)            :select     :inhibit-window-quit   :size+:align|:other     :same|:popup
-          '((compilation-mode              :select nil                                               )
-            ("*undo-tree*"                                                    :size 0.25 :align right)
-            ("*eshell*"                    :select t                          :other t               )
-            ("*Shell Command Output*"      :select nil                                               )
-            ("\\*Async Shell.*\\*" :regexp t :ignore t                                                 )
-            (occur-mode                    :select nil                                   :align t    )
-            ("*Help*"                      :select nil   :other t :align below :size 0.25)
-            ("*Completions*"                                                  :size 0.3  :align t    )
-            ("*Messages*"                  :select nil :inhibit-window-quit t :other t               )
-            ("\\*[Wo]*Man.*\\*"    :regexp t :select t   :inhibit-window-quit t :other t               )
-            ("\\*poporg.*\\*"      :regexp t :select t                          :other t               )
-            ("\\`\\*helm.*?\\*\\'"   :regexp t                                    :size 0.3  :align t    )
-            ("*Calendar*"                  :select t                          :size 0.3  :align below)
-            ("*info*"                      :select t   :inhibit-window-quit t                         :same t)
-            (magit-status-mode             :select t   :inhibit-window-quit t                         :same t)
-            (magit-log-mode                :select t   :inhibit-window-quit t                         :same t)
-            ))
-
-    (shackle-mode 1)))
+;;     (setq shackle-rules
+;;           ;; CONDITION(:regexp)            :select     :inhibit-window-quit   :size+:align|:other     :same|:popup
+;;           '((compilation-mode              :select nil                                               )
+;;             ("*undo-tree*"                                                    :size 0.25 :align right)
+;;             ("*eshell*"         :regexp t  :select t                          :other t   :align below)
+;;             ("*Shell Command Output*"      :select nil                                               )
+;;             ("\\*Async Shell.*\\*" :regexp t :ignore t                                                 )
+;;             (occur-mode                    :select nil                                   :align t    )
+;;             ("*Help*"                      :select nil   :other t :align right :size 0.45)
+;;             ("*Completions*"                                                  :size 0.3  :align t    )
+;;             ("*Messages*"                  :select nil :inhibit-window-quit t :other t               )
+;;             ("\\*[Wo]*Man.*\\*"    :regexp t :select t   :inhibit-window-quit t :other t               )
+;;             ("\\*poporg.*\\*"      :regexp t :select t                          :other t               )
+;;             ("\\`\\*helm.*?\\*\\'"   :regexp t                                    :size 0.3  :align t    )
+;;             ("*Calendar*"                  :select t                          :size 0.3  :align below)
+;;             ("*info*"                      :select t   :inhibit-window-quit t                         :same t)
+;;             (magit-status-mode             :select t   :inhibit-window-quit t                         :same t)
+;;             (magit-log-mode                :select t   :inhibit-window-quit t                         :same t)))
+;;     (shackle-mode 1)))
 
 ;;; Saner defaults
 ;; Fix some defaults
@@ -537,7 +544,7 @@ Version 2017-04-19"
 
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 
-(show-paren-mode 1)
+(show-paren-mode 0)
 (setq-default indent-tabs-mode nil)
 (setq save-interprogram-paste-before-kill t
       apropos-do-all t
@@ -549,7 +556,7 @@ Version 2017-04-19"
       backup-directory-alist `(("." . ,(concat user-emacs-directory
                                                "backups"))))
 
-;;; Interface management with ivy and which-key
+;;; Interface management
 (use-package which-key
   :config
   (which-key-mode)
@@ -565,14 +572,16 @@ Version 2017-04-19"
   (wgrep-change-to-wgrep-mode))
 
 (use-package ivy
-  :init (ivy-mode 1)        ; enable ivy globally at startup
+  :init (ivy-mode 1)                  ; enable ivy globally at startup
   :config
-  (setq ivy-use-virtual-buffers t)   ; extend searching to bookmarks and …
-  (setq ivy-height 10)               ; set height of the ivy window
+  (setq ivy-use-virtual-buffers t) ; extend searching to bookmarks and …
+  (setq ivy-height 10)             ; set height of the ivy window
   (setq ivy-count-format "(%d/%d) ") ; count format, from the ivy help page
   (define-key ivy-minibuffer-map "\C-j" 'ivy-next-line)
   (define-key ivy-minibuffer-map "\C-k" 'ivy-previous-line)
-  (define-key ivy-minibuffer-map (kbd "C-SPC") 'ivy-toggle-fuzzy))
+  (define-key ivy-minibuffer-map (kbd "C-SPC") 'ivy-toggle-fuzzy)
+  :ryo
+  ("SPC" (("b" ivy-switch-buffer))))
 
 (use-package ivy-rich
   :after (counsel)
@@ -613,11 +622,31 @@ Version 2017-04-19"
 (use-package ivy-prescient
   :config (ivy-prescient-mode))
 
+;; Workspaces
+(use-package eyebrowse
+  :config
+  (eyebrowse-mode 1)
+  (setq eyebrowse-wrap-around t)
+  :ryo
+  ("gt" eyebrowse-next-window-config)
+  ("gT" eyebrowse-prev-window-config)
+  ("SPC" (("0" eyebrowse-switch-to-window-config-0)
+          ("1" eyebrowse-switch-to-window-config-1)
+          ("2" eyebrowse-switch-to-window-config-2)
+          ("3" eyebrowse-switch-to-window-config-3)
+          ("4" eyebrowse-switch-to-window-config-4)
+          ("5" eyebrowse-switch-to-window-config-5)
+          ("6" eyebrowse-switch-to-window-config-6)
+          ("7" eyebrowse-switch-to-window-config-7)
+          ("8" eyebrowse-switch-to-window-config-8)
+          ("9" eyebrowse-switch-to-window-config-9))))
+
 ;;; Autocompletion
 ;;;; Company
 (use-package company
+  :hook (prog-mode . company-mode)
   :config
-  (global-company-mode 1)
+  ;; (global-company-mode 1)
   (company-tng-configure-default)
   (setq company-minimum-prefix-length 2)
   (setq company-idle-delay 0.1)
@@ -671,7 +700,7 @@ Version 2017-04-19"
 (use-package yasnippet
   :config
   (yas-global-mode 1)
-  (global-set-key (kbd "C-c C-s") 'company-yasnippet))
+  (global-set-key (kbd "C-c s") 'company-yasnippet))
 
 ;;; In buffer navigation
 (use-package avy
@@ -820,15 +849,22 @@ Inserted by installing org-mode or when a release is made."
 
 ;;; General programming concerns
 ;;;; Parentheses 
-;; Smartparens is very heavy and weird. This stays more or less out of the way
 (electric-pair-mode 1)
+;; I don't like how smartparens deals with actual pairs, but its
+;; navigation commands are very good
+(use-package smartparens
+  :ryo
+  ("e" sp-forward-sexp :first '(set-mark-here))
+  ("E" sp-forward-sexp :first '(set-mark-if-inactive))
+  ("M-e" sp-backward-sexp :first '(set-mark-here))
+  ("M-E" sp-backward-sexp :first '(set-mark-if-inactive)))
 
 (use-package rainbow-delimiters
   :config
   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 
 (use-package emacs-surround
-  :straight (emacs-surround :type git :host github :repo "ganmacs/emacs-surround")
+  :straight (emacs-surround :host github :repo "ganmacs/emacs-surround")
   :config
   (add-to-list 'emacs-surround-alist '("<" . ("<" . ">")))
   (add-to-list 'emacs-surround-alist '(">" . ("< " . " >")))
@@ -842,8 +878,7 @@ Inserted by installing org-mode or when a release is made."
   :config
   (global-aggressive-indent-mode 1)
   (add-to-list 'aggressive-indent-excluded-modes 'haskell-mode)
-  (add-to-list 'aggressive-indent-excluded-modes 'python-mode)
-  )
+  (add-to-list 'aggressive-indent-excluded-modes 'python-mode))
 
 ;;;; Linting 
 (use-package flycheck
@@ -852,23 +887,101 @@ Inserted by installing org-mode or when a release is made."
   ("] e" flycheck-next-error :first '(deactivate-mark))
   ("[ e" flycheck-previous-error :first '(deactivate-mark)))
 
-;;; Language specific programming concerns
-;;;; Haskell - (should rethink to lsp)
-(use-package haskell-mode
+;;;; Jumping
+(use-package dumb-jump
   :config
-  (setq haskell-process-type 'stack-ghci))
+  (setq dumb-jump-selector 'ivy)
+  (setq dumb-jump-prefer-searcher 'rg)
+  :ryo
+  (:norepeat t)
+  ("g" (("d" dumb-jump-go)
+        ("b" dumb-jump-back)
+        ("o" dumb-jump-other-window)
+        ("p" dumb-jump-go-prompt))))
 
-;; (use-package intero
-;;   :config
-;;   (add-hook 'haskell-mode-hook 'intero-mode))
+;;;; Eshell
+(use-package eshell-toggle
+  :straight (:host github :repo "4DA/eshell-toggle")
+  :bind ("C-t" . eshell-toggle)
+  :config
+  (setq et-use-projectile-root t)
+  (setq et-eshell-height-fraction 3))
+
+(use-package esh-autosuggest
+  :hook (eshell-mode . esh-autosuggest-mode))
+(use-package eshell-autojump)
+
+;;; Language specific programming concerns
+;;;; Haskell
+(use-package haskell-mode
+  :straight (:host github :repo "haskell/haskell-mode"
+                   ;; Forked it to get rid of haskell indentation
+                   :fork (:host github :repo "jmorag/haskell-mode"))
+  :config
+  (add-hook 'haskell-mode-hook #'interactive-haskell-mode)
+  (setq haskell-process-type 'stack-ghci
+        haskell-interactive-popup-errors nil
+        haskell-process-path-ghci "stack"
+        haskell-process-args-stack-ghci '("--ghci-options=-ferror-spans -fshow-loaded-modules")
+        haskell-process-suggest-remove-import-lines t
+        haskell-process-auto-import-loaded-modules t
+        haskell-process-log t)
+  (defun haskell-backward-sexp (count)
+    (interactive "p") (haskell-forward-sexp (- count)))
+  ;; http://haskell.github.io/haskell-mode/manual/latest/Interactive-Haskell.html#Interactive-Haskell
+  ;; TODO Figure out normal mode bindings for these
+  :bind
+  (:map haskell-mode-map
+        ("C-c C-l" . haskell-process-load-file)
+        ("C-;" . haskell-interactive-bring)
+        ("C-c C-t" . haskell-process-do-type)
+        ("C-c C-i" . haskell-process-do-info)
+        ("C-c C-c" . haskell-process-cabal-build)
+        ("C-c C-k" . haskell-interactive-mode-clear)
+        ("C-c c" . haskell-process-cabal)
+        :map haskell-cabal-mode-map
+        ("C-;" . haskell-interactive-bring)
+        ("C-c C-k" . haskell-interactive-mode-clear)
+        ("C-c C-c" . haskell-process-cabal-build)
+        ("C-c c" . haskell-process-cabal)
+        )
+  :ryo
+  (:mode 'haskell-mode)
+  ("\\ l" haskell-process-load-file)
+  ("\\ t" haskell-process-do-type)
+  ("\\ i" haskell-process-do-info)
+  ("e" haskell-forward-sexp :first '(set-mark-here))
+  ("E" haskell-forward-sexp :first '(set-mark-if-inactive))
+  ("M-e" haskell-backward-sexp :first '(set-mark-here))
+  ("M-E" haskell-backward-sexp :first '(set-mark-if-inactive))
+  )
 
 (use-package hasky-stack)
 (use-package shakespeare-mode)
+(use-package shm
+  :after haskell-mode
+  :demand t
+  :init
+  (add-hook 'ryo-modal-mode-hook
+	    (lambda ()
+	      (when (eq major-mode 'haskell-mode)
+	        (if ryo-modal-mode
+                    (structured-haskell-mode -1)
+                  (structured-haskell-mode 1)))))
+  :ryo
+  (:mode 'haskell-mode)
+  ("[ [" shm/backward-paragraph :first '(set-mark-here))
+  ("{ [" shm/backward-paragraph :first '(set-mark-if-inactive))
+  ("] ]" shm/forward-paragraph :first '(set-mark-here))
+  ("} ]" shm/forward-paragraph :first '(set-mark-if-inactive))
+  )
 
 ;;;; Yaml
 (use-package yaml-mode
   :config
-  (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)))
+  (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
+  :hook
+  (yaml-mode . ryo-modal-mode))
 
 ;;;; Lisps 
 ;; (since all of my time is spent in emacs, I should have a lisp plugin)
@@ -876,9 +989,9 @@ Inserted by installing org-mode or when a release is made."
 (use-package lispy
   :config
   (add-hook 'ryo-modal-mode-hook
-	    (lambda ()
-	      (when (eq major-mode 'emacs-lisp-mode)
-		(if ryo-modal-mode
+            (lambda ()
+              (when (eq major-mode 'emacs-lisp-mode)
+        	(if ryo-modal-mode
                     (lispy-mode -1)
                   (lispy-mode 1))))))
 
