@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: language
+# key: lang
+# --
+{-# ${1:LANGUAGE} ${2:OverloadedStrings} #-}

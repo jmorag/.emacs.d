@@ -204,16 +204,14 @@ but I like this behavior better."
   (interactive "p")
   (end-of-line)
   (dotimes (_ count)
-    (electric-newline-and-maybe-indent)
-    (indent-for-tab-command)))
+    (electric-newline-and-maybe-indent)))
 
 (defun kak/O (count)
   (interactive "p")
   (beginning-of-line)
   (dotimes (_ count)
     (newline)
-    (forward-line -1)
-    (indent-for-tab-command)))
+    (forward-line -1)))
 
 (defun kak/join ()
   "Join the next line to the current one."
@@ -327,7 +325,15 @@ Version 2017-04-19"
    ("." ryo-modal-repeat)
    ("," save-buffer)
    ("'" jm/comment-region-or-line)
-   (";" unset-mark)
+   ;; (";" unset-mark) - This is a prominent key and "h l" or "j k" do this fine
+   (";" (("q" delete-window)
+         ("w" save-buffer)
+         ("h" windmove-left)
+         ("j" windmove-down)
+         ("k" windmove-up)
+         ("l" windmove-right)
+         ("v" split-window-horizontally)
+         ("s" split-window-vertically)))
    ("M-;" exchange-point-and-mark)
    ("*" ryo-tbd)
    ("`" kak/downcase)
@@ -411,6 +417,8 @@ Version 2017-04-19"
   (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click))
 
 (use-package expand-region
+  :straight (:host github :repo "magnars/expand-region.el"
+                   :fork (:host github :repo "jmorag/expand-region.el"))
   :ryo
   ("v" er/expand-region))
 
@@ -780,11 +788,11 @@ Version 2017-04-19"
 	:map with-editor-mode-map
 	("RET" . with-editor-finish-if-ryo)))
 
-(use-package magithub
-  :after magit
-  :config
-  (magithub-feature-autoinject t)
-  (setq magithub-clone-default-directory "~/Code"))
+;; (use-package magithub
+;;   :after magit
+;;   :config
+;;   (magithub-feature-autoinject t)
+;;   (setq magithub-clone-default-directory "~/Code"))
 
 ;;;; Projectile 
 (use-package projectile
@@ -899,6 +907,9 @@ Inserted by installing org-mode or when a release is made."
         ("o" dumb-jump-other-window)
         ("p" dumb-jump-go-prompt))))
 
+;;;; Formatting
+(use-package format-all
+  )
 ;;;; Eshell
 (use-package eshell-toggle
   :straight (:host github :repo "4DA/eshell-toggle")
@@ -914,9 +925,9 @@ Inserted by installing org-mode or when a release is made."
 ;;; Language specific programming concerns
 ;;;; Haskell
 (use-package haskell-mode
-  :straight (:host github :repo "haskell/haskell-mode"
-                   ;; Forked it to get rid of haskell indentation
-                   :fork (:host github :repo "jmorag/haskell-mode"))
+  :preface
+  (defun haskell-backward-sexp (count)
+    (interactive "p") (haskell-forward-sexp (- count)))
   :config
   (add-hook 'haskell-mode-hook #'interactive-haskell-mode)
   (setq haskell-process-type 'stack-ghci
@@ -926,8 +937,6 @@ Inserted by installing org-mode or when a release is made."
         haskell-process-suggest-remove-import-lines t
         haskell-process-auto-import-loaded-modules t
         haskell-process-log t)
-  (defun haskell-backward-sexp (count)
-    (interactive "p") (haskell-forward-sexp (- count)))
   ;; http://haskell.github.io/haskell-mode/manual/latest/Interactive-Haskell.html#Interactive-Haskell
   ;; TODO Figure out normal mode bindings for these
   :bind
@@ -947,34 +956,51 @@ Inserted by installing org-mode or when a release is made."
         )
   :ryo
   (:mode 'haskell-mode)
-  ("\\ l" haskell-process-load-file)
-  ("\\ t" haskell-process-do-type)
-  ("\\ i" haskell-process-do-info)
+  ("SPC m l" haskell-process-load-file)
+  ("SPC m t" haskell-process-do-type)
+  ("SPC m i" haskell-process-do-info)
   ("e" haskell-forward-sexp :first '(set-mark-here))
   ("E" haskell-forward-sexp :first '(set-mark-if-inactive))
   ("M-e" haskell-backward-sexp :first '(set-mark-here))
-  ("M-E" haskell-backward-sexp :first '(set-mark-if-inactive))
-  )
+  ("M-E" haskell-backward-sexp :first '(set-mark-if-inactive)))
 
-(use-package hasky-stack)
-(use-package shakespeare-mode)
-(use-package shm
-  :after haskell-mode
-  :demand t
-  :init
-  (add-hook 'ryo-modal-mode-hook
-	    (lambda ()
-	      (when (eq major-mode 'haskell-mode)
-	        (if ryo-modal-mode
-                    (structured-haskell-mode -1)
-                  (structured-haskell-mode 1)))))
+(use-package flycheck-stack
+  :preface
+  (defun haskell-mode-flycheck-stack ()
+    (flycheck-select-checker 'stack)
+    (flycheck-mode)
+    (ignore (flycheck-stack-targets)))
+  :config
+  (add-hook 'haskell-mode-hook #'haskell-mode-flycheck-stack))
+
+(use-package hasky-stack
+  :config (setq hasky-stack-auto-target t)
   :ryo
   (:mode 'haskell-mode)
-  ("[ [" shm/backward-paragraph :first '(set-mark-here))
-  ("{ [" shm/backward-paragraph :first '(set-mark-if-inactive))
-  ("] ]" shm/forward-paragraph :first '(set-mark-here))
-  ("} ]" shm/forward-paragraph :first '(set-mark-if-inactive))
-  )
+  ("SPC m s" hasky-stack-execute)
+  ("SPC m b" hasky-stack-build-popup))
+
+(use-package hindent
+  :hook (haskell-mode . hindent-mode))
+
+(use-package shakespeare-mode)
+;; (use-package shm
+;;   :after haskell-mode
+;;   :demand t
+;;   :init
+;;   (add-hook 'ryo-modal-mode-hook
+;; 	    (lambda ()
+;; 	      (when (eq major-mode 'haskell-mode)
+;; 	        (if ryo-modal-mode
+;;                     (structured-haskell-mode -1)
+;;                   (structured-haskell-mode 1)))))
+;;   :ryo
+;;   (:mode 'haskell-mode)
+;;   ("[ [" shm/backward-paragraph :first '(set-mark-here))
+;;   ("{ [" shm/backward-paragraph :first '(set-mark-if-inactive))
+;;   ("] ]" shm/forward-paragraph :first '(set-mark-here))
+;;   ("} ]" shm/forward-paragraph :first '(set-mark-if-inactive))
+;;   )
 
 ;;;; Yaml
 (use-package yaml-mode
