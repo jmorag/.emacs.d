@@ -5,7 +5,7 @@
 (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
-;;;; Fonts and scrolling 
+;;;; Fonts and scrolling
 (column-number-mode 1)
 (set-face-font 'default "-*-Menlo-normal-normal-normal-*-14-*-*-*-m-0-iso10646-1")
 ;; Make scrolling work more like vim's
@@ -607,7 +607,7 @@ Version 2017-04-19"
    counsel-git-grep           ; search for regexp in git repo
    counsel-ag                 ; search for regexp in git repo using ag
    counsel-locate             ; search for files or else using locate
-   counsel-rg)                ; search for regexp in git repo using 
+   counsel-rg)                ; search for regexp in git repo using
   :config
   (setq counsel-rg-base-command
 	"rg -i -M 120 --follow --glob \"!.git/*\" --no-heading --ignore-case\
@@ -703,7 +703,7 @@ Version 2017-04-19"
 
 (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
 
-;;;; Snippets 
+;;;; Snippets
 ;; Yasnipet
 (use-package yasnippet
   :config
@@ -739,7 +739,7 @@ Version 2017-04-19"
   :ryo ("g ;" goto-last-change))
 
 ;;; Project management
-;;;; Magit 
+;;;; Magit
 (use-package magit
   :ryo
   ("SPC g" magit-status)
@@ -794,7 +794,7 @@ Version 2017-04-19"
 ;;   (magithub-feature-autoinject t)
 ;;   (setq magithub-clone-default-directory "~/Code"))
 
-;;;; Projectile 
+;;;; Projectile
 (use-package projectile
   :config
   (projectile-mode 1)
@@ -841,7 +841,7 @@ Inserted by installing org-mode or when a release is made."
 
 (provide 'org-version)
 
-;;;; Org config 
+;;;; Org config
 (use-package org
   :ryo
   (:mode 'org-mode)
@@ -856,7 +856,7 @@ Inserted by installing org-mode or when a release is made."
   (setq ranger-show-hidden t))
 
 ;;; General programming concerns
-;;;; Parentheses 
+;;;; Parentheses
 (electric-pair-mode 1)
 ;; I don't like how smartparens deals with actual pairs, but its
 ;; navigation commands are very good
@@ -881,14 +881,14 @@ Inserted by installing org-mode or when a release is made."
   :ryo
   ("S" emacs-surround))
 
-;;;; Indentation 
+;;;; Indentation
 (use-package aggressive-indent
   :config
   (global-aggressive-indent-mode 1)
   (add-to-list 'aggressive-indent-excluded-modes 'haskell-mode)
   (add-to-list 'aggressive-indent-excluded-modes 'python-mode))
 
-;;;; Linting 
+;;;; Linting
 (use-package flycheck
   :ryo
   ("SPC" (("a t" flycheck-mode :name "Flycheck toggle")))
@@ -909,7 +909,9 @@ Inserted by installing org-mode or when a release is made."
 
 ;;;; Formatting
 (use-package format-all
-  )
+  :ryo
+  ("SPC =" format-all-buffer))
+
 ;;;; Eshell
 (use-package eshell-toggle
   :straight (:host github :repo "4DA/eshell-toggle")
@@ -1009,7 +1011,7 @@ Inserted by installing org-mode or when a release is made."
   :hook
   (yaml-mode . ryo-modal-mode))
 
-;;;; Lisps 
+;;;; Lisps
 ;; (since all of my time is spent in emacs, I should have a lisp plugin)
 ;; There is a choice between lispy, paredit, smart-parens, and parinfer
 (use-package lispy
