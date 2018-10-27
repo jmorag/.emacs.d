@@ -24,15 +24,6 @@
                          ("gnu"       . "http://elpa.gnu.org/packages/")
                          ("melpa"     . "https://melpa.org/packages/")))
 
-;;;; Bootstrap `use-package' -- deprecated package.el
-;; (package-initialize)
-;; (unless (package-installed-p 'use-package)
-;;   (package-refresh-contents)
-;;   (package-install 'use-package))
-
-;; (require 'use-package)
-;; (setq use-package-always-ensure t)
-
 ;;;; Bootstrap straight.el
 (defvar bootstrap-version)
 (let ((bootstrap-file
@@ -284,17 +275,17 @@ Version 2017-04-19"
    ("e" ryo-tbd)
    ("E" ryo-tbd)
    ("g" (("h" beginning-of-line)
-	 ("j" end-of-buffer)
-	 ("k" beginning-of-buffer)
-	 ("g" beginning-of-buffer)
-	 ("l" end-of-line)
-	 ("i" back-to-indentation)) :first '(deactivate-mark))
+         ("j" end-of-buffer)
+         ("k" beginning-of-buffer)
+         ("g" beginning-of-buffer)
+         ("l" end-of-line)
+         ("i" back-to-indentation)) :first '(deactivate-mark))
    ("G" (("h" beginning-of-line)
-	 ("j" end-of-buffer)
-	 ("k" beginning-of-buffer)
-	 ("g" beginning-of-buffer)
-	 ("l" end-of-line)
-	 ("i" back-to-indentation)) :first '(set-mark-if-inactive))
+         ("j" end-of-buffer)
+         ("k" beginning-of-buffer)
+         ("g" beginning-of-buffer)
+         ("l" end-of-line)
+         ("i" back-to-indentation)) :first '(set-mark-if-inactive))
    ("h" backward-char :first '(deactivate-mark))
    ("H" backward-char :first '(set-mark-if-inactive))
    ("i" ryo-leave)
@@ -334,21 +325,22 @@ Version 2017-04-19"
          ("l" windmove-right)
          ("v" split-window-horizontally)
          ("s" split-window-vertically)))
-   ("M-;" exchange-point-and-mark)
+   ;; C-x C-x is just as easy to type as this is
+   ("M-;" ryo-tbd)
    ("*" ryo-tbd)
    ("`" kak/downcase)
    ("~" kak/upcase)
    ("%" mark-whole-buffer)
-   ("\\"  ryo-tbd)
+   ("\\" ryo-tbd)
    ("M-`" xah-toggle-letter-case)
    ("M-j" kak/join)
    ("C-e" eval-last-sexp)
    ("[" (("SPC" insert-line-above)
-	 ("b" previous-buffer)
-	 ("p" paste-above)))
+         ("b" previous-buffer)
+         ("p" paste-above)))
    ("]" (("SPC" insert-line-below)
-	 ("b" next-buffer)
-	 ("p" paste-below)))
+         ("b" next-buffer)
+         ("p" paste-below)))
    ("[ [" backward-paragraph :first '(set-mark-here))
    ("{ [" backward-paragraph :first '(set-mark-if-inactive))
    ("] ]" forward-paragraph :first '(set-mark-here))
@@ -381,8 +373,7 @@ Version 2017-04-19"
     (define-key keymap "k" 'previous-line)
     (define-key keymap "\C-d" 'scroll-up-command)
     (define-key keymap "\C-u" 'scroll-down-command)
-    (define-key keymap "o" 'other-window)
-    ))
+    (define-key keymap "o" 'other-window)))
 
 ;; Help mode bindings
 (vimlike-navigation help-mode-map)
@@ -395,14 +386,6 @@ Version 2017-04-19"
      (define-key ibuffer-mode-map (kbd "j") 'ibuffer-forward-line)
      (define-key ibuffer-mode-map (kbd "k") 'ibuffer-backward-line)
      (define-key ibuffer-mode-map (kbd "K") 'ibuffer-do-kill-lines)))
-
-;; ;; Dired mode bindings
-;; (use-package dired
-;;   :straight nil
-;;   :bind (:map dired-mode-map
-;; 	      ("j" . dired-next-line)
-;; 	      ("k" . dired-previous-line)
-;; 	      ("K" . dired-do-kill-lines)))
 
 ;;;; Multiple cursors and expand region
 (use-package multiple-cursors
@@ -784,10 +767,9 @@ Version 2017-04-19"
 	("C-k" . magit-section-backward-sibling)
 	:map magit-hunk-section-map
 	("C-j" . magit-section-forward-sibling)
-	("C-k" . magit-section-backward-sibling)
-	:map with-editor-mode-map
-	("RET" . with-editor-finish-if-ryo)))
+	("C-k" . magit-section-backward-sibling)))
 
+;; Authentication is broken
 ;; (use-package magithub
 ;;   :after magit
 ;;   :config
@@ -971,7 +953,7 @@ Inserted by installing org-mode or when a release is made."
   (defun haskell-mode-flycheck-stack ()
     (flycheck-select-checker 'stack)
     (flycheck-mode)
-    (ignore (flycheck-stack-targets)))
+    )
   :config
   (add-hook 'haskell-mode-hook #'haskell-mode-flycheck-stack))
 
