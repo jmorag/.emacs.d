@@ -738,7 +738,7 @@ Version 2017-04-19"
     (jump-to-register :magit-fullscreen))
   (defun with-editor-finish-if-ryo ()
     (interactive)
-    (if (ryo-modal-mode)
+    (if (bound-and-true-p ryo-modal-mode)
 	(with-editor-finish nil)
       (newline)))
   :bind
@@ -767,7 +767,9 @@ Version 2017-04-19"
 	("C-k" . magit-section-backward-sibling)
 	:map magit-hunk-section-map
 	("C-j" . magit-section-forward-sibling)
-	("C-k" . magit-section-backward-sibling)))
+	("C-k" . magit-section-backward-sibling)
+        :map with-editor-mode-map
+        ("RET" . with-editor-finish-if-ryo)))
 
 ;; Authentication is broken
 ;; (use-package magithub
