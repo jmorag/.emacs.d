@@ -929,7 +929,7 @@ Inserted by installing org-mode or when a release is made."
   (:map haskell-mode-map
         ("C-c C-l" . haskell-process-load-file)
         ("C-;" . haskell-interactive-bring)
-        ("C-c C-t" . haskell-process-do-type)
+        ("C-c C-t" . haskell-mode-show-type-at)
         ("C-c C-i" . haskell-process-do-info)
         ("C-c C-c" . haskell-process-cabal-build)
         ("C-c C-k" . haskell-interactive-mode-clear)
@@ -943,7 +943,7 @@ Inserted by installing org-mode or when a release is made."
   :ryo
   (:mode 'haskell-mode)
   ("SPC m l" haskell-process-load-file)
-  ("SPC m t" haskell-process-do-type)
+  ("SPC m t" haskell-mode-show-type-at)
   ("SPC m i" haskell-process-do-info)
   ("e" haskell-forward-sexp :first '(set-mark-here))
   ("E" haskell-forward-sexp :first '(set-mark-if-inactive))
@@ -955,7 +955,8 @@ Inserted by installing org-mode or when a release is made."
   (defun haskell-mode-flycheck-stack ()
     (flycheck-select-checker 'stack)
     (flycheck-mode)
-    )
+    (flycheck-stack-destroy)
+    (flycheck-stack-get-worker-create "" (current-buffer)))
   :config
   (add-hook 'haskell-mode-hook #'haskell-mode-flycheck-stack))
 
@@ -977,7 +978,7 @@ Inserted by installing org-mode or when a release is made."
 ;;   (add-hook 'ryo-modal-mode-hook
 ;; 	    (lambda ()
 ;; 	      (when (eq major-mode 'haskell-mode)
-;; 	        (if ryo-modal-mode
+;; 	        (if (bound-and-true-p ryo-modal-mode)
 ;;                     (structured-haskell-mode -1)
 ;;                   (structured-haskell-mode 1)))))
 ;;   :ryo
@@ -1003,7 +1004,7 @@ Inserted by installing org-mode or when a release is made."
   (add-hook 'ryo-modal-mode-hook
             (lambda ()
               (when (eq major-mode 'emacs-lisp-mode)
-        	(if ryo-modal-mode
+        	(if (bound-and-true-p ryo-modal-mode)
                     (lispy-mode -1)
                   (lispy-mode 1))))))
 
