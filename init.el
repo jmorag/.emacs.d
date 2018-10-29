@@ -89,7 +89,7 @@ Goes backward if ARG is negative; error if CHAR not found."
   (search-forward (char-to-string char) nil nil arg)
   (point))
 
-(defun kak/x (&optional count)
+(defun kak/x (count)
   "Select COUNT lines from the current line.
 
 Note that kakoune's x doesn't behave exactly like this,
@@ -99,46 +99,41 @@ but I like this behavior better."
   (set-mark (point))
   (forward-line count))
 
-(defun kak/X (&optional count)
+(defun kak/X (count)
   "Extend COUNT lines from the current line."
   (interactive "p")
   (beginning-of-line)
   (unless (use-region-p) (set-mark (point)))
   (forward-line count))
 
-(defun kak/d ()
-  "Kill selected text."
-  (interactive)
+(defun kak/d (count)
+  "Kill selected text or COUNT chars."
+  (interactive "p")
   (if (use-region-p)
       (kill-region (region-beginning) (region-end))
-    (delete-char 1 t)))
+    (delete-char count t)))
 
-(defun kak/p (&optional count)
+(defun kak/p (count)
   "Yank COUNT times after the point."
   (interactive "p")
   (dotimes (_ count) (save-excursion (yank)))
   )
 
-(defun jm/comment-region-or-line (count) (interactive "p")
-       (if (use-region-p)
-	   (comment-or-uncomment-region (region-beginning) (region-end))
-	 (save-excursion (comment-line count))))
-
-(defun insert-line-below (&optional count)
+(defun insert-line-below (count)
   "Insert COUNT empty lines below the current line."
   (interactive "p")
   (save-excursion
     (end-of-line)
     (open-line count)))
 
-(defun insert-line-above (&optional count)
+(defun insert-line-above (count)
   "Insert COUNT empty lines above the current line."
   (interactive "p")
   (save-excursion
     (end-of-line 0)
     (open-line count)))
 
-(defun paste-above (&optional count)
+(defun paste-above (count)
   "Paste (yank) COUNT times above the current line."
   (interactive "p")
   (save-excursion
@@ -146,7 +141,7 @@ but I like this behavior better."
 	     (newline)
 	     (yank))))
 
-(defun paste-below (&optional count)
+(defun paste-below (count)
   "Paste (yank) COUNT times below the current line."
   (interactive "p")
   (save-excursion
@@ -313,9 +308,8 @@ Version 2017-04-19"
    ("y" kill-ring-save)
    ("Y" ryo-tbd)
    ("Z" ryo-tbd)
-   ("." ryo-modal-repeat)
    ("," save-buffer)
-   ("'" jm/comment-region-or-line)
+   ("." ryo-modal-repeat)
    ;; (";" unset-mark) - This is a prominent key and "h l" or "j k" do this fine
    (";" (("q" delete-window)
          ("w" save-buffer)
@@ -325,8 +319,7 @@ Version 2017-04-19"
          ("l" windmove-right)
          ("v" split-window-horizontally)
          ("s" split-window-vertically)))
-   ;; C-x C-x is just as easy to type as this is
-   ("M-;" ryo-tbd)
+   ("M-;" exchange-point-and-mark)
    ("*" ryo-tbd)
    ("`" kak/downcase)
    ("~" kak/upcase)
@@ -356,7 +349,9 @@ Version 2017-04-19"
    ("6" "M-6" :norepeat t)
    ("7" "M-7" :norepeat t)
    ("8" "M-8" :norepeat t)
-   ("9" "M-9" :norepeat t)))
+   ("9" "M-9" :norepeat t)
+   ("-" "M--" :norepeat t)))
+
 ;; Register bindings
 (define-key ryo-modal-mode-map (kbd "\"") ctl-x-r-map)
 
@@ -387,7 +382,7 @@ Version 2017-04-19"
      (define-key ibuffer-mode-map (kbd "k") 'ibuffer-backward-line)
      (define-key ibuffer-mode-map (kbd "K") 'ibuffer-do-kill-lines)))
 
-;;;; Multiple cursors and expand region
+;;;; Fancy text editing
 (use-package multiple-cursors
   :ryo
   ("m" mc/mark-next-like-this)
@@ -544,6 +539,7 @@ Version 2017-04-19"
       load-prefer-newer t
       ediff-window-setup-function 'ediff-setup-windows-plain
       save-place-file (concat user-emacs-directory "places")
+      auto-save-default nil
       backup-directory-alist `(("." . ,(concat user-emacs-directory
                                                "backups"))))
 
@@ -709,7 +705,6 @@ Version 2017-04-19"
   (add-hook 'prog-mode-hook 'outline-minor-mode))
 
 (use-package navi-mode
-  :ryo ("-" outshine-navi)
   :bind (:map navi-mode-map
 	      ("j" . occur-next)
 	      ("k" . occur-prev)
@@ -793,51 +788,14 @@ Version 2017-04-19"
   :after (projectile counsel)
   :config (counsel-projectile-mode))
 
-;;;; Org mode install
-;; Installing org mode with straight is annoying
-;; https://github.com/raxod502/straight.el#installing-org-with-straightel
-(require 'subr-x)
-(straight-use-package 'git)
-
-(defun org-git-version ()
-  "The Git version of org-mode.
-Inserted by installing org-mode or when a release is made."
-  (require 'git)
-  (let ((git-repo (expand-file-name
-                   "straight/repos/org/" user-emacs-directory)))
-    (string-trim
-     (git-run "describe"
-              "--match=release\*"
-              "--abbrev=6"
-              "HEAD"))))
-
-(defun org-release ()
-  "The release version of org-mode.
-Inserted by installing org-mode or when a release is made."
-  (require 'git)
-  (let ((git-repo (expand-file-name
-                   "straight/repos/org/" user-emacs-directory)))
-    (string-trim
-     (string-remove-prefix
-      "release_"
-      (git-run "describe" "--match=release\*" "--abbrev=0"
-               "HEAD")))))
-
-(provide 'org-version)
-
-;;;; Org config
-(use-package org
-  :ryo
-  (:mode 'org-mode)
-  (">" org-demote-subtree)
-  ("<" org-promote-subtree))
-
 ;;; File management
 (use-package ranger
   :config
   (ranger-override-dired-mode t)
   (setq ranger-cleanup-on-disable t)
-  (setq ranger-show-hidden t))
+  (setq ranger-show-hidden t)
+  :ryo
+  ("SPC d" ranger))
 
 ;;; General programming concerns
 ;;;; Parentheses
@@ -896,6 +854,12 @@ Inserted by installing org-mode or when a release is made."
   :ryo
   ("SPC =" format-all-buffer))
 
+;;;; Commenting
+(use-package evil-nerd-commenter
+  :ryo
+  ("'" evilnc-comment-or-uncomment-lines)
+  ("SPC '" evilnc-comment-or-uncomment-paragraphs))
+
 ;;;; Eshell
 (use-package eshell-toggle
   :straight (:host github :repo "4DA/eshell-toggle")
@@ -934,6 +898,7 @@ Inserted by installing org-mode or when a release is made."
         ("C-c C-c" . haskell-process-cabal-build)
         ("C-c C-k" . haskell-interactive-mode-clear)
         ("C-c c" . haskell-process-cabal)
+        ("C-c C-d" . haskell-w3m-open-haddock)
         :map haskell-cabal-mode-map
         ("C-;" . haskell-interactive-bring)
         ("C-c C-k" . haskell-interactive-mode-clear)
@@ -945,6 +910,7 @@ Inserted by installing org-mode or when a release is made."
   ("SPC m l" haskell-process-load-file)
   ("SPC m t" haskell-mode-show-type-at)
   ("SPC m i" haskell-process-do-info)
+  ("SPC m d" haskell-w3m-open-haddock)
   ("e" haskell-forward-sexp :first '(set-mark-here))
   ("E" haskell-forward-sexp :first '(set-mark-if-inactive))
   ("M-e" haskell-backward-sexp :first '(set-mark-here))
@@ -967,8 +933,33 @@ Inserted by installing org-mode or when a release is made."
   ("SPC m s" hasky-stack-execute)
   ("SPC m b" hasky-stack-build-popup))
 
-(use-package hindent
-  :hook (haskell-mode . hindent-mode))
+(when (executable-find "hindent")
+  (use-package hindent
+    :hook (haskell-mode . hindent-mode)))
+
+(when (executable-find "w3m")
+  (use-package w3m
+    :preface
+    (defun w3m-maybe-url ()
+      (interactive)
+      (if (or (equal '(w3m-anchor) (get-text-property (point) 'face))
+              (equal '(w3m-arrived-anchor) (get-text-property (point) 'face)))
+          (w3m-view-this-url)))
+    :after haskell-mode
+    :config
+    (add-hook 'w3m-display-hook 'w3m-haddock-display)
+    (require 'w3m-haddock)
+    :bind
+    (:map w3m-mode-map
+          ("RET" . w3m-view-this-url)
+          ("q" . bury-buffer)
+          ("<mouse-1>" . w3m-maybe-url)
+          ("M-r" . w3m-reload-this-page)
+          ("C-c C-d" . haskell-w3m-open-haddock)
+          ("M-<left>" . w3m-view-previous-page)
+          ("M-<right>" . w3m-view-next-page)
+          ("M-." . w3m-haddock-find-tag)
+          )))
 
 (use-package shakespeare-mode)
 ;; (use-package shm
@@ -1012,6 +1003,110 @@ Inserted by installing org-mode or when a release is made."
   :config
   (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook))
     (add-hook hook 'turn-on-elisp-slime-nav-mode)))
+
+;;;; Org mode install
+;; Installing org mode with straight is annoying
+;; https://github.com/raxod502/straight.el#installing-org-with-straightel
+(require 'subr-x)
+(straight-use-package 'git)
+
+(defun org-git-version ()
+  "The Git version of org-mode.
+Inserted by installing org-mode or when a release is made."
+  (require 'git)
+  (let ((git-repo (expand-file-name
+                   "straight/repos/org/" user-emacs-directory)))
+    (string-trim
+     (git-run "describe"
+              "--match=release\*"
+              "--abbrev=6"
+              "HEAD"))))
+
+(defun org-release ()
+  "The release version of org-mode.
+Inserted by installing org-mode or when a release is made."
+  (require 'git)
+  (let ((git-repo (expand-file-name
+                   "straight/repos/org/" user-emacs-directory)))
+    (string-trim
+     (string-remove-prefix
+      "release_"
+      (git-run "describe" "--match=release\*" "--abbrev=0"
+               "HEAD")))))
+
+(provide 'org-version)
+
+;;;; Org config
+(use-package org
+  :hook (org . ryo-modal-mode)
+  :ryo
+  (:mode 'org-mode)
+  (">" org-demote-subtree)
+  ("<" org-promote-subtree))
+
+;;;; Markdown 
+(use-package markdown-mode
+  :commands (markdown-mode gfm-mode)
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init (setq markdown-command "multimarkdown")
+  :hook (markdown . ryo-modal-mode))
+
+;;; Kitchen sink
+;;;; Pdf
+;; Stolen from doom
+(use-package pdf-tools
+  :preface 
+  (defun +pdf|cleanup-windows ()
+    "Kill left-over annotation buffers when the document is killed."
+    (when (buffer-live-p pdf-annot-list-document-buffer)
+      (pdf-info-close pdf-annot-list-document-buffer))
+    (when (buffer-live-p pdf-annot-list-buffer)
+      (kill-buffer pdf-annot-list-buffer))
+    (let ((contents-buffer (get-buffer "*Contents*")))
+      (when (and contents-buffer (buffer-live-p contents-buffer))
+        (kill-buffer contents-buffer))))
+  :mode ("\\.pdf\\'" . pdf-view-mode)
+  :config
+  (unless noninteractive (pdf-tools-install))
+  (add-hook 'pdf-view-mode-hook
+            (add-hook 'kill-buffer-hook #'+pdf|cleanup-windows nil t))
+  (setq-default pdf-view-display-size 'fit-page)
+  :bind (:map pdf-view-mode-map
+              ("q" . kill-this-buffer))
+  )
+
+;;;; 2048
+(use-package 2048-game
+  :commands (2048-game)
+  :bind
+  (:map 2048-mode-map
+        ("h" . 2048-left)
+        ("j" . 2048-down)
+        ("k" . 2048-up)
+        ("l" . 2048-right)))
+
+;;;; xkcd 
+(use-package xkcd
+  :commands (xkcd xkcd-get xkcd-get-latest)
+  :bind
+  (:map xkcd-mode-map
+        ("h" . xkcd-prev)
+        ("j" . xkcd-next)
+        ("k" . xkcd-prev)
+        ("l" . xkcd-next)
+        ("r" . xkcd-rand)
+        ("SPC" . xkcd-alt-text)))
+
+;;;; Music
+;; Surprisingly, this works, but it can use some tweaking 
+(use-package emms
+  :config
+  (require 'emms-setup)
+  (emms-all)
+  (emms-default-players)
+  (setq emms-source-file-default-directory "~/Music/iTunes/iTunes Media/Music/"))
 
 ;;; End
 ;; Revert garbage collection to default after loading init

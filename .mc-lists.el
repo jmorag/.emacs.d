@@ -19,6 +19,7 @@
         kak/j
         kak/k
         kak/l
+        kak/p
         kak/r
         kak/replace-char
         kak/tilde
@@ -55,6 +56,7 @@
         ryo:bd01dafd864b73f282864790f7d77e3c:kak/d
         ryo:c44301a1d93e869c777c4e24d9131cb5:er/expand-region
         ryo:e4fe141b0e119b6d1fa1fce3dfa14784:end-of-line
+        ryo:e7a5212c33f50d09246829cc7289a6d2:forward-char
         ryo:fc7eefa7332e9195f27e3ba02ec62ae7:beginning-of-line
         special-digit-argument
         special-lh-knight/body
@@ -134,6 +136,7 @@
         counsel-M-x
         describe-key
         eldoc-eval-expression
+        ryo:43a840e32c825f68414b7560417a88ff:mc/skip-to-next-like-this
         ryo:4c795c327d46eee6c51f2df1e7698c37:mc/mark-previous-like-this
         ryo:73ac12fcb39da89064b04736b28f5f0f:mc/mark-next-like-this
         ryo:f27938a88c89decb111731da89fe4793:vr/mc-mark
