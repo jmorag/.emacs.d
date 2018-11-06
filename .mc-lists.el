@@ -37,6 +37,7 @@
         lispy-space
         lispy-tick
         modalka-translation
+        org-self-insert-command
         outshine-self-insert-command
         ryo-enter
         ryo-leave
@@ -51,6 +52,7 @@
         ryo:6b7f269a0c9f62ded5e6ef76672f3722:forward-same-syntax
         ryo:852c571a517d85538a1f9b56f60a68f3:backward-same-syntax
         ryo:8ab5d0830a9c4685f6b642216b9c72bd:forward-char
+        ryo:8e022ec1dd956ebb75e780e711bf370d:avy-goto-char-in-line
         ryo:a147c9a24b4efc5e3424c4618b0aa58a:end-of-line
         ryo:b219ebd046736cb61e7239c837f2a722:emacs-surround
         ryo:bd01dafd864b73f282864790f7d77e3c:kak/d

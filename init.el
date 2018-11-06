@@ -1053,6 +1053,14 @@ Inserted by installing org-mode or when a release is made."
   :init (setq markdown-command "multimarkdown")
   :hook (markdown . ryo-modal-mode))
 
+;;;; Lilypond
+(when (and (executable-find "lilypond") (eq system-type 'darwin))
+  (progn
+    (add-to-list 'load-path "/usr/local/Cellar/lilypond/2.18.2/share/emacs/site-lisp/lilypond/")
+    (autoload 'LilyPond-mode "lilypond-mode")
+    (setq auto-mode-alist
+          (cons '("\\.ly$" . LilyPond-mode) auto-mode-alist))))
+
 ;;; Kitchen sink
 ;;;; Pdf
 ;; Stolen from doom
@@ -1102,11 +1110,14 @@ Inserted by installing org-mode or when a release is made."
 ;;;; Music
 ;; Surprisingly, this works, but it can use some tweaking 
 (use-package emms
+  :straight (:repo "git://git.sv.gnu.org/emms.git")
   :config
   (require 'emms-setup)
   (emms-all)
   (emms-default-players)
-  (setq emms-source-file-default-directory "~/Music/iTunes/iTunes Media/Music/"))
+  ;; (setq emms-source-file-default-directory "~/Music/iTunes/iTunes Media/Music/")
+  (require 'emms-info-libtag)
+  (setq emms-info-functions '(emms-info-libtag)))
 
 ;;; End
 ;; Revert garbage collection to default after loading init
