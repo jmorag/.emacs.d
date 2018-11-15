@@ -44,6 +44,7 @@
 
 ;;; Core editor facilities
 ;; This sets up basic text editing commands
+
 ;;;; Key chord
 (use-package use-package-chords
   :config
@@ -313,12 +314,12 @@ Version 2017-04-19"
    ;; (";" unset-mark) - This is a prominent key and "h l" or "j k" do this fine
    (";" (("q" delete-window)
          ("w" save-buffer)
-         ("h" windmove-left)
-         ("j" windmove-down)
-         ("k" windmove-up)
-         ("l" windmove-right)
          ("v" split-window-horizontally)
          ("s" split-window-vertically)))
+   ("<tab>" (("h" windmove-left)
+             ("j" windmove-down)
+             ("k" windmove-up)
+             ("l" windmove-right)))
    ("M-;" exchange-point-and-mark)
    ("*" ryo-tbd)
    ("`" kak/downcase)
@@ -428,7 +429,10 @@ Version 2017-04-19"
 (use-package exec-path-from-shell
   :config
   (when (memq window-system '(mac ns x))
-    (exec-path-from-shell-initialize)))
+    (setenv "SHELL" "/bin/bash")
+    (exec-path-from-shell-initialize)
+    (exec-path-from-shell-copy-envs '("PATH"))
+    ))
 
 ;; Use command as meta on mac
 (when (eq system-type 'darwin)
@@ -443,7 +447,7 @@ Version 2017-04-19"
   (eshell-git-prompt-use-theme 'powerline))
 
 (when (version<= "26.0.50" emacs-version)
-  (global-display-line-numbers-mode))
+  (add-hook 'prog-mode-hook 'display-line-numbers-mode))
 
 (use-package doom-themes
   :config
@@ -614,6 +618,7 @@ Version 2017-04-19"
   :config
   (eyebrowse-mode 1)
   (setq eyebrowse-wrap-around t)
+  (setq eyebrowse-new-workspace t)
   :ryo
   ("gt" eyebrowse-next-window-config)
   ("gT" eyebrowse-prev-window-config)
@@ -784,7 +789,8 @@ Version 2017-04-19"
   ("SPC SPC" projectile-find-file))
 
 (use-package counsel-projectile
-  :commands (counsel-projectile projectile-find-file)
+  :commands (couns
+             el-projectile projectile-find-file)
   :after (projectile counsel)
   :config (counsel-projectile-mode))
 
@@ -825,10 +831,7 @@ Version 2017-04-19"
 
 ;;;; Indentation
 (use-package aggressive-indent
-  :config
-  (global-aggressive-indent-mode 1)
-  (add-to-list 'aggressive-indent-excluded-modes 'haskell-mode)
-  (add-to-list 'aggressive-indent-excluded-modes 'python-mode))
+  :hook (emacs-lisp-mode . aggressive-indent-mode))
 
 ;;;; Linting
 (use-package flycheck
@@ -1039,12 +1042,14 @@ Inserted by installing org-mode or when a release is made."
 ;;;; Org config
 (use-package org
   :hook (org . ryo-modal-mode)
+  :config
+  (require 'ox-md nil t)
   :ryo
   (:mode 'org-mode)
   (">" org-demote-subtree)
   ("<" org-promote-subtree))
 
-;;;; Markdown 
+;;;; Markdown
 (use-package markdown-mode
   :commands (markdown-mode gfm-mode)
   :mode (("README\\.md\\'" . gfm-mode)
@@ -1053,19 +1058,22 @@ Inserted by installing org-mode or when a release is made."
   :init (setq markdown-command "multimarkdown")
   :hook (markdown . ryo-modal-mode))
 
-;;;; Lilypond
+;; Lilypond
 (when (and (executable-find "lilypond") (eq system-type 'darwin))
-  (progn
-    (add-to-list 'load-path "/usr/local/Cellar/lilypond/2.18.2/share/emacs/site-lisp/lilypond/")
-    (autoload 'LilyPond-mode "lilypond-mode")
-    (setq auto-mode-alist
-          (cons '("\\.ly$" . LilyPond-mode) auto-mode-alist))))
+  (use-package lilypond-mode
+    :straight
+    (:local-repo "/usr/local/Cellar/lilypond/2.18.2/share/emacs/site-lisp/lilypond/"
+                 :files ("lilypond*.el"))
+    :config
+    (add-to-list 'auto-mode-alist '("\\.ly\\'" . LilyPond-mode))
+    :hook
+    (lilypond . ryo-modal-mode)))
 
 ;;; Kitchen sink
 ;;;; Pdf
 ;; Stolen from doom
 (use-package pdf-tools
-  :preface 
+  :preface
   (defun +pdf|cleanup-windows ()
     "Kill left-over annotation buffers when the document is killed."
     (when (buffer-live-p pdf-annot-list-document-buffer)
@@ -1095,7 +1103,7 @@ Inserted by installing org-mode or when a release is made."
         ("k" . 2048-up)
         ("l" . 2048-right)))
 
-;;;; xkcd 
+;;;; xkcd
 (use-package xkcd
   :commands (xkcd xkcd-get xkcd-get-latest)
   :bind
@@ -1108,7 +1116,7 @@ Inserted by installing org-mode or when a release is made."
         ("SPC" . xkcd-alt-text)))
 
 ;;;; Music
-;; Surprisingly, this works, but it can use some tweaking 
+;; Surprisingly, this works, but it can use some tweaking
 (use-package emms
   :straight (:repo "git://git.sv.gnu.org/emms.git")
   :config
@@ -1118,6 +1126,34 @@ Inserted by installing org-mode or when a release is made."
   ;; (setq emms-source-file-default-directory "~/Music/iTunes/iTunes Media/Music/")
   (require 'emms-info-libtag)
   (setq emms-info-functions '(emms-info-libtag)))
+
+;;;; Fake word processor
+(use-package flyspell-correct
+  :config
+  (when (executable-find "aspell")
+    (setq-default ispell-program-name "aspell")
+    (setq ispell-really-aspell t))
+  (setq flyspell-correct-interface #'flyspell-correct-dummy)
+  :ryo
+  ("g s" flyspell-correct-wrapper))
+
+(use-package darkroom
+  :preface
+  (defun jm/toggle-prose-mode ()
+    "Toggle distraction free writing mode for prose."
+    (interactive)
+    (if (bound-and-true-p darkroom-mode)
+        (progn (display-line-numbers-mode 1)
+               (darkroom-mode 0)
+               (visual-line-mode 0)
+               (flyspell-mode 0)
+               (text-scale-increase 1))
+      (progn (display-line-numbers-mode 0)
+             (darkroom-mode 1)
+             (visual-line-mode 1)
+             (flyspell-mode 1)
+             (text-scale-decrease 1))))
+  :commands (darkroom-mode darkroom-tentative-mode))
 
 ;;; End
 ;; Revert garbage collection to default after loading init

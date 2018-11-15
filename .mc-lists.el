@@ -23,6 +23,7 @@
         kak/r
         kak/replace-char
         kak/tilde
+        kak/upcase
         kak/w
         kak/x
         lispy-backtick
@@ -37,6 +38,7 @@
         lispy-space
         lispy-tick
         modalka-translation
+        org-cycle
         org-self-insert-command
         outshine-self-insert-command
         ryo-enter
@@ -138,8 +140,10 @@
         counsel-M-x
         describe-key
         eldoc-eval-expression
+        multiple-cursors-mode
         ryo:43a840e32c825f68414b7560417a88ff:mc/skip-to-next-like-this
         ryo:4c795c327d46eee6c51f2df1e7698c37:mc/mark-previous-like-this
         ryo:73ac12fcb39da89064b04736b28f5f0f:mc/mark-next-like-this
+        ryo:9668f7b8424ef98fc7eed0e23d2b6bc3:scroll-down-command
         ryo:f27938a88c89decb111731da89fe4793:vr/mc-mark
         ))
