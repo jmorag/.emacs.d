@@ -141,6 +141,7 @@
         describe-key
         eldoc-eval-expression
         multiple-cursors-mode
+        ryo:0e93af3b38e44fa93c5656cb1bd98ac3:mc/skip-to-previous-like-this
         ryo:43a840e32c825f68414b7560417a88ff:mc/skip-to-next-like-this
         ryo:4c795c327d46eee6c51f2df1e7698c37:mc/mark-previous-like-this
         ryo:73ac12fcb39da89064b04736b28f5f0f:mc/mark-next-like-this

@@ -396,8 +396,8 @@ Version 2017-04-19"
   (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click))
 
 (use-package expand-region
-  :straight (:host github :repo "magnars/expand-region.el"
-                   :fork (:host github :repo "jmorag/expand-region.el"))
+  :straight (expand-region :host github :repo "magnars/expand-region.el"
+                           :fork (:host github :repo "jmorag/expand-region.el"))
   :ryo
   ("v" er/expand-region))
 
@@ -881,107 +881,71 @@ Version 2017-04-19"
   :preface
   (defun haskell-backward-sexp (count)
     (interactive "p") (haskell-forward-sexp (- count)))
-  :config
-  (add-hook 'haskell-mode-hook #'interactive-haskell-mode)
-  (setq haskell-process-type 'stack-ghci
-        haskell-interactive-popup-errors nil
-        haskell-process-path-ghci "stack"
-        haskell-process-args-stack-ghci '("--ghci-options=-ferror-spans -fshow-loaded-modules")
-        haskell-process-suggest-remove-import-lines t
-        haskell-process-auto-import-loaded-modules t
-        haskell-process-log t)
-  ;; http://haskell.github.io/haskell-mode/manual/latest/Interactive-Haskell.html#Interactive-Haskell
-  ;; TODO Figure out normal mode bindings for these
-  :bind
-  (:map haskell-mode-map
-        ("C-c C-l" . haskell-process-load-file)
-        ("C-;" . haskell-interactive-bring)
-        ("C-c C-t" . haskell-mode-show-type-at)
-        ("C-c C-i" . haskell-process-do-info)
-        ("C-c C-c" . haskell-process-cabal-build)
-        ("C-c C-k" . haskell-interactive-mode-clear)
-        ("C-c c" . haskell-process-cabal)
-        ("C-c C-d" . haskell-w3m-open-haddock)
-        :map haskell-cabal-mode-map
-        ("C-;" . haskell-interactive-bring)
-        ("C-c C-k" . haskell-interactive-mode-clear)
-        ("C-c C-c" . haskell-process-cabal-build)
-        ("C-c c" . haskell-process-cabal)
-        )
+  :hook (haskell-mode . haskell-decl-scan-mode)
   :ryo
   (:mode 'haskell-mode)
-  ("SPC m l" haskell-process-load-file)
-  ("SPC m t" haskell-mode-show-type-at)
-  ("SPC m i" haskell-process-do-info)
-  ("SPC m d" haskell-w3m-open-haddock)
   ("e" haskell-forward-sexp :first '(set-mark-here))
   ("E" haskell-forward-sexp :first '(set-mark-if-inactive))
   ("M-e" haskell-backward-sexp :first '(set-mark-here))
-  ("M-E" haskell-backward-sexp :first '(set-mark-if-inactive)))
+  ("M-E" haskell-backward-sexp :first '(set-mark-if-inactive))
+  ("[ [" haskell-ds-backward-decl :first '(set-mark-here))
+  ("{ [" haskell-ds-backward-decl :first '(set-mark-if-inactive))
+  ("] ]" haskell-ds-forward-decl :first '(set-mark-here))
+  ("} ]" haskell-ds-forward-decl :first '(set-mark-if-inactive))
+  )
 
-(use-package flycheck-stack
-  :preface
-  (defun haskell-mode-flycheck-stack ()
-    (flycheck-select-checker 'stack)
-    (flycheck-mode)
-    (flycheck-stack-destroy)
-    (flycheck-stack-get-worker-create "" (current-buffer)))
-  :config
-  (add-hook 'haskell-mode-hook #'haskell-mode-flycheck-stack))
+(use-package intero
+  :after haskell-mode
+  :hook (haskell-mode . intero-mode)
+  :config (flycheck-add-next-checker 'intero '(warning . haskell-hlint)))
 
-(use-package hasky-stack
-  :config (setq hasky-stack-auto-target t)
-  :ryo
-  (:mode 'haskell-mode)
-  ("SPC m s" hasky-stack-execute)
-  ("SPC m b" hasky-stack-build-popup))
+;; Prefer brittany to hindent
+(with-eval-after-load 'haskell-mode
+  (cond ((executable-find "brittany")
+         (progn
+           (defun brittany-region ()
+             (interactive)
+             (shell-command-on-region (region-beginning) (region-end)
+                                      "brittany" nil t))
+           (define-key haskell-mode-map (kbd "M-q") 'brittany-region)
+           (ryo-modal-major-mode-keys 'haskell-mode
+                                      ("=" brittany-region))))
+        ((executable-find "hindent")
+         (use-package hindent
+           :after haskell-mode
+           :hook (haskell-mode . hindent-mode)))))
 
-(when (executable-find "hindent")
-  (use-package hindent
-    :hook (haskell-mode . hindent-mode)))
 
-(when (executable-find "w3m")
-  (use-package w3m
-    :preface
-    (defun w3m-maybe-url ()
-      (interactive)
-      (if (or (equal '(w3m-anchor) (get-text-property (point) 'face))
-              (equal '(w3m-arrived-anchor) (get-text-property (point) 'face)))
-          (w3m-view-this-url)))
-    :after haskell-mode
-    :config
-    (add-hook 'w3m-display-hook 'w3m-haddock-display)
-    (require 'w3m-haddock)
-    :bind
-    (:map w3m-mode-map
-          ("RET" . w3m-view-this-url)
-          ("q" . bury-buffer)
-          ("<mouse-1>" . w3m-maybe-url)
-          ("M-r" . w3m-reload-this-page)
-          ("C-c C-d" . haskell-w3m-open-haddock)
-          ("M-<left>" . w3m-view-previous-page)
-          ("M-<right>" . w3m-view-next-page)
-          ("M-." . w3m-haddock-find-tag)
-          )))
+;; (when (executable-find "w3m")
+;;   (use-package w3m
+;;     :preface
+;;     (defun w3m-maybe-url ()
+;;       (interactive)
+;;       (if (or (equal '(w3m-anchor) (get-text-property (point) 'face))
+;;               (equal '(w3m-arrived-anchor) (get-text-property (point) 'face)))
+;;           (w3m-view-this-url)))
+;;     :after haskell-mode
+;;     :config
+;;     (add-hook 'w3m-display-hook 'w3m-haddock-display)
+;;     (require 'w3m-haddock)
+;;     :bind
+;;     (:map w3m-mode-map
+;;           ("RET" . w3m-view-this-url)
+;;           ("q" . bury-buffer)
+;;           ("<mouse-1>" . w3m-maybe-url)
+;;           ("M-r" . w3m-reload-this-page)
+;;           ("C-c C-d" . haskell-w3m-open-haddock)
+;;           ("M-<left>" . w3m-view-previous-page)
+;;           ("M-<right>" . w3m-view-next-page)
+;;           ("M-." . w3m-haddock-find-tag)
+;;           )))
 
 (use-package shakespeare-mode)
-;; (use-package shm
-;;   :after haskell-mode
-;;   :demand t
-;;   :init
-;;   (add-hook 'ryo-modal-mode-hook
-;; 	    (lambda ()
-;; 	      (when (eq major-mode 'haskell-mode)
-;; 	        (if (bound-and-true-p ryo-modal-mode)
-;;                     (structured-haskell-mode -1)
-;;                   (structured-haskell-mode 1)))))
-;;   :ryo
-;;   (:mode 'haskell-mode)
-;;   ("[ [" shm/backward-paragraph :first '(set-mark-here))
-;;   ("{ [" shm/backward-paragraph :first '(set-mark-if-inactive))
-;;   ("] ]" shm/forward-paragraph :first '(set-mark-here))
-;;   ("} ]" shm/forward-paragraph :first '(set-mark-if-inactive))
-;;   )
+(use-package shm
+  :after haskell-mode
+  :ryo
+  (:mode 'haskell-mode)
+  )
 
 ;;;; Yaml
 (use-package yaml-mode
@@ -1135,7 +1099,9 @@ Inserted by installing org-mode or when a release is made."
     (setq ispell-really-aspell t))
   (setq flyspell-correct-interface #'flyspell-correct-dummy)
   :ryo
-  ("g s" flyspell-correct-wrapper))
+  ("g s" flyspell-auto-correct-word)
+  ("g S" flyspell-correct-wrapper))
+
 
 (use-package darkroom
   :preface
