@@ -14,7 +14,8 @@
     (lispy multiple-cursors key-chord modalka eshell-git-prompt wgrep solarized-theme yaml-mode shakespeare-mode smex ivy-hydra which-key rainbow-delimiters rainbow-delimeters hasky-stack hindent intero treemacs-projectile treemacs-evil treemacs ranger aggressive-indent aggressive-indent-mode evil-unimpaired evil-exchange evil-smartparens exec-path-from-shell smartparens evil-magit evil-vimish-fold company-flx eyebrowse haskell-mode yasnippet-snippets yasnippet evil-goggles expand-region evil-multiedit magithub flycheck counsel-projectile magit evil-commentary avy company helm evil-indent-textobject evil-surround counsel ivy doom-modeline powerline telephone-line dashboard general doom-themes evil-collection evil use-package)))
  '(safe-local-variable-values
    (quote
-    ((intero-targets "mcc:lib" "mcc:exe:mcc" "mcc:test:testall")
+    ((intero-targets "othaskell:lib" "othaskell:exe:othaskell-exe" "othaskell:test:othaskell-test")
+     (intero-targets "mcc:lib" "mcc:exe:mcc" "mcc:test:testall")
      (haskell-indent-spaces . 2)
      (haskell-process-use-ghci . t)
      (haskell-indent-spaces . 4)

@@ -250,6 +250,94 @@ Version 2017-04-19"
     'toggle-kbd-macro-recording-on)
   (end-kbd-macro))
 
+;;;; Exchanges - stolen from evil-exchange pacakge
+(defcustom holy-exchange-highlight-face 'highlight
+  "Face used to highlight marked area."
+  :type 'sexp
+  :group 'holy-exchange)
+
+(defvar holy-exchange--position nil "Text position which will be exchanged.")
+
+(defvar holy-exchange--overlays nil "Overlays used to highlight marked area.")
+
+(defun holy-exchange--highlight (beg end)
+  (let ((o (make-overlay beg end nil t nil)))
+    (overlay-put o 'face holy-exchange-highlight-face)
+    (add-to-list 'holy-exchange--overlays o)))
+
+(defun holy-exchange--clean ()
+  (setq holy-exchange--position nil)
+  (mapc 'delete-overlay holy-exchange--overlays)
+  (setq holy-exchange--overlays nil))
+
+(defun holy-exchange (beg end)
+  "Exchange two regions."
+  (interactive "r")
+  (let ((beg-marker (copy-marker beg t))
+        (end-marker (copy-marker end nil)))
+    (if (null holy-exchange--position)
+        ;; call without holy-exchange--position set: store region
+        (progn
+          (setq holy-exchange--position (list (current-buffer) beg-marker end-marker))
+          ;; highlight area marked to exchange
+          (holy-exchange--highlight beg end))
+      ;; secondary call: do exchange
+      (cl-destructuring-bind
+          (orig-buffer orig-beg orig-end) holy-exchange--position
+        (holy-exchange--do-swap (current-buffer) orig-buffer
+                                beg-marker end-marker
+                                orig-beg orig-end
+                                #'delete-and-extract-region #'insert)))))
+
+(defun holy-exchange--do-swap (curr-buffer orig-buffer curr-beg curr-end orig-beg
+                                           orig-end extract-fn insert-fn)
+  "This function does the real exchange work. Here's the detailed steps:
+
+1. call extract-fn with orig-beg and orig-end to extract orig-text.
+2. call extract-fn with curr-beg and curr-end to extract curr-text.
+3. go to orig-beg and then call insert-fn with curr-text.
+4. go to curr-beg and then call insert-fn with orig-text.
+After step 2, the two markers of the same beg/end pair (curr or orig)
+will point to the same position. So if orig-beg points to the same position
+of curr-end initially, orig-beg and curr-beg will point to the same position
+before step 3. Because curr-beg is a marker which moves after insertion, the
+insertion in step 3 will push it to the end of the newly inserted text,
+thus resulting incorrect behaviour.
+To fix this edge case, we swap two extracted texts before step 3 to
+effectively reverse the (problematic) order of two `holy-exchange' calls."
+  (if (eq curr-buffer orig-buffer)
+      ;; in buffer exchange
+      (let ((adjacent  (equal (marker-position orig-beg) (marker-position curr-end)))
+            (orig-text (funcall extract-fn orig-beg orig-end))
+            (curr-text (funcall extract-fn curr-beg curr-end)))
+        ;; swaps two texts if adjacent is set
+        (let ((orig-text (if adjacent curr-text orig-text))
+              (curr-text (if adjacent orig-text curr-text)))
+          (save-excursion
+            (goto-char orig-beg)
+            (funcall insert-fn curr-text)
+            (goto-char curr-beg)
+            (funcall insert-fn orig-text))))
+    ;; exchange across buffers
+    (let ((orig-text (with-current-buffer orig-buffer
+                       (funcall extract-fn orig-beg orig-end)))
+          (curr-text (funcall extract-fn curr-beg curr-end)))
+      (save-excursion
+        (with-current-buffer orig-buffer
+          (goto-char orig-beg)
+          (funcall insert-fn curr-text))
+        (goto-char curr-beg)
+        (funcall insert-fn orig-text))))
+  (holy-exchange--clean))
+
+(defun holy-exchange-cancel ()
+  "Cancel current pending exchange."
+  (interactive)
+  (if (null holy-exchange--position)
+      (message "No pending exchange")
+    (holy-exchange--clean)
+    (message "Exchange cancelled")))
+
 ;;;; Basic keybindings
 (use-package ryo-modal
   :straight (ryo-modal :host github :repo "Kungsgeten/ryo-modal"
@@ -270,6 +358,8 @@ Version 2017-04-19"
    ("D" kill-line)
    ("e" ryo-tbd)
    ("E" ryo-tbd)
+   ("g x" holy-exchange)
+   ("g X" holy-exchange-cancel)
    ("g" (("h" beginning-of-line)
          ("j" end-of-buffer)
          ("k" beginning-of-buffer)
@@ -943,8 +1033,10 @@ Version 2017-04-19"
 (use-package shakespeare-mode)
 (use-package shm
   :after haskell-mode
-  :ryo
-  (:mode 'haskell-mode)
+  :bind (:map shm-map
+              ("C-0" . shm/goto-last-point))
+  ;; :ryo
+  ;; (:mode 'haskell-mode)
   )
 
 ;;;; Yaml
