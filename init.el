@@ -449,6 +449,9 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
 ;; Access all C-x bindings easily
 (define-key ryo-modal-mode-map (kbd "z") ctl-x-map)
 
+;; Hippie expand
+(global-set-key (kbd "C-v") 'hippie-expand)
+
 ;; We have better ways to open lines
 (global-set-key (kbd "C-o") 'other-window)
 
@@ -850,6 +853,7 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
 	("g f u" . magit-jump-to-unpulled-from-upstream)
 	("p" . magit-push-popup)
 	("P" . magit-pull-popup)
+        ("M-k" . magit-discard)
 	;; It seems as if we will have to repeat ourselves
 	;; or learn how macros work...
 	:map magit-file-section-map
