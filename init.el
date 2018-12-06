@@ -987,7 +987,17 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
 (use-package intero
   :after haskell-mode
   :hook (haskell-mode . intero-mode)
-  :config (flycheck-add-next-checker 'intero '(warning . haskell-hlint)))
+  :config (flycheck-add-next-checker 'intero '(warning . haskell-hlint))
+  :ryo
+  (:mode 'haskell-mode)
+  ("SPC m t" intero-type-at)
+  ("SPC m i" intero-info)
+  ("SPC m c" intero-repl-eval-region)
+  ("SPC m e" intero-expand-splice-at-point)
+  ("SPC m l" intero-repl-load)
+  ("SPC m r" intero-apply-suggestions)
+  ("SPC m z" intero-repl)
+  )
 
 ;; Prefer brittany to hindent
 (with-eval-after-load 'haskell-mode
@@ -1035,8 +1045,9 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
   :after haskell-mode
   :bind (:map shm-map
               ("C-0" . shm/goto-last-point))
-  ;; :ryo
-  ;; (:mode 'haskell-mode)
+  :ryo
+  (:mode 'haskell-mode)
+  ("SPC m s" structured-haskell-mode)
   )
 
 ;;;; Yaml
