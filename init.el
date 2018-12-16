@@ -1057,6 +1057,10 @@ Inserted by installing org-mode or when a release is made."
   (">" org-demote-subtree)
   ("<" org-promote-subtree))
 
+(use-package org-bullets
+  :hook (org . org-bullets-mode)
+  :after org)
+
 ;;;; Markdown
 (use-package markdown-mode
   :commands (markdown-mode gfm-mode)
