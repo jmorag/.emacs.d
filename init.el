@@ -604,6 +604,7 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
       require-final-newline t
       load-prefer-newer t
       ediff-window-setup-function 'ediff-setup-windows-plain
+      ediff-split-window-function 'split-window-horizontally
       save-place-file (concat user-emacs-directory "places")
       auto-save-default nil
       backup-directory-alist `(("." . ,(concat user-emacs-directory
