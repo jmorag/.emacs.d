@@ -987,6 +987,11 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
   ("SPC m s" structured-haskell-mode)
   )
 
+
+;;;; Idris
+(use-package idris-mode
+  :defer t)
+
 ;;;; Yaml
 (use-package yaml-mode
   :config
