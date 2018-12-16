@@ -578,37 +578,6 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
   :config
   (ace-popup-menu-mode 1))
 
-;; Make popup windows behave
-;; https://github.com/kaushalmodi/.emacs.d/blob/master/setup-files/setup-shackle.el
-;; (use-package shackle
-;;   :if (not (bound-and-true-p disable-pkg-shackle))
-;;   :config
-;;   (progn
-;;     (setq shackle-lighter "")
-;;     (setq shackle-select-reused-windows nil) ; default nil
-;;     (setq shackle-default-alignment 'below) ; default below
-;;     (setq shackle-default-size 0.4) ; default 0.5
-
-;;     (setq shackle-rules
-;;           ;; CONDITION(:regexp)            :select     :inhibit-window-quit   :size+:align|:other     :same|:popup
-;;           '((compilation-mode              :select nil                                               )
-;;             ("*undo-tree*"                                                    :size 0.25 :align right)
-;;             ("*eshell*"         :regexp t  :select t                          :other t   :align below)
-;;             ("*Shell Command Output*"      :select nil                                               )
-;;             ("\\*Async Shell.*\\*" :regexp t :ignore t                                                 )
-;;             (occur-mode                    :select nil                                   :align t    )
-;;             ("*Help*"                      :select nil   :other t :align right :size 0.45)
-;;             ("*Completions*"                                                  :size 0.3  :align t    )
-;;             ("*Messages*"                  :select nil :inhibit-window-quit t :other t               )
-;;             ("\\*[Wo]*Man.*\\*"    :regexp t :select t   :inhibit-window-quit t :other t               )
-;;             ("\\*poporg.*\\*"      :regexp t :select t                          :other t               )
-;;             ("\\`\\*helm.*?\\*\\'"   :regexp t                                    :size 0.3  :align t    )
-;;             ("*Calendar*"                  :select t                          :size 0.3  :align below)
-;;             ("*info*"                      :select t   :inhibit-window-quit t                         :same t)
-;;             (magit-status-mode             :select t   :inhibit-window-quit t                         :same t)
-;;             (magit-log-mode                :select t   :inhibit-window-quit t                         :same t)))
-;;     (shackle-mode 1)))
-
 ;;; Saner defaults
 ;; Fix some defaults
 (setq-default
@@ -731,7 +700,6 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
 (use-package company
   :hook (prog-mode . company-mode)
   :config
-  ;; (global-company-mode 1)
   (company-tng-configure-default)
   (setq company-minimum-prefix-length 2)
   (setq company-idle-delay 0.1)
@@ -747,10 +715,6 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
   (with-eval-after-load 'company
     (company-flx-mode +1))
   (setq company-flx-limit 250))
-
-;; Make company prettier
-;; (use-package company-box
-;;   :hook (company-mode . company-box-mode))
 
 ;; Remember completions
 (use-package company-prescient
@@ -864,13 +828,6 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
 	("C-k" . magit-section-backward-sibling)
         :map with-editor-mode-map
         ("RET" . with-editor-finish-if-ryo)))
-
-;; Authentication is broken
-;; (use-package magithub
-;;   :after magit
-;;   :config
-;;   (magithub-feature-autoinject t)
-;;   (setq magithub-clone-default-directory "~/Code"))
 
 ;;;; Projectile
 (use-package projectile
@@ -1019,31 +976,6 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
            :after haskell-mode
            :hook (haskell-mode . hindent-mode)))))
 
-
-;; (when (executable-find "w3m")
-;;   (use-package w3m
-;;     :preface
-;;     (defun w3m-maybe-url ()
-;;       (interactive)
-;;       (if (or (equal '(w3m-anchor) (get-text-property (point) 'face))
-;;               (equal '(w3m-arrived-anchor) (get-text-property (point) 'face)))
-;;           (w3m-view-this-url)))
-;;     :after haskell-mode
-;;     :config
-;;     (add-hook 'w3m-display-hook 'w3m-haddock-display)
-;;     (require 'w3m-haddock)
-;;     :bind
-;;     (:map w3m-mode-map
-;;           ("RET" . w3m-view-this-url)
-;;           ("q" . bury-buffer)
-;;           ("<mouse-1>" . w3m-maybe-url)
-;;           ("M-r" . w3m-reload-this-page)
-;;           ("C-c C-d" . haskell-w3m-open-haddock)
-;;           ("M-<left>" . w3m-view-previous-page)
-;;           ("M-<right>" . w3m-view-next-page)
-;;           ("M-." . w3m-haddock-find-tag)
-;;           )))
-
 (use-package shakespeare-mode)
 (use-package shm
   :after haskell-mode
@@ -1063,7 +995,6 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
 
 ;;;; Lisps
 ;; (since all of my time is spent in emacs, I should have a lisp plugin)
-;; There is a choice between lispy, paredit, smart-parens, and parinfer
 (use-package lispy
   :config
   (add-hook 'ryo-modal-mode-hook
@@ -1208,7 +1139,6 @@ Inserted by installing org-mode or when a release is made."
   :ryo
   ("g s" flyspell-auto-correct-word)
   ("g S" flyspell-correct-wrapper))
-
 
 (use-package darkroom
   :preface
