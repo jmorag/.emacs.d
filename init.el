@@ -830,6 +830,16 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
         :map with-editor-mode-map
         ("RET" . with-editor-finish-if-ryo)))
 
+(use-package git-timemachine
+  :defer t
+  :ryo
+  ("SPC G" git-timemachine)
+  :bind
+  (:map git-timemachine-mode-map
+        ("j" . git-timemachine-show-next-revision)
+        ("k" . git-timemachine-show-previous-revision)
+        ("," . write-file)))
+
 ;;;; Projectile
 (use-package projectile
   :config
