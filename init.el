@@ -992,6 +992,11 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
 (use-package idris-mode
   :defer t)
 
+;;;; Rust
+(use-package rust-mode
+  :defer t
+  :config (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode)))
+
 ;;;; Yaml
 (use-package yaml-mode
   :config
