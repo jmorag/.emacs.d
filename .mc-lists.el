@@ -22,6 +22,7 @@
         kak/p
         kak/r
         kak/replace-char
+        kak/replace-selection
         kak/tilde
         kak/upcase
         kak/w
@@ -52,6 +53,8 @@
         ryo:3bb381c903c6cfa663a851920ee9f42e:undo-tree-undo
         ryo:3d738d4315c2c23e69c7a6b7358e52f2:forward-char
         ryo:4ba44c9869d838fd0f93ea2dabc09909:backward-char
+        ryo:5afdf8eb96b1ba206f89586c7bde6655:back-to-indentation
+        ryo:5fa0e76c510678b6c22c30e6e493d5c7:kak/O
         ryo:6b7f269a0c9f62ded5e6ef76672f3722:forward-same-syntax
         ryo:852c571a517d85538a1f9b56f60a68f3:backward-same-syntax
         ryo:8ab5d0830a9c4685f6b642216b9c72bd:forward-char
@@ -143,11 +146,16 @@
         counsel-M-x
         describe-key
         eldoc-eval-expression
+        electric-pair-delete-pair
+        mouse-set-region
         multiple-cursors-mode
         ryo:0e93af3b38e44fa93c5656cb1bd98ac3:mc/skip-to-previous-like-this
         ryo:43a840e32c825f68414b7560417a88ff:mc/skip-to-next-like-this
         ryo:4c795c327d46eee6c51f2df1e7698c37:mc/mark-previous-like-this
         ryo:73ac12fcb39da89064b04736b28f5f0f:mc/mark-next-like-this
         ryo:9668f7b8424ef98fc7eed0e23d2b6bc3:scroll-down-command
+        ryo:b1589c12e9cf3a7dadf52ae6a5e3c310:rust-format-buffer
         ryo:f27938a88c89decb111731da89fe4793:vr/mc-mark
+        wgrep-change-to-wgrep-mode
+        wgrep-finish-edit
         ))

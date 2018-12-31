@@ -1005,7 +1005,25 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
 ;;;; Rust
 (use-package rust-mode
   :defer t
-  :config (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode)))
+  :config
+  (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
+  (projectile-register-project-type 'rust-cargo '("Cargo.toml")
+                                    :compile "cargo build"
+                                    :test "cargo test"
+                                    :run "cargo run")
+  )
+
+(use-package flycheck-rust
+  :after (flycheck rust-mode)
+  :config
+  (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+
+(use-package racer
+  :after (rust-mode company)
+  :config
+  (add-hook 'rust-mode-hook #'racer-mode)
+  (add-hook 'racer-mode-hook #'eldoc-mode)
+  (add-hook 'racer-mode-hook #'company-mode))
 
 ;;;; Yaml
 (use-package yaml-mode
