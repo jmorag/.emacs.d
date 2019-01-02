@@ -7,7 +7,8 @@
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 ;;;; Fonts and scrolling
 (column-number-mode 1)
-(set-face-font 'default "-*-Menlo-normal-normal-normal-*-14-*-*-*-m-0-iso10646-1")
+(when (eq system-type 'darwin)
+  (set-face-font 'default "-*-Menlo-normal-normal-normal-*-14-*-*-*-m-0-iso10646-1"))
 ;; Make scrolling work more like vim's
 (scroll-lock-mode 1)
 
@@ -571,7 +572,7 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
 (use-package doom-modeline
   :hook (after-init . doom-modeline-init)
   :config
-  (setq doom-modeline-height 30)
+  (setq doom-modeline-height 70)
   (setq doom-modeline-bar-width 4))
 
 (use-package ace-popup-menu
@@ -579,7 +580,6 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
   (ace-popup-menu-mode 1))
 
 ;;; Saner defaults
-;; Fix some defaults
 (setq-default
  ring-bell-function               'ignore ;; Stop ringing bell
  sentence-end-double-space        nil	  ; I prefer single space
@@ -764,7 +764,7 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
 
 (use-package outshine
   :config
-  (add-hook 'outline-minor-mode-hook 'outshine-hook-function)
+  (add-hook 'outline-minor-mode-hook 'outshine-mode)
   (add-hook 'prog-mode-hook 'outline-minor-mode))
 
 (use-package navi-mode
