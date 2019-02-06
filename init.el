@@ -205,6 +205,14 @@ but I like this behavior better."
   "Join the next line to the current one."
   (interactive) (join-line 1))
 
+(defun kak/Y (count)
+  "Copy to the end of the line"
+  (interactive "p")
+  (save-excursion
+    (let ((cur (point)))
+      (move-end-of-line count)
+      (kill-ring-save cur (point)))))
+
 (defun xah-toggle-letter-case ()
   "Toggle the letter case of current word or text selection.
 Always cycle in this order: Init Caps, ALL CAPS, all lower.
@@ -398,7 +406,7 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
    ("x" kak/x)
    ("X" kak/X)
    ("y" kill-ring-save)
-   ("Y" ryo-tbd)
+   ("Y" kak/Y)
    ("Z" ryo-tbd)
    ("," save-buffer)
    ("." ryo-modal-repeat)
@@ -609,6 +617,7 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
       auto-save-default nil
       backup-directory-alist `(("." . ,(concat user-emacs-directory
                                                "backups"))))
+(global-auto-revert-mode t)
 
 ;;; Interface management
 (use-package which-key
@@ -1047,6 +1056,10 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
   :config
   (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook))
     (add-hook hook 'turn-on-elisp-slime-nav-mode)))
+
+;;;; Nix
+(use-package nix-mode
+  )
 
 ;;;; Org mode install
 ;; Installing org mode with straight is annoying

@@ -63,6 +63,7 @@
         ryo:b219ebd046736cb61e7239c837f2a722:emacs-surround
         ryo:bd01dafd864b73f282864790f7d77e3c:kak/d
         ryo:c44301a1d93e869c777c4e24d9131cb5:er/expand-region
+        ryo:d1dd1223b7a7caa4a871db9e9e2bff6c:backward-same-syntax
         ryo:d90fcccac9ed9f6087bc94e7a229b598:kak/select-to-char
         ryo:e4fe141b0e119b6d1fa1fce3dfa14784:end-of-line
         ryo:e7a5212c33f50d09246829cc7289a6d2:forward-char
