@@ -19,12 +19,6 @@
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
 
-;;; Bootstrap package management
-(setq package-enable-at-startup nil)
-(setq package-archives '(("org"       . "http://orgmode.org/elpa/")
-                         ("gnu"       . "http://elpa.gnu.org/packages/")
-                         ("melpa"     . "https://melpa.org/packages/")))
-
 ;;;; Bootstrap straight.el
 (defvar bootstrap-version)
 (let ((bootstrap-file
