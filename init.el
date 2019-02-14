@@ -1110,7 +1110,7 @@ Inserted by installing org-mode or when a release is made."
   :init (setq markdown-command "multimarkdown")
   :hook (markdown . ryo-modal-mode))
 
-;; Lilypond
+;;;; Lilypond
 (when (and (executable-find "lilypond") (eq system-type 'darwin))
   (use-package lilypond-mode
     :straight
@@ -1208,6 +1208,37 @@ Inserted by installing org-mode or when a release is made."
              (text-scale-decrease 1))))
   :commands (darkroom-mode darkroom-tentative-mode))
 
+;;;; Email
+(require 'smtpmail)
+(when (and (executable-find "mu") (string= (system-name) "jnix"))
+  (use-package mu4e
+    :defer t
+    :straight
+    (:local-repo "/home/joseph/.nix-profile/share/emacs/site-lisp/mu4e/")
+    :config
+    (setq message-send-mail-function 'smtpmail-send-it
+          smtpmail-starttls-credentials
+          '(("smtp.gmail.com" 587 nil nil))
+          smtpmail-default-smtp-server "smtp.gmail.com"
+          smtpmail-smtp-server "smtp.gmail.com"
+          smtpmail-smtp-service 587
+          smtpmail-debug-info t
+          mu4e-maildir (expand-file-name "~/Mail/gmail")
+          mu4e-sent-folder "/Sent Messages"
+          mu4e-drafts-folder "/Drafts"
+          mu4e-trash-folder "/Deleted Messages")))
+
+;;;; Wifi management
+(use-package nm
+  :commands (nm/list-access-points
+             nm/list-active-connections
+             nm/show-wifi-status
+             nm/set-interface
+             nm/connect-basic
+             nm/connect-with-profile
+             nm/connect-vpn-profile)
+  :straight (emacs-nm :host github :repo "Kodkollektivet/emacs-nm")
+  )
 ;;; End
 ;; Revert garbage collection to default after loading init
 (setq gc-cons-threshold 1000000)
