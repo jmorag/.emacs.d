@@ -974,22 +974,6 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
   ("SPC m z" intero-repl)
   )
 
-;; Prefer brittany to hindent
-(with-eval-after-load 'haskell-mode
-  (cond ((executable-find "brittany")
-         (progn
-           (defun brittany-region ()
-             (interactive)
-             (shell-command-on-region (region-beginning) (region-end)
-                                      "brittany" nil t))
-           (define-key haskell-mode-map (kbd "M-q") 'brittany-region)
-           (ryo-modal-major-mode-keys 'haskell-mode
-                                      ("=" brittany-region))))
-        ((executable-find "hindent")
-         (use-package hindent
-           :after haskell-mode
-           :hook (haskell-mode . hindent-mode)))))
-
 (use-package shakespeare-mode)
 (use-package shm
   :after haskell-mode
