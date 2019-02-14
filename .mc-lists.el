@@ -3,6 +3,7 @@
 
 (setq mc/cmds-to-run-for-all
       '(
+        electric-newline-and-maybe-indent
         kak/Gl
         kak/H
         kak/L
@@ -140,6 +141,8 @@
         special-lispy-x
         special-pop-tag-mark
         unset-mark
+        yaml-electric-backspace
+        yaml-electric-dash-and-dot
         ))
 
 (setq mc/cmds-to-run-once
