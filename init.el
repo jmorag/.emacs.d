@@ -1213,16 +1213,18 @@ Inserted by installing org-mode or when a release is made."
           mu4e-trash-folder "/Deleted Messages")))
 
 ;;;; Wifi management
-(use-package nm
-  :commands (nm/list-access-points
-             nm/list-active-connections
-             nm/show-wifi-status
-             nm/set-interface
-             nm/connect-basic
-             nm/connect-with-profile
-             nm/connect-vpn-profile)
-  :straight (emacs-nm :host github :repo "Kodkollektivet/emacs-nm")
-  )
+(when (executable-find "nmcli")
+  (use-package nm
+    :commands (nm/list-access-points
+               nm/list-active-connections
+               nm/show-wifi-status
+               nm/set-interface
+               nm/connect-basic
+               nm/connect-with-profile
+               nm/connect-vpn-profile)
+    :straight (emacs-nm :host github :repo "Kodkollektivet/emacs-nm")
+    ))
+
 ;;; End
 ;; Revert garbage collection to default after loading init
 (setq gc-cons-threshold 1000000)
