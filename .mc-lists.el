@@ -4,6 +4,7 @@
 (setq mc/cmds-to-run-for-all
       '(
         electric-newline-and-maybe-indent
+        haskell-indentation-common-electric-command
         kak/Gl
         kak/H
         kak/L
@@ -28,6 +29,7 @@
         kak/upcase
         kak/w
         kak/x
+        kill-rectangle
         lispy-backtick
         lispy-braces
         lispy-brackets
@@ -65,8 +67,10 @@
         ryo:bd01dafd864b73f282864790f7d77e3c:kak/d
         ryo:c44301a1d93e869c777c4e24d9131cb5:er/expand-region
         ryo:d1dd1223b7a7caa4a871db9e9e2bff6c:backward-same-syntax
+        ryo:d7762b250433e384b77e82019e29e7d6:move-end-of-line
         ryo:d90fcccac9ed9f6087bc94e7a229b598:kak/select-to-char
         ryo:e4fe141b0e119b6d1fa1fce3dfa14784:end-of-line
+        ryo:e5dbb354d557462cb65bb1d6bb3fa5af:evilnc-comment-or-uncomment-lines
         ryo:e7a5212c33f50d09246829cc7289a6d2:forward-char
         ryo:fc7eefa7332e9195f27e3ba02ec62ae7:beginning-of-line
         shm/del
@@ -143,19 +147,26 @@
         unset-mark
         yaml-electric-backspace
         yaml-electric-dash-and-dot
+        yank-rectangle
         ))
 
 (setq mc/cmds-to-run-once
       '(
         counsel-M-x
         describe-key
+        disable-mouse--handle
         eldoc-eval-expression
         electric-pair-delete-pair
+        idris-load-file
+        insert-register
         mouse-set-region
         multiple-cursors-mode
         ryo:0e93af3b38e44fa93c5656cb1bd98ac3:mc/skip-to-previous-like-this
+        ryo:3a1146b874b557308dd23eafa4dde36b:format-all-buffer
         ryo:43a840e32c825f68414b7560417a88ff:mc/skip-to-next-like-this
         ryo:4c795c327d46eee6c51f2df1e7698c37:mc/mark-previous-like-this
+        ryo:61c916a9417cba6c72baaceae23ec80b:scroll-up-command
+        ryo:7383f6bec9b60a5d69520a6dc68ea1f2:mc/mark-all-like-this
         ryo:73ac12fcb39da89064b04736b28f5f0f:mc/mark-next-like-this
         ryo:9668f7b8424ef98fc7eed0e23d2b6bc3:scroll-down-command
         ryo:b1589c12e9cf3a7dadf52ae6a5e3c310:rust-format-buffer
