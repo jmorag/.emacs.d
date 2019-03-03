@@ -39,6 +39,10 @@
 
 ;;; Core editor facilities
 ;; This sets up basic text editing commands
+;;;; Turn off the mouse on linux
+(when (string= (system-name) "jnix")
+  (use-package disable-mouse
+    :config (global-disable-mouse-mode)))
 
 ;;;; Key chord
 (use-package use-package-chords
@@ -46,6 +50,7 @@
   (key-chord-mode 1))
 
 ;;;; General utilities
+(defun goto-init-file () (interactive) (find-file user-init-file))
 (defun ryo-enter () (interactive) (ryo-modal-mode +1))
 (defun ryo-leave () (interactive) (ryo-modal-mode -1))
 (defun ryo-tbd () (interactive) (message "Key not assigned"))
@@ -58,12 +63,15 @@
   (interactive "p")
   (forward-same-syntax (- count)))
 
+(defvar kak/last-char-selected-to " " "kak/select-to-char updates this variable")
+
 (defun kak/select-to-char (arg char)
   "Select up to, but not including ARGth occurrence of CHAR.
 Case is ignored if `case-fold-search' is non-nil in the current buffer.
 Goes backward if ARG is negative; error if CHAR not found.
 Ignores CHAR at point."
   (interactive "p\ncSelect to char: ")
+  (setq kak/last-char-selected-to char)
   (let ((direction (if (>= arg 0) 1 -1)))
     (progn
       (forward-char direction)
@@ -72,18 +80,10 @@ Ignores CHAR at point."
 	(backward-char direction))
       (point))))
 
-(defun kak/select-up-to-char (arg char)
-  "Select up to and including ARGth occurrence of CHAR.
-Case is ignored if `case-fold-search' is non-nil in the current buffer.
-Goes backward if ARG is negative; error if CHAR not found."
-  (interactive (list (prefix-numeric-value current-prefix-arg)
-		     (read-char "Select to char: " t)))
-  ;; Avoid "obsolete" warnings for translation-table-for-input.
-  (with-no-warnings
-    (if (char-table-p translation-table-for-input)
-	(setq char (or (aref translation-table-for-input char) char))))
-  (search-forward (char-to-string char) nil nil arg)
-  (point))
+(defun kak/select-to-char-again (&optional count)
+  "Expand the selection to whatever the last 't' command was."
+  (interactive "p")
+  (kak/select-to-char count kak/last-char-selected-to))
 
 (defun kak/x (count)
   "Select COUNT lines from the current line.
@@ -238,21 +238,6 @@ Version 2017-04-19"
       (downcase-region $p1 $p2)
       (put this-command 'state 0)))))
 
-;; Macros - https://www.emacswiki.org/emacs/KeyboardMacros
-(defun toggle-kbd-macro-recording-on ()
-  "One-key keyboard macros: turn recording on."
-  (interactive)
-  (define-key global-map (this-command-keys)
-    'toggle-kbd-macro-recording-off)
-  (start-kbd-macro nil))
-
-(defun toggle-kbd-macro-recording-off ()
-  "One-key keyboard macros: turn recording off."
-  (interactive)
-  (define-key global-map (this-command-keys)
-    'toggle-kbd-macro-recording-on)
-  (end-kbd-macro))
-
 ;;;; Exchanges - stolen from evil-exchange pacakge
 (defcustom holy-exchange-highlight-face 'highlight
   "Face used to highlight marked area."
@@ -346,6 +331,7 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
   :straight (ryo-modal :host github :repo "Kungsgeten/ryo-modal"
 		       :fork (:host github :repo "jmorag/ryo-modal"))
   :chords ("fd" . ryo-enter)
+  :bind ("C-z" . ryo-modal-mode) ;; In order to be useful in macros
   :config
   (setq-default cursor-type '(bar . 1))
   (setq ryo-modal-cursor-type 'box)
@@ -390,7 +376,7 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
    ("p" kak/p)
    ("P" yank-pop)
    ("q" kmacro-call-macro)
-   ("Q" toggle-kbd-macro-recording-on)
+   ("Q" ryo-tbd)
    ("r" kak/replace-char)
    ("R" kak/replace-selection)
    ("t" kak/select-to-char :first '(set-mark-here))
@@ -403,12 +389,11 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
    ("Y" kak/Y)
    ("Z" ryo-tbd)
    ("," save-buffer)
-   ("." ryo-modal-repeat)
-   ;; (";" unset-mark) - This is a prominent key and "h l" or "j k" do this fine
+   ("." kak/select-to-char-again :first '(set-mark-if-inactive))
    (";" (("q" delete-window)
-         ("w" save-buffer)
          ("v" split-window-horizontally)
-         ("s" split-window-vertically)))
+         ("s" split-window-vertically)
+         ("i" goto-init-file)))
    ("<tab>" (("h" windmove-left)
              ("j" windmove-down)
              ("k" windmove-up)
@@ -453,7 +438,7 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
 (define-key ryo-modal-mode-map (kbd "z") ctl-x-map)
 
 ;; Hippie expand
-(global-set-key (kbd "C-v") 'hippie-expand)
+(global-set-key (kbd "C-w") 'hippie-expand)
 
 ;; We have better ways to open lines
 (global-set-key (kbd "C-o") 'other-window)
@@ -486,6 +471,7 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
   ("M" mc/skip-to-next-like-this)
   ("n" mc/mark-previous-like-this)
   ("N" mc/skip-to-previous-like-this)
+  ("*" mc/mark-all-like-this)
   ("C-v" set-rectangular-region-anchor)
   :config
   (global-unset-key (kbd "M-<down-mouse-1>"))
@@ -525,9 +511,8 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
 (use-package exec-path-from-shell
   :config
   (when (memq window-system '(mac ns x))
-    (setenv "SHELL" "/bin/bash")
+    ;; (setenv "SHELL" "/bin/bash")
     (exec-path-from-shell-initialize)
-    (exec-path-from-shell-copy-envs '("PATH"))
     ))
 
 ;; Use command as meta on mac
@@ -572,6 +557,7 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
 
 ;; Modeline
 (use-package doom-modeline
+  :straight (doom-modeline :host github :repo "seagle0128/doom-modeline")
   :hook (after-init . doom-modeline-init)
   :config
   (setq doom-modeline-height 70)
@@ -688,6 +674,7 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
   :ryo
   ("gt" eyebrowse-next-window-config)
   ("gT" eyebrowse-prev-window-config)
+  ("; w" eyebrowse-close-window-config)
   ("SPC" (("0" eyebrowse-switch-to-window-config-0)
           ("1" eyebrowse-switch-to-window-config-1)
           ("2" eyebrowse-switch-to-window-config-2)
@@ -959,19 +946,36 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
   ("} ]" haskell-ds-forward-decl :first '(set-mark-if-inactive))
   )
 
-(use-package intero
+;; (use-package intero
+;;   :after haskell-mode
+;;   ;; :hook (haskell-mode . intero-mode)
+;;   :config (flycheck-add-next-checker 'intero '(warning . haskell-hlint))
+;;   :ryo
+;;   (:mode 'haskell-mode)
+;;   ("SPC m t" intero-type-at)
+;;   ("SPC m i" intero-info)
+;;   ("SPC m c" intero-repl-eval-region)
+;;   ("SPC m e" intero-expand-splice-at-point)
+;;   ("SPC m l" intero-repl-load)
+;;   ("SPC m r" intero-apply-suggestions)
+;;   ("SPC m z" intero-repl)
+;;   )
+
+(use-package dante
   :after haskell-mode
-  :hook (haskell-mode . intero-mode)
-  :config (flycheck-add-next-checker 'intero '(warning . haskell-hlint))
+  :commands 'dante-mode
+  :init
+  (add-hook 'haskell-mode-hook 'flycheck-mode)
+  (add-hook 'haskell-mode-hook 'dante-mode)
+  :config (flycheck-add-next-checker 'haskell-dante '(warning . haskell-hlint))
+  :bind
+  (:map dante-mode-map
+        ("C-c C-c" . dante-eval-block))
   :ryo
   (:mode 'haskell-mode)
-  ("SPC m t" intero-type-at)
-  ("SPC m i" intero-info)
-  ("SPC m c" intero-repl-eval-region)
-  ("SPC m e" intero-expand-splice-at-point)
-  ("SPC m l" intero-repl-load)
-  ("SPC m r" intero-apply-suggestions)
-  ("SPC m z" intero-repl)
+  ("SPC m t" dante-type-at)
+  ("SPC m i" dante-info)
+  ("SPC m e" dante-eval-block)
   )
 
 (use-package shakespeare-mode)
@@ -987,7 +991,22 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
 
 ;;;; Idris
 (use-package idris-mode
-  :defer t)
+  :defer t
+  :bind
+  (:map idris-repl-mode-map
+        ("C-c C-k" . idris-repl-clear-buffer))
+  :ryo
+  (:mode 'idris-mode)
+  ("," idris-load-file)
+  ("SPC m r" idris-load-file)
+  ("SPC m t" idris-type-at-point)
+  ("SPC m d" idris-add-clause)
+  ("SPC m l" idris-make-lemma)
+  ("SPC m c" idris-case-split)
+  ("SPC m w" idris-make-with-block)
+  ("SPC m m" idris-add-missing)
+  ("SPC m p" idris-proof-search)
+  ("SPC m h" idris-docs-at-point))
 
 ;;;; Rust
 (use-package rust-mode
@@ -997,8 +1016,7 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
   (projectile-register-project-type 'rust-cargo '("Cargo.toml")
                                     :compile "cargo build"
                                     :test "cargo test"
-                                    :run "cargo run")
-  )
+                                    :run "cargo run"))
 
 (use-package flycheck-rust
   :after (flycheck rust-mode)
@@ -1038,6 +1056,13 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
 ;;;; Nix
 (use-package nix-mode
   )
+
+;;;; Elm
+(use-package reformatter
+  :straight (reformatter :host github :repo "purcell/reformatter.el"))
+(use-package elm-mode
+  :after reformatter
+  :straight (elm-mode :host github :repo "jcollard/elm-mode"))
 
 ;;;; Org mode install
 ;; Installing org mode with straight is annoying
@@ -1192,25 +1217,99 @@ Inserted by installing org-mode or when a release is made."
              (text-scale-decrease 1))))
   :commands (darkroom-mode darkroom-tentative-mode))
 
-;;;; Email
-(require 'smtpmail)
-(when (and (executable-find "mu") (string= (system-name) "jnix"))
-  (use-package mu4e
-    :defer t
-    :straight
-    (:local-repo "/home/joseph/.nix-profile/share/emacs/site-lisp/mu4e/")
-    :config
-    (setq message-send-mail-function 'smtpmail-send-it
-          smtpmail-starttls-credentials
-          '(("smtp.gmail.com" 587 nil nil))
-          smtpmail-default-smtp-server "smtp.gmail.com"
-          smtpmail-smtp-server "smtp.gmail.com"
-          smtpmail-smtp-service 587
-          smtpmail-debug-info t
-          mu4e-maildir (expand-file-name "~/Mail/gmail")
-          mu4e-sent-folder "/Sent Messages"
-          mu4e-drafts-folder "/Drafts"
-          mu4e-trash-folder "/Deleted Messages")))
+;;;; Email (still a mess)
+;; (require 'smtpmail)
+;; (when (and (executable-find "mu") (string= (system-name) "jnix"))
+;;   (use-package mu4e
+;;     :defer t
+;;     :straight
+;;     (:local-repo "/run/current-system/sw/share/emacs/site-lisp/mu4e/")
+;;     :bind
+;;     (:map mu)
+;;     :custom
+;;     (mu4e-maildir "~/Mail/gmail")
+;;     (user-mail-address "sefim96@gmail.com")
+;;     (user-full-name "Joseph Morag")
+;;     ( mu4e-compose-signature nil)
+;;     ( message-send-mail-function 'smtpmail-send-it )
+;;     ( smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil)) )
+;;     ( smtpmail-default-smtp-server "smtp.gmail.com" )
+;;     ( smtpmail-smtp-server "smtp.gmail.com" )
+;;     ( smtpmail-smtp-service 587 )
+;;     ( smtpmail-debug-info t )
+;;     ( mu4e-sent-folder "/[Gmail]/Sent Mail" )
+;;     ( mu4e-drafts-folder "/[Gmail]/Drafts" )
+;;     ( mu4e-trash-folder "/[Gmail]/Trash" )
+;;     ( mu4e-get-mail-command "mbsync -c ~/.emacs.d/.mbsyncrc gmail" )
+
+;;     ;; :config
+;;     ;; (setq mu4e-contexts `( ,(make-mu4e-context
+;;     ;;                          :name "gmail"
+;;     ;;                          ;; we match based on the contact-fields of the message
+;;     ;;                          ;; :match-func (lambda (msg)
+;;     ;;                          ;;               (when msg
+;;     ;;                          ;;                 (string-match-p "*" (mu4e-message-field msg :maildir))))
+;;     ;;                          :vars '( ( user-mail-address      . "sefim96@gmail.com"  )
+;;     ;;                                   ( user-full-name         . "Joseph Morag" )
+;;     ;; ( mu4e-compose-signature . nil)
+;;     ;; ( message-send-mail-function . 'smtpmail-send-it )
+;;     ;; ( smtpmail-starttls-credentials . '(("smtp.gmail.com" 587 nil nil)) )
+;;     ;; ( smtpmail-default-smtp-server . "smtp.gmail.com" )
+;;     ;; ( smtpmail-smtp-server . "smtp.gmail.com" )
+;;     ;; ( smtpmail-smtp-service . 587 )
+;;     ;; ( smtpmail-debug-info . t )
+;;     ;; ( mu4e-sent-folder . "/[Gmail]/Sent Mail" )
+;;     ;; ( mu4e-drafts-folder . "/gmail/[Gmail]/Drafts" )
+;;     ;; ( mu4e-trash-folder . "/gmail/[Gmail]/Trash" )
+;;     ;; ( mu4e-get-mail-command . "mbsync -c ~/.emacs.d/.mbsyncrc gmail" )
+;;     ;;                                   ))
+;;     ;;                        ,(make-mu4e-context
+;;     ;;                          :name "lionmail"
+;;     ;;                          ;; Match on the maildir
+;;     ;;                          ;; :match-func (lambda (msg)
+;;     ;;                          ;;               (when msg
+;;     ;;                          ;;                 (string-match-p "^/lionmail" (mu4e-message-field msg :maildir))))
+;;     ;;                          :vars '( ( user-mail-address      . "jm4157@lionmail.com"  )
+;;     ;;                                   ( user-full-name         . "Joseph Morag" )
+;;     ;;                                   ( mu4e-compose-signature . nil)
+;;     ;;                                   ( message-send-mail-function . 'smtpmail-send-it )
+;;     ;;                                   ( smtpmail-starttls-credentials . '(("smtp.gmail.com" 587 nil nil)) )
+;;     ;;                                   ( smtpmail-default-smtp-server . "smtp.gmail.com" )
+;;     ;;                                   ( smtpmail-smtp-server . "smtp.gmail.com" )
+;;     ;;                                   ( smtpmail-smtp-service . 587 )
+;;     ;;                                   ( smtpmail-debug-info . t )
+;;     ;;                                   ( mu4e-sent-folder . "/lionmail/[Gmail]/Sent Mail" )
+;;     ;;                                   ( mu4e-drafts-folder . "/lionmail/[Gmail]/Drafts" )
+;;     ;;                                   ( mu4e-trash-folder . "/lionmail/[Gmail]/Trash" )
+;;     ;;                                   ( mu4e-get-mail-command . "mbsync -c ~/.emacs.d/.mbsyncrc lionmail" )
+;;     ;;                                   ))
+
+;;     ;;                        ,(make-mu4e-context
+;;     ;;                          :name "ipower"
+;;     ;;                          ;; :match-func (lambda (msg)
+;;     ;;                          ;;               (when msg
+;;     ;;                          ;;                 (string-match-p "^/ipower" (mu4e-message-field msg :maildir))))
+;;     ;;                          :vars '( ( user-mail-address      . "jm@josephmorag.com"  )
+;;     ;;                                   ( user-full-name         . "Joseph Morag" )
+;;     ;;                                   ( mu4e-compose-signature . nil)
+;;     ;;                                   ( message-send-mail-function . 'smtpmail-send-it )
+;;     ;;                                   ( smtpmail-starttls-credentials . '(("smtp.ipower.com" 587 nil nil)) )
+;;     ;;                                   ( smtpmail-default-smtp-server . "smtp.ipower.com" )
+;;     ;;                                   ( smtpmail-smtp-server . "smtp.ipower.com" )
+;;     ;;                                   ( smtpmail-smtp-service . 587 )
+;;     ;;                                   ( smtpmail-debug-info . t )
+;;     ;;                                   ( mu4e-sent-folder . "/ipower/Sent Messages" )
+;;     ;;                                   ( mu4e-drafts-folder . "/ipower/Drafts" )
+;;     ;;                                   ( mu4e-trash-folder . "/ipower/Trash" )
+;;     ;;                                   ( mu4e-get-mail-command . "mbsync -c ~/.emacs.d/.mbsyncrc ipower" )
+;;     ;;                                   ))
+;;     ;;                        ))
+;;     ))
+
+;; (use-package notmuch
+;;   :straight (notmuch :local-repo "~/.nix-profile/share/emacs/site-lisp/" :files ("notmuch*.elc"))
+;;   :custom
+;;   (notmuch-search-oldest-first . nil))
 
 ;;;; Wifi management
 (when (executable-find "nmcli")
@@ -1224,6 +1323,12 @@ Inserted by installing org-mode or when a release is made."
                nm/connect-vpn-profile)
     :straight (emacs-nm :host github :repo "Kodkollektivet/emacs-nm")
     ))
+
+;;;; Package management
+(use-package system-packages
+  :commands (system-pacakges-search
+             system-pacakges-install
+             system-pacakges-uninstall))
 
 ;;; End
 ;; Revert garbage collection to default after loading init
