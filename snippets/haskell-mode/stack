@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: stack-script
+# key: stack
+# --
+#!/usr/bin/env stack
+-- stack --resolver lts-${1:13.8} --install-ghc runghc $2
+$0

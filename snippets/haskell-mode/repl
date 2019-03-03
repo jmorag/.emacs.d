@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: repl
+# key: r
+# --
+-- >>> $0
