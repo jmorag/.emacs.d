@@ -24,3 +24,57 @@ Create Slave
 Sync All
 Expunge Both
 SyncState *
+
+IMAPAccount lionmail
+Host imap.gmail.com
+User jm4157@columbia.edu
+PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.emacs.d/.mbsynclionmailpass.gpg"
+Port 993
+SSLType IMAPS
+AuthMechs Login
+CertificateFile /etc/ssl/certs/ca-bundle.crt
+PipelineDepth 50
+
+IMAPStore lionmail-remote
+Account lionmail
+
+MaildirStore lionmail-local
+Subfolders verbatim
+Path ~/Mail/lionmail/
+Inbox ~/Mail/lionmail/Inbox
+
+Channel lionmail
+Master :lionmail-remote:
+Slave :lionmail-local:
+Patterns *
+Create Slave
+Sync All
+Expunge Both
+SyncState *
+
+IMAPAccount ipower
+Host imap.ipower.com
+User jm@josephmorag.com
+PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.emacs.d/.mbsyncipowerpass.gpg"
+Port 993
+SSLType IMAPS
+AuthMechs Login
+CertificateFile /etc/ssl/certs/ca-bundle.crt
+PipelineDepth 50
+
+IMAPStore ipower-remote
+Account ipower
+
+MaildirStore ipower-local
+Subfolders verbatim
+Path ~/Mail/ipower/
+Inbox ~/Mail/ipower/Inbox
+
+Channel ipower
+Master :ipower-remote:
+Slave :ipower-local:
+Patterns *
+Create Slave
+Sync All
+Expunge Both
+SyncState *
