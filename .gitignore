@@ -16,3 +16,8 @@ var/
 *#
 .cask/
 xkcd/
+/%backup%~
+/emms/history
+/network-security.data
+/emms/scores
+/url/cookies
