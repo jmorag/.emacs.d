@@ -33,6 +33,7 @@
         lispy-backtick
         lispy-braces
         lispy-brackets
+        lispy-colon
         lispy-comment
         lispy-delete
         lispy-delete-backward
