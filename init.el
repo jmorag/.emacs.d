@@ -481,7 +481,17 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
   :straight (expand-region :host github :repo "magnars/expand-region.el"
                            :fork (:host github :repo "jmorag/expand-region.el"))
   :ryo
-  ("v" er/expand-region))
+  ("v" er/expand-region)
+  ("M-i" (("w" er/mark-word)
+          ("b" er/mark-inside-pairs)
+          ("'" er/mark-inside-quotes)
+          ("s" er/mark-sentence)
+          ("p" er/mark-paragraph)))
+  ("M-a" (("w" er/mark-symbol)
+          ("b" er/mark-outside-pairs)
+          ("'" er/mark-outside-quotes)
+          ("s" er/mark-sentence)
+          ("p" er/mark-paragraph))))
 
 (use-package visual-regexp
   :ryo
@@ -871,15 +881,9 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
   :config
   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 
-(use-package emacs-surround
-  :straight (emacs-surround :host github :repo "ganmacs/emacs-surround")
-  :config
-  (add-to-list 'emacs-surround-alist '("<" . ("<" . ">")))
-  (add-to-list 'emacs-surround-alist '(">" . ("< " . " >")))
-  (add-to-list 'emacs-surround-alist '(")" . ("( " . " )")))
-  (add-to-list 'emacs-surround-alist '("}" . ("{ " . " }")))
+(use-package embrace
   :ryo
-  ("S" emacs-surround))
+  ("S" embrace-commander))
 
 ;;;; Indentation
 (use-package aggressive-indent
