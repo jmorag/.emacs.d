@@ -383,6 +383,8 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
    ("T" kak/select-to-char :first '(set-mark-if-inactive))
    ("w" forward-same-syntax :first '(set-mark-here))
    ("W" forward-same-syntax :first '(set-mark-if-inactive))
+   ("M-w" forward-symbol :first '(set-mark-here))
+   ("M-W" forward-symbol :first '(set-mark-if-inactive))
    ("x" kak/x)
    ("X" kak/X)
    ("y" kill-ring-save)
@@ -868,14 +870,6 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
 ;;; General programming concerns
 ;;;; Parentheses
 (electric-pair-mode 1)
-;; I don't like how smartparens deals with actual pairs, but its
-;; navigation commands are very good
-(use-package smartparens
-  :ryo
-  ("e" sp-forward-sexp :first '(set-mark-here))
-  ("E" sp-forward-sexp :first '(set-mark-if-inactive))
-  ("M-e" sp-backward-sexp :first '(set-mark-here))
-  ("M-E" sp-backward-sexp :first '(set-mark-if-inactive)))
 
 (use-package rainbow-delimiters
   :config
