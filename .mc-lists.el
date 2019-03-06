@@ -14,6 +14,7 @@
         kak/b
         kak/c
         kak/d
+        kak/downcase
         kak/escape
         kak/gl
         kak/h
@@ -33,7 +34,6 @@
         lispy-backtick
         lispy-braces
         lispy-brackets
-        lispy-colon
         lispy-comment
         lispy-delete
         lispy-delete-backward
@@ -41,8 +41,10 @@
         lispy-move-end-of-line
         lispy-parens
         lispy-quotes
+        lispy-right-nostring
         lispy-space
         lispy-tick
+        lispy-yank
         modalka-translation
         org-cycle
         org-self-insert-command
@@ -52,6 +54,7 @@
         ryo-modal-repeat
         ryo:05cf1b18d95ef5a653397ec40f07e7e6:forward-same-syntax
         ryo:07a1551edff338532c86f629c151f7d4:next-line
+        ryo:0bb4aa504aadfd9c58c187b14d5806d6:embrace-commander
         ryo:3384a614304dd5324a6aa723d5ed9e5e:previous-line
         ryo:3a8ba329f32aa4ca26aedb4e0096966d:backward-char
         ryo:3bb381c903c6cfa663a851920ee9f42e:undo-tree-undo
@@ -159,6 +162,7 @@
         eldoc-eval-expression
         electric-pair-delete-pair
         idris-load-file
+        iedit-switch-to-mc-mode
         insert-register
         mouse-set-region
         multiple-cursors-mode
