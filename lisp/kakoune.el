@@ -2,7 +2,7 @@
 
 ;; Author: Joseph Morag <jm4157@columbia.edu>
 ;; Version: 0.1
-;; Package-Requires: ((ryo-modal "0.4") (multiple-cursors "1.4") (expand-region "0.11.0") (visual-regexp "1.1") (phi-search "2.2.2"))
+;; Package-Requires: ((ryo-modal "0.4") (multiple-cursors "1.4") (expand-region "0.11.0")) 
 ;; MIT License
 
 ;;; Commentary:
@@ -16,11 +16,6 @@
 (require 'ryo-modal)
 (require 'expand-region)
 (require 'multiple-cursors)
-(require 'visual-regexp)
-
-(setq-default cursor-type '(bar . 1))
-(setq ryo-modal-cursor-type 'box)
-(add-hook 'prog-mode-hook 'ryo-modal-mode)
 
 ;; Basic keybindings
 (ryo-modal-keys
@@ -32,10 +27,8 @@
  ("C" kill-line :exit t)
  ("d" kak/d)
  ("D" kill-line)
- ("e" ryo-tbd)
- ("E" ryo-tbd)
- ("g x" holy-exchange)
- ("g X" holy-exchange-cancel)
+ ("f" kak/select-to-char :first '(set-mark-here))
+ ("F" kak/select-to-char :first '(set-mark-if-inactive))
  ("g" (("h" beginning-of-line)
        ("j" end-of-buffer)
        ("k" beginning-of-buffer)
@@ -63,10 +56,12 @@
  ("p" kak/p)
  ("r" kak/replace-char)
  ("R" kak/replace-selection)
- ("t" kak/select-to-char :first '(set-mark-here))
- ("T" kak/select-to-char :first '(set-mark-if-inactive))
+ ("t" kak/select-up-to-char :first '(set-mark-here))
+ ("T" kak/select-up-to-char :first '(set-mark-if-inactive))
  ("w" forward-same-syntax :first '(set-mark-here))
  ("W" forward-same-syntax :first '(set-mark-if-inactive))
+ ("M-w" forward-symbol :first '(set-mark-here))
+ ("M-W" forward-symbol :first '(set-mark-if-inactive))
  ("x" kak/x)
  ("X" kak/X)
  ("y" kill-ring-save)
@@ -114,6 +109,8 @@
          ("p" er/mark-paragraph))))
 
 ;; Multiple cursors
-(ryo-modal-keys ("s" vr/mc-mark))
+(ryo-modal-keys ("s" mc/mark-all-in-region)
+                ("S" mc/split-region))
+
 (provide 'kakoune)
 ;;; kakoune.el ends here

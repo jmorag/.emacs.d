@@ -18,15 +18,17 @@
   (interactive "p")
   (forward-same-syntax (- count)))
 
+(defvar kak/last-t-or-f ?f "Using t or f command sets this variable")
 (defvar kak/last-char-selected-to " " "kak/select-to-char updates this variable")
 
-(defun kak/select-to-char (arg char)
+(defun kak/select-up-to-char (arg char)
   "Select up to, but not including ARGth occurrence of CHAR.
 Case is ignored if `case-fold-search' is non-nil in the current buffer.
 Goes backward if ARG is negative; error if CHAR not found.
 Ignores CHAR at point."
-  (interactive "p\ncSelect to char: ")
+  (interactive "p\ncSelect up to char: ")
   (setq kak/last-char-selected-to char)
+  (setq kak/last-t-or-f ?t)
   (let ((direction (if (>= arg 0) 1 -1)))
     (progn
       (forward-char direction)
@@ -35,10 +37,27 @@ Ignores CHAR at point."
 	(backward-char direction))
       (point))))
 
-(defun kak/select-to-char-again (&optional count)
+(defun kak/select-to-char (arg char)
+  "Select up to, and including ARGth occurrence of CHAR.
+Case is ignored if `case-fold-search' is non-nil in the current buffer.
+Goes backward if ARG is negative; error if CHAR not found.
+Ignores CHAR at point."
+  (interactive "p\ncSelect to char: ")
+  (setq kak/last-char-selected-to char)
+  (setq kak/last-t-or-f ?f)
+  (let ((direction (if (>= arg 0) 1 -1)))
+    (progn
+      (forward-char direction)
+      (unwind-protect
+	  (search-forward (char-to-string char) nil nil arg))
+      (point))))
+
+(defun kak/select-again (&optional count)
   "Expand the selection to whatever the last 't' command was."
   (interactive "p")
-  (kak/select-to-char count kak/last-char-selected-to))
+  (if (eq kak/last-t-or-f ?t)
+      (kak/select-up-to-char count kak/last-char-selected-to)
+    (kak/select-to-char count kak/last-char-selected-to)))
 
 (defun kak/x (count)
   "Select COUNT lines from the current line.
@@ -132,4 +151,25 @@ but I like this behavior better."
       (move-end-of-line count)
       (kill-ring-save cur (point)))))
 
-
+(require 'multiple-cursors)
+;; Until this function is accepted upstream, we inline it here
+(defun mc/split-region (beg end search)
+  "Split region each time SEARCH occurs in the buffer.
+ This can be thought of as an inverse to `mc/mark-all-in-region'."
+  (interactive "r\nsSplit on: ")
+  (let ((case-fold-search nil))
+    (if (string= search "")
+        (user-error "Empty search term")
+      (progn
+        (mc/remove-fake-cursors)
+        (goto-char beg)
+        (push-mark beg)
+        (while (search-forward search end t)
+          (save-excursion
+            (goto-char (match-beginning 0))
+            (mc/create-fake-cursor-at-point))
+          (push-mark (match-end 0)))
+        (unless (= (point) end)
+          (goto-char end))
+        (mc/maybe-multiple-cursors-mode)
+        ))))
