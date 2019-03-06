@@ -55,7 +55,8 @@
 (defun goto-init-file () (interactive) (find-file user-init-file))
 
 ;;;; Fancy text editing
-(require 'kakoune)
+(use-package kakoune
+  :straight (kakoune :local-repo "~/Projects/kakoune.el/"))
 
 ;;;; Sane undo and redo
 (use-package undo-tree
