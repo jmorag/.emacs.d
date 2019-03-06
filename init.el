@@ -468,6 +468,29 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
 
 ;;;; Fancy text editing
 (use-package multiple-cursors
+  :config
+  (defun mc/split-region (beg end search)
+    "Split region each time SEARCH occurs in the buffer.
+ This can be thought of as an inverse to `mc/mark-all-in-region'."
+    (interactive "r\nsSplit on: ")
+    (let ((case-fold-search nil))
+      (if (string= search "")
+          (user-error "Empty search term")
+        (progn
+          (mc/remove-fake-cursors)
+          (goto-char beg)
+          (push-mark beg)
+          (while (search-forward search end t)
+            (save-excursion
+              (goto-char (match-beginning 0))
+              (mc/create-fake-cursor-at-point))
+            (push-mark (match-end 0)))
+          (unless (= (point) end)
+            (goto-char end))
+          (mc/maybe-multiple-cursors-mode)
+          ))))
+  (global-unset-key (kbd "M-<down-mouse-1>"))
+  (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click)
   :ryo
   ("m" mc/mark-next-like-this)
   ("M" mc/skip-to-next-like-this)
@@ -475,9 +498,8 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
   ("N" mc/skip-to-previous-like-this)
   ("*" mc/mark-all-like-this)
   ("C-v" set-rectangular-region-anchor)
-  :config
-  (global-unset-key (kbd "M-<down-mouse-1>"))
-  (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click))
+  ("M-s" mc/split-region)
+  )
 
 (use-package expand-region
   :straight (expand-region :host github :repo "magnars/expand-region.el"
