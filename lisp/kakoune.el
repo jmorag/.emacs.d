@@ -3,6 +3,7 @@
 ;; Author: Joseph Morag <jm4157@columbia.edu>
 ;; Version: 0.1
 ;; Package-Requires: ((ryo-modal "0.4") (multiple-cursors "1.4") (expand-region "0.11.0") (visual-regexp "1.1") (phi-search "2.2.2"))
+;; MIT License
 
 ;;; Commentary:
 ;; This package provides many, but not all of the editing primitives in the kakoune editor.
@@ -21,7 +22,7 @@
 (setq ryo-modal-cursor-type 'box)
 (add-hook 'prog-mode-hook 'ryo-modal-mode)
 
-;;;; Basic keybindings
+;; Basic keybindings
 (ryo-modal-keys
  ("a" forward-char :exit t)
  ("A" move-end-of-line :exit t)
@@ -97,6 +98,20 @@
                  ("8" "M-8" :norepeat t)
                  ("9" "M-9" :norepeat t)
                  ("-" "M--" :norepeat t))
+
+;; Region selectors
+(ryo-modal-keys
+ ("v" er/expand-region)
+ ("M-i" (("w" er/mark-word)
+         ("b" er/mark-inside-pairs)
+         ("'" er/mark-inside-quotes)
+         ("s" er/mark-sentence)
+         ("p" er/mark-paragraph)))
+ ("M-a" (("w" er/mark-symbol)
+         ("b" er/mark-outside-pairs)
+         ("'" er/mark-outside-quotes)
+         ("s" er/mark-sentence)
+         ("p" er/mark-paragraph))))
 
 ;; Multiple cursors
 (ryo-modal-keys ("s" vr/mc-mark))
