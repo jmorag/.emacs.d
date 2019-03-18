@@ -835,8 +835,8 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
 	("g p u" . magit-jump-to-unpushed-to-upstream)
 	("g f p" . magit-jump-to-unpulled-from-pushremote)
 	("g f u" . magit-jump-to-unpulled-from-upstream)
-	("p" . magit-push-popup)
-	("P" . magit-pull-popup)
+	("p" . magit-push)
+	("P" . magit-pull)
         ("M-k" . magit-discard)
 	;; It seems as if we will have to repeat ourselves
 	;; or learn how macros work...
