@@ -20,15 +20,15 @@
 (load custom-file)
 
 ;;;; Bootstrap straight.el
+(setq straight-recipes-gnu-elpa-use-mirror t)
 (defvar bootstrap-version)
 (let ((bootstrap-file
-       (expand-file-name
-	"straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
       (bootstrap-version 5))
   (unless (file-exists-p bootstrap-file)
     (with-current-buffer
-	(url-retrieve-synchronously
-	 "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
          'silent 'inhibit-cookies)
       (goto-char (point-max))
       (eval-print-last-sexp)))
@@ -40,9 +40,9 @@
 ;;; Core editor facilities
 ;; This sets up basic text editing commands
 ;;;; Turn off the mouse on linux
-(when (string= (system-name) "jnix")
-  (use-package disable-mouse
-    :config (global-disable-mouse-mode)))
+(use-package disable-mouse
+  :if (string= (system-name) "jnix")
+  :config (global-disable-mouse-mode))
 
 ;;;; Key chord
 (use-package use-package-chords
@@ -328,8 +328,7 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
 
 ;;;; Basic keybindings
 (use-package ryo-modal
-  :straight (ryo-modal :host github :repo "Kungsgeten/ryo-modal"
-		       :fork (:host github :repo "jmorag/ryo-modal"))
+  :straight (:host github :repo "jmorag/ryo-modal")
   :chords ("fd" . ryo-enter)
   :bind ("C-z" . ryo-modal-mode) ;; In order to be useful in macros
   :config
@@ -454,17 +453,7 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
     (define-key keymap "\C-u" 'scroll-down-command)
     (define-key keymap "o" 'other-window)))
 
-;; Help mode bindings
-(vimlike-navigation help-mode-map)
 (define-key ryo-modal-mode-map (kbd "SPC h") 'help-command)
-;; Package mode bindings
-(eval-after-load 'package '(vimlike-navigation package-menu-mode-map))
-;; Ibuffer mode bindings
-(eval-after-load 'ibuffer
-  '(progn
-     (define-key ibuffer-mode-map (kbd "j") 'ibuffer-forward-line)
-     (define-key ibuffer-mode-map (kbd "k") 'ibuffer-backward-line)
-     (define-key ibuffer-mode-map (kbd "K") 'ibuffer-do-kill-lines)))
 
 ;;;; Fancy text editing
 (use-package multiple-cursors
@@ -804,6 +793,12 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
   :ryo ("g ;" goto-last-change))
 
 ;;; Project management
+;;;; Direnv
+(use-package direnv
+  :if (executable-find "direnv")
+  :config
+  (direnv-mode))
+
 ;;;; Magit
 (use-package magit
   :ryo
@@ -870,6 +865,7 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
   (projectile-mode 1)
   (setq projectile-completion-system 'ivy)
   ;; (setq projectile-require-project-root nil)
+  :init
   (define-key ryo-modal-mode-map (kbd "SPC p") 'projectile-command-map)
   :ryo
   ("SPC SPC" projectile-find-file))
@@ -879,15 +875,6 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
              el-projectile projectile-find-file)
   :after (projectile counsel)
   :config (counsel-projectile-mode))
-
-;;; File management
-(use-package ranger
-  :config
-  (ranger-override-dired-mode t)
-  (setq ranger-cleanup-on-disable t)
-  (setq ranger-show-hidden t)
-  :ryo
-  ("SPC d" ranger))
 
 ;;; General programming concerns
 ;;;; Parentheses
@@ -1031,6 +1018,7 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
 ;;;; Rust
 (use-package rust-mode
   :defer t
+  :after (projectile)
   :config
   (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
   (projectile-register-project-type 'rust-cargo '("Cargo.toml")
@@ -1041,14 +1029,24 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
 (use-package flycheck-rust
   :after (flycheck rust-mode)
   :config
+  (add-hook 'rust-mode-hook #'flycheck-mode)
   (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
 
 (use-package racer
-  :after (rust-mode company)
+  :after (rust-mode company direnv)
   :config
   (add-hook 'rust-mode-hook #'racer-mode)
+  (defun racer-reload (&rest args)
+    "Try again to find the racer executable"
+    (interactive)
+    (let ((racer-executable (executable-find "racer")))
+      (when racer-executable (setq racer-cmd racer-executable))))
   (add-hook 'racer-mode-hook #'eldoc-mode)
-  (add-hook 'racer-mode-hook #'company-mode))
+  (add-hook 'racer-mode-hook #'company-mode)
+  (add-hook 'racer-mode-hook #'racer-reload)
+  (setq racer-rust-src-path nil)
+  (advice-add 'direnv-update-directory-environment :after #'racer-reload)
+  )
 
 ;;;; Yaml
 (use-package yaml-mode
@@ -1083,6 +1081,10 @@ effectively reverse the (problematic) order of two `holy-exchange' calls."
 (use-package elm-mode
   :after reformatter
   :straight (elm-mode :host github :repo "jcollard/elm-mode"))
+
+;;;; Ocaml
+(use-package tuareg
+  )
 
 ;;;; Org mode install
 ;; Installing org mode with straight is annoying
@@ -1121,6 +1123,7 @@ Inserted by installing org-mode or when a release is made."
   :hook (org . ryo-modal-mode)
   :config
   (require 'ox-md nil t)
+  (setq org-confirm-babel-evaluate nil)
   :ryo
   (:mode 'org-mode)
   (">" org-demote-subtree)
@@ -1129,6 +1132,9 @@ Inserted by installing org-mode or when a release is made."
 (use-package org-bullets
   :hook (org . org-bullets-mode)
   :after org)
+
+(use-package ox-moderncv
+  :straight (ox-moderncv :host gitlab :repo "Titan-C/org-cv"))
 
 ;;;; Markdown
 (use-package markdown-mode
@@ -1154,21 +1160,8 @@ Inserted by installing org-mode or when a release is made."
 ;;;; Pdf
 ;; Stolen from doom
 (use-package pdf-tools
-  :preface
-  (defun +pdf|cleanup-windows ()
-    "Kill left-over annotation buffers when the document is killed."
-    (when (buffer-live-p pdf-annot-list-document-buffer)
-      (pdf-info-close pdf-annot-list-document-buffer))
-    (when (buffer-live-p pdf-annot-list-buffer)
-      (kill-buffer pdf-annot-list-buffer))
-    (let ((contents-buffer (get-buffer "*Contents*")))
-      (when (and contents-buffer (buffer-live-p contents-buffer))
-        (kill-buffer contents-buffer))))
   :mode ("\\.pdf\\'" . pdf-view-mode)
   :config
-  (unless noninteractive (pdf-tools-install))
-  (add-hook 'pdf-view-mode-hook
-            (add-hook 'kill-buffer-hook #'+pdf|cleanup-windows nil t))
   (setq-default pdf-view-display-size 'fit-page)
   :bind (:map pdf-view-mode-map
               ("q" . kill-this-buffer))
@@ -1237,112 +1230,32 @@ Inserted by installing org-mode or when a release is made."
              (text-scale-decrease 1))))
   :commands (darkroom-mode darkroom-tentative-mode))
 
-;;;; Email (still a mess)
-;; (require 'smtpmail)
-;; (when (and (executable-find "mu") (string= (system-name) "jnix"))
-;;   (use-package mu4e
-;;     :defer t
-;;     :straight
-;;     (:local-repo "/run/current-system/sw/share/emacs/site-lisp/mu4e/")
-;;     :bind
-;;     (:map mu)
-;;     :custom
-;;     (mu4e-maildir "~/Mail/gmail")
-;;     (user-mail-address "sefim96@gmail.com")
-;;     (user-full-name "Joseph Morag")
-;;     ( mu4e-compose-signature nil)
-;;     ( message-send-mail-function 'smtpmail-send-it )
-;;     ( smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil)) )
-;;     ( smtpmail-default-smtp-server "smtp.gmail.com" )
-;;     ( smtpmail-smtp-server "smtp.gmail.com" )
-;;     ( smtpmail-smtp-service 587 )
-;;     ( smtpmail-debug-info t )
-;;     ( mu4e-sent-folder "/[Gmail]/Sent Mail" )
-;;     ( mu4e-drafts-folder "/[Gmail]/Drafts" )
-;;     ( mu4e-trash-folder "/[Gmail]/Trash" )
-;;     ( mu4e-get-mail-command "mbsync -c ~/.emacs.d/.mbsyncrc gmail" )
+(straight-use-package 'auctex)
 
-;;     ;; :config
-;;     ;; (setq mu4e-contexts `( ,(make-mu4e-context
-;;     ;;                          :name "gmail"
-;;     ;;                          ;; we match based on the contact-fields of the message
-;;     ;;                          ;; :match-func (lambda (msg)
-;;     ;;                          ;;               (when msg
-;;     ;;                          ;;                 (string-match-p "*" (mu4e-message-field msg :maildir))))
-;;     ;;                          :vars '( ( user-mail-address      . "sefim96@gmail.com"  )
-;;     ;;                                   ( user-full-name         . "Joseph Morag" )
-;;     ;; ( mu4e-compose-signature . nil)
-;;     ;; ( message-send-mail-function . 'smtpmail-send-it )
-;;     ;; ( smtpmail-starttls-credentials . '(("smtp.gmail.com" 587 nil nil)) )
-;;     ;; ( smtpmail-default-smtp-server . "smtp.gmail.com" )
-;;     ;; ( smtpmail-smtp-server . "smtp.gmail.com" )
-;;     ;; ( smtpmail-smtp-service . 587 )
-;;     ;; ( smtpmail-debug-info . t )
-;;     ;; ( mu4e-sent-folder . "/[Gmail]/Sent Mail" )
-;;     ;; ( mu4e-drafts-folder . "/gmail/[Gmail]/Drafts" )
-;;     ;; ( mu4e-trash-folder . "/gmail/[Gmail]/Trash" )
-;;     ;; ( mu4e-get-mail-command . "mbsync -c ~/.emacs.d/.mbsyncrc gmail" )
-;;     ;;                                   ))
-;;     ;;                        ,(make-mu4e-context
-;;     ;;                          :name "lionmail"
-;;     ;;                          ;; Match on the maildir
-;;     ;;                          ;; :match-func (lambda (msg)
-;;     ;;                          ;;               (when msg
-;;     ;;                          ;;                 (string-match-p "^/lionmail" (mu4e-message-field msg :maildir))))
-;;     ;;                          :vars '( ( user-mail-address      . "jm4157@lionmail.com"  )
-;;     ;;                                   ( user-full-name         . "Joseph Morag" )
-;;     ;;                                   ( mu4e-compose-signature . nil)
-;;     ;;                                   ( message-send-mail-function . 'smtpmail-send-it )
-;;     ;;                                   ( smtpmail-starttls-credentials . '(("smtp.gmail.com" 587 nil nil)) )
-;;     ;;                                   ( smtpmail-default-smtp-server . "smtp.gmail.com" )
-;;     ;;                                   ( smtpmail-smtp-server . "smtp.gmail.com" )
-;;     ;;                                   ( smtpmail-smtp-service . 587 )
-;;     ;;                                   ( smtpmail-debug-info . t )
-;;     ;;                                   ( mu4e-sent-folder . "/lionmail/[Gmail]/Sent Mail" )
-;;     ;;                                   ( mu4e-drafts-folder . "/lionmail/[Gmail]/Drafts" )
-;;     ;;                                   ( mu4e-trash-folder . "/lionmail/[Gmail]/Trash" )
-;;     ;;                                   ( mu4e-get-mail-command . "mbsync -c ~/.emacs.d/.mbsyncrc lionmail" )
-;;     ;;                                   ))
 
-;;     ;;                        ,(make-mu4e-context
-;;     ;;                          :name "ipower"
-;;     ;;                          ;; :match-func (lambda (msg)
-;;     ;;                          ;;               (when msg
-;;     ;;                          ;;                 (string-match-p "^/ipower" (mu4e-message-field msg :maildir))))
-;;     ;;                          :vars '( ( user-mail-address      . "jm@josephmorag.com"  )
-;;     ;;                                   ( user-full-name         . "Joseph Morag" )
-;;     ;;                                   ( mu4e-compose-signature . nil)
-;;     ;;                                   ( message-send-mail-function . 'smtpmail-send-it )
-;;     ;;                                   ( smtpmail-starttls-credentials . '(("smtp.ipower.com" 587 nil nil)) )
-;;     ;;                                   ( smtpmail-default-smtp-server . "smtp.ipower.com" )
-;;     ;;                                   ( smtpmail-smtp-server . "smtp.ipower.com" )
-;;     ;;                                   ( smtpmail-smtp-service . 587 )
-;;     ;;                                   ( smtpmail-debug-info . t )
-;;     ;;                                   ( mu4e-sent-folder . "/ipower/Sent Messages" )
-;;     ;;                                   ( mu4e-drafts-folder . "/ipower/Drafts" )
-;;     ;;                                   ( mu4e-trash-folder . "/ipower/Trash" )
-;;     ;;                                   ( mu4e-get-mail-command . "mbsync -c ~/.emacs.d/.mbsyncrc ipower" )
-;;     ;;                                   ))
-;;     ;;                        ))
-;;     ))
-
-;; (use-package notmuch
-;;   :straight (notmuch :local-repo "~/.nix-profile/share/emacs/site-lisp/" :files ("notmuch*.elc"))
-;;   :custom
-;;   (notmuch-search-oldest-first . nil))
+;;;; Email
+(require 'smtpmail)
+(use-package notmuch
+  :if (executable-find "notmuch")
+  :straight (notmuch
+             :local-repo "~/.nix-profile/share/emacs/site-lisp/"
+             :files ("notmuch*.elc"))
+  :commands (notmuch)
+  :custom
+  (notmuch-search-oldest-first . nil))
 
 ;;;; Wifi management
-(when (executable-find "nmcli")
-  (use-package nm
-    :commands (nm/list-access-points
-               nm/list-active-connections
-               nm/show-wifi-status
-               nm/set-interface
-               nm/connect-basic
-               nm/connect-with-profile
-               nm/connect-vpn-profile)
-    :straight (emacs-nm :host github :repo "Kodkollektivet/emacs-nm")
-    ))
+(use-package nm
+  :if (executable-find "nmcli")
+  :commands (nm/list-access-points
+             nm/list-active-connections
+             nm/show-wifi-status
+             nm/set-interface
+             nm/connect-basic
+             nm/connect-with-profile
+             nm/connect-vpn-profile)
+  :straight (emacs-nm :host github :repo "Kodkollektivet/emacs-nm")
+  )
 
 ;;;; Package management
 (use-package system-packages
@@ -1356,3 +1269,4 @@ Inserted by installing org-mode or when a release is made."
 
 (provide 'init)
 ;; init.el ends here
+(put 'narrow-to-region 'disabled nil)

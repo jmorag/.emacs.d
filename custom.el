@@ -10,12 +10,43 @@
  '(org-export-backends (quote (ascii html icalendar latex md odt)))
  '(safe-local-variable-values
    (quote
-    ((intero-targets "othaskell:lib" "othaskell:exe:othaskell-exe" "othaskell:test:othaskell-test")
+    ((eval when
+           (and
+            (buffer-file-name)
+            (file-regular-p
+             (buffer-file-name))
+            (string-match-p "^[^.]"
+                            (buffer-file-name)))
+           (unless
+               (featurep
+                (quote package-build))
+             (let
+                 ((load-path
+                   (cons "../package-build" load-path)))
+               (require
+                (quote package-build))))
+           (package-build-minor-mode)
+           (set
+            (make-local-variable
+             (quote package-build-working-dir))
+            (expand-file-name "../working/"))
+           (set
+            (make-local-variable
+             (quote package-build-archive-dir))
+            (expand-file-name "../packages/"))
+           (set
+            (make-local-variable
+             (quote package-build-recipes-dir))
+            default-directory))
+     (intero-targets "othaskell:lib" "othaskell:exe:othaskell-exe" "othaskell:test:othaskell-test")
      (intero-targets "mcc:lib" "mcc:exe:mcc" "mcc:test:testall")
      (haskell-indent-spaces . 2)
      (haskell-process-use-ghci . t)
      (haskell-indent-spaces . 4)
-     (intero-stack-yaml . "/Users/josephmorag/Code/crossword-helper/stack.yaml")))))
+     (intero-stack-yaml . "/Users/josephmorag/Code/crossword-helper/stack.yaml"))))
+ '(send-mail-function (quote smtpmail-send-it))
+ '(smtpmail-smtp-server "smtp.gmail.com")
+ '(smtpmail-smtp-service 25))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
