@@ -66,6 +66,7 @@
         ryo:3a8ba329f32aa4ca26aedb4e0096966d:backward-char
         ryo:3bb381c903c6cfa663a851920ee9f42e:undo-tree-undo
         ryo:3d738d4315c2c23e69c7a6b7358e52f2:forward-char
+        ryo:42f606a03331e6ec0b254a5086c1e672:kak/select-up-to-char
         ryo:4ba44c9869d838fd0f93ea2dabc09909:backward-char
         ryo:5afdf8eb96b1ba206f89586c7bde6655:back-to-indentation
         ryo:5fa0e76c510678b6c22c30e6e493d5c7:kak/O
@@ -188,4 +189,5 @@
         wdired-finish-edit
         wgrep-change-to-wgrep-mode
         wgrep-finish-edit
+        mc/split-region
         ))

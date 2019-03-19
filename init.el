@@ -43,17 +43,57 @@
   :if (string= (system-name) "jnix")
   :config (global-disable-mouse-mode))
 
-;;;; Key chord
+(defun goto-init-file () (interactive) (find-file user-init-file))
+
+;;;; Fancy text editing
 (use-package use-package-chords
   :config
   (key-chord-mode 1))
 
-;;;; General utilities
-(defun goto-init-file () (interactive) (find-file user-init-file))
-
-;;;; Fancy text editing
 (use-package kakoune
-  :straight (kakoune :local-repo "~/Projects/kakoune.el/"))
+  :straight (kakoune :local-repo "~/Projects/kakoune.el/")
+  :demand t
+  :chords ("fd" . ryo-enter)
+  :bind ("C-z" . ryo-modal-mode)
+  :config
+  (require 'kakoune)
+  (setq-default cursor-type '(bar . 1))
+  (setq ryo-modal-cursor-type 'box)
+  (add-hook 'prog-mode-hook #'ryo-enter)
+  (define-key ryo-modal-mode-map (kbd "SPC h") 'help-command)
+  ;; Access all C-x bindings easily
+  (define-key ryo-modal-mode-map (kbd "z") ctl-x-map)
+  ;; I dislike the default kakoune behavior of ;
+  (ryo-modal-unset-key ";")
+  (ryo-modal-keys ("," save-buffer)
+                  ("P" yank-pop)
+                  ("m" mc/mark-next-like-this)
+                  ("M" mc/skip-to-next-like-this)
+                  ("n" mc/mark-previous-like-this)
+                  ("N" mc/skip-to-previous-like-this)
+                  ("*" mc/mark-all-like-this)
+                  ("C-v" set-rectangular-region-anchor)
+                  ("M-s" mc/split-region)
+                  (";" (("q" delete-window)
+                        ("v" split-window-horizontally)
+                        ("s" split-window-vertically)
+                        ("i" goto-init-file)))
+                  ("C-h" windmove-left)
+                  ("C-j" windmove-down)
+                  ("C-k" windmove-up)
+                  ("C-l" windmove-right)
+                  ("C-u" scroll-down-command :first '(deactivate-mark))
+                  ("C-d" scroll-up-command :first '(deactivate-mark))))
+
+(use-package visual-regexp
+  :ryo
+  ("s" vr/mc-mark)
+  ("?" vr/replace)
+  ("M-/" vr/query-replace))
+
+(use-package phi-search
+  :bind (("C-s" . phi-search)
+	 ("C-r" . phi-search-backward)))
 
 ;;;; Sane undo and redo
 (use-package undo-tree
