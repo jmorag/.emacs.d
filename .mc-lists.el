@@ -3,14 +3,17 @@
 
 (setq mc/cmds-to-run-for-all
       '(
+        c-electric-brace
         electric-newline-and-maybe-indent
         haskell-indentation-common-electric-command
+        holy-exchange
         kak/Gl
         kak/H
         kak/L
         kak/R
         kak/SPC
         kak/W
+        kak/X
         kak/b
         kak/c
         kak/d
@@ -20,6 +23,7 @@
         kak/h
         kak/i
         kak/j
+        kak/join
         kak/k
         kak/l
         kak/p
@@ -47,8 +51,11 @@
         lispy-yank
         modalka-translation
         org-cycle
+        org-delete-char
         org-self-insert-command
+        org-yank
         outshine-self-insert-command
+        phi-search-backward
         ryo-enter
         ryo-leave
         ryo-modal-repeat
@@ -76,6 +83,7 @@
         ryo:e4fe141b0e119b6d1fa1fce3dfa14784:end-of-line
         ryo:e5dbb354d557462cb65bb1d6bb3fa5af:evilnc-comment-or-uncomment-lines
         ryo:e7a5212c33f50d09246829cc7289a6d2:forward-char
+        ryo:eac1488896d62c02d1ece92d73bb9d26:kak/o
         ryo:fc7eefa7332e9195f27e3ba02ec62ae7:beginning-of-line
         shm/del
         special-digit-argument
@@ -164,6 +172,7 @@
         idris-load-file
         iedit-switch-to-mc-mode
         insert-register
+        mouse-appearance-menu
         mouse-set-region
         multiple-cursors-mode
         ryo:0e93af3b38e44fa93c5656cb1bd98ac3:mc/skip-to-previous-like-this
@@ -176,6 +185,7 @@
         ryo:9668f7b8424ef98fc7eed0e23d2b6bc3:scroll-down-command
         ryo:b1589c12e9cf3a7dadf52ae6a5e3c310:rust-format-buffer
         ryo:f27938a88c89decb111731da89fe4793:vr/mc-mark
+        wdired-finish-edit
         wgrep-change-to-wgrep-mode
         wgrep-finish-edit
         ))
