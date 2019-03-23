@@ -43,12 +43,18 @@
   :if (string= (system-name) "jnix")
   :config (global-disable-mouse-mode))
 
-(defun goto-init-file () (interactive) (find-file user-init-file))
-
 ;;;; Fancy text editing
 (use-package use-package-chords
   :config
   (key-chord-mode 1))
+
+(use-package ryo-modal
+  :straight (ryo-modal :host github :repo "jmorag/ryo-modal")
+  :config
+  (defun ryo-enter ()
+    "Enter normal mode"
+    (interactive)
+    (ryo-modal-mode 1)))
 
 (use-package kakoune
   :straight (kakoune :local-repo "~/Projects/kakoune.el/")
@@ -71,13 +77,13 @@
                   ("M" mc/skip-to-next-like-this)
                   ("n" mc/mark-previous-like-this)
                   ("N" mc/skip-to-previous-like-this)
+                  ("M-m" mc/edit-lines)
                   ("*" mc/mark-all-like-this)
                   ("C-v" set-rectangular-region-anchor)
                   ("M-s" mc/split-region)
                   (";" (("q" delete-window)
                         ("v" split-window-horizontally)
-                        ("s" split-window-vertically)
-                        ("i" goto-init-file)))
+                        ("s" split-window-vertically)))
                   ("C-h" windmove-left)
                   ("C-j" windmove-down)
                   ("C-k" windmove-up)
@@ -135,7 +141,6 @@
 (use-package doom-themes
   :config
   (load-theme 'doom-one t)
-  (doom-themes-treemacs-config)
   (doom-themes-org-config))
 
 ;; Required for dashboard
@@ -162,7 +167,6 @@
   :straight (doom-modeline :host github :repo "seagle0128/doom-modeline")
   :hook (after-init . doom-modeline-init)
   :config
-  (setq doom-modeline-height 70)
   (setq doom-modeline-bar-width 4))
 
 (use-package ace-popup-menu
@@ -200,6 +204,10 @@
       backup-directory-alist `(("." . ,(concat user-emacs-directory
                                                "backups"))))
 (global-auto-revert-mode t)
+
+(use-package crux
+  :ryo
+  ("; i" crux-find-user-init-file))
 
 ;;; Interface management
 (use-package which-key
@@ -792,6 +800,7 @@ Inserted by installing org-mode or when a release is made."
   ("g S" flyspell-correct-wrapper))
 
 (use-package darkroom
+  :after (org markdown-mode)
   :preface
   (defun jm/toggle-prose-mode ()
     "Toggle distraction free writing mode for prose."
@@ -800,14 +809,18 @@ Inserted by installing org-mode or when a release is made."
         (progn (display-line-numbers-mode 1)
                (darkroom-mode 0)
                (visual-line-mode 0)
-               (flyspell-mode 0)
-               (text-scale-increase 1))
+               (flyspell-mode 0))
       (progn (display-line-numbers-mode 0)
              (darkroom-mode 1)
              (visual-line-mode 1)
-             (flyspell-mode 1)
-             (text-scale-decrease 1))))
-  :commands (darkroom-mode darkroom-tentative-mode))
+             (flyspell-mode 1))))
+  :commands (darkroom-mode darkroom-tentative-mode)
+  :config
+  (setq darkroom-margins 0.1)
+  (add-hook 'org-mode-hook 'jm/toggle-prose-mode)
+  (add-hook 'markdown-mode-hook 'jm/toggle-prose-mode)
+  (ryo-modal-key "SPC a p" 'jm/toggle-prose-mode)
+  )
 
 (straight-use-package 'auctex)
 
@@ -822,6 +835,27 @@ Inserted by installing org-mode or when a release is made."
   :commands (notmuch)
   :custom
   (notmuch-search-oldest-first . nil))
+
+;;;; Calendar
+;; (use-package org-gcal
+;;   :config
+;;   (require 'org-gcal)
+;;   (setq org-gcal-client-id "598036041241-s9r8dgpa6umicqeerum2f4afb06qirs9.apps.googleusercontent.com"
+;;         org-gcal-client-secret "NkMuYHH-HAhOCYjYCZO986aW"
+;;         org-gcal-file-alist '(("sefim96@gmail.com" .  "~/Personal/calendar.org")))
+;;   (setq org-agenda-files (list "~/Personal/calendar.org")))
+
+;; (use-package calfw
+;;   :straight (calfw :host github :repo "kiwanami/emacs-calfw")
+;;   :config
+;;   (require 'calfw)
+;;   (require 'calfw-org)
+;;   (require 'calfw-ical)
+;;   (require 'calfw-cal)
+;;   (defun my-open-calendar ()
+;;     (interactive)
+;;     (cfw:open-ical-calendar "https://calendar.google.com/calendar/ical/sefim96%40gmail.com/private-e18a0b7ec41c3551534d98a6e6dad582/basic.ics"))
+;;   )
 
 ;;;; Wifi management
 (use-package nm

@@ -22,6 +22,7 @@
         kak/gl
         kak/h
         kak/i
+        kak/insert-mode
         kak/j
         kak/join
         kak/k
@@ -58,6 +59,7 @@
         phi-search-backward
         ryo-enter
         ryo-leave
+        ryo-modal-mode
         ryo-modal-repeat
         ryo:05cf1b18d95ef5a653397ec40f07e7e6:forward-same-syntax
         ryo:07a1551edff338532c86f629c151f7d4:next-line
@@ -173,6 +175,7 @@
         idris-load-file
         iedit-switch-to-mc-mode
         insert-register
+        mc/split-region
         mouse-appearance-menu
         mouse-set-region
         multiple-cursors-mode
@@ -189,5 +192,4 @@
         wdired-finish-edit
         wgrep-change-to-wgrep-mode
         wgrep-finish-edit
-        mc/split-region
         ))
