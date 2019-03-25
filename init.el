@@ -2,6 +2,7 @@
 
 ;;; Startup improvements
 ;;;; Turn off mouse interface early in startup to avoid momentary display
+(setq-default cursor-type '(bar . 2))
 (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
@@ -51,45 +52,45 @@
 (use-package ryo-modal
   :straight (ryo-modal :host github :repo "jmorag/ryo-modal")
   :config
-  (defun ryo-enter ()
-    "Enter normal mode"
-    (interactive)
-    (ryo-modal-mode 1)))
+  (defun ryo-enter () "Enter normal mode" (interactive) (ryo-modal-mode 1)))
 
 (use-package kakoune
   :straight (kakoune :local-repo "~/Projects/kakoune.el/")
-  :demand t
   :chords ("fd" . ryo-enter)
   :bind ("C-z" . ryo-modal-mode)
+  :hook (after-init . my/kakoune-setup)
   :config
-  (require 'kakoune)
-  (setq-default cursor-type '(bar . 1))
-  (setq ryo-modal-cursor-type 'box)
-  (add-hook 'prog-mode-hook #'ryo-enter)
-  (define-key ryo-modal-mode-map (kbd "SPC h") 'help-command)
-  ;; Access all C-x bindings easily
-  (define-key ryo-modal-mode-map (kbd "z") ctl-x-map)
-  ;; I dislike the default kakoune behavior of ;
-  (ryo-modal-unset-key ";")
-  (ryo-modal-keys ("," save-buffer)
-                  ("P" yank-pop)
-                  ("m" mc/mark-next-like-this)
-                  ("M" mc/skip-to-next-like-this)
-                  ("n" mc/mark-previous-like-this)
-                  ("N" mc/skip-to-previous-like-this)
-                  ("M-m" mc/edit-lines)
-                  ("*" mc/mark-all-like-this)
-                  ("C-v" set-rectangular-region-anchor)
-                  ("M-s" mc/split-region)
-                  (";" (("q" delete-window)
-                        ("v" split-window-horizontally)
-                        ("s" split-window-vertically)))
-                  ("C-h" windmove-left)
-                  ("C-j" windmove-down)
-                  ("C-k" windmove-up)
-                  ("C-l" windmove-right)
-                  ("C-u" scroll-down-command :first '(deactivate-mark))
-                  ("C-d" scroll-up-command :first '(deactivate-mark))))
+  (defun my/kakoune-setup ()
+    "Call kak/setup-keybinds and then add some personal config."
+    (kak/setup-keybinds)
+    (setq ryo-modal-cursor-type 'box)
+    (add-hook 'prog-mode-hook #'ryo-enter)
+    (define-key ryo-modal-mode-map (kbd "SPC h") 'help-command)
+    ;; Access all C-x bindings easily
+    (define-key ryo-modal-mode-map (kbd "z") ctl-x-map)
+    ;; I dislike the default kakoune behavior of ;
+    (ryo-modal-unset-key ";")
+    (ryo-modal-keys
+     ("," save-buffer)
+     ("P" counsel-yank-pop)
+     ("m" mc/mark-next-like-this)
+     ("M" mc/skip-to-next-like-this)
+     ("n" mc/mark-previous-like-this)
+     ("N" mc/skip-to-previous-like-this)
+     ("M-m" mc/edit-lines)
+     ("*" mc/mark-all-like-this)
+     ("v" er/expand-region)
+     ("C-v" set-rectangular-region-anchor)
+     ("M-s" mc/split-region)
+     (";" (("q" delete-window)
+           ("v" split-window-horizontally)
+           ("s" split-window-vertically)))
+     ("C-h" windmove-left)
+     ("C-j" windmove-down)
+     ("C-k" windmove-up)
+     ("C-l" windmove-right)
+     ("C-u" scroll-down-command :first '(deactivate-mark))
+     ("C-d" scroll-up-command :first '(deactivate-mark)))))
 
 (use-package visual-regexp
   :ryo
@@ -380,6 +381,8 @@
   :ryo ("g ;" goto-last-change))
 
 ;;; Project management
+;;;; Dired
+
 ;;;; Direnv
 (use-package direnv
   :if (executable-find "direnv")
@@ -451,17 +454,14 @@
   :config
   (projectile-mode 1)
   (setq projectile-completion-system 'ivy)
-  ;; (setq projectile-require-project-root nil)
   :init
-  (define-key ryo-modal-mode-map (kbd "SPC p") 'projectile-command-map)
-  :ryo
-  ("SPC SPC" projectile-find-file))
+  (define-key ryo-modal-mode-map (kbd "SPC p") 'projectile-command-map))
 
 (use-package counsel-projectile
-  :commands (couns
-             el-projectile projectile-find-file)
   :after (projectile counsel)
-  :config (counsel-projectile-mode))
+  :config (counsel-projectile-mode)
+  :ryo
+  ("SPC SPC" counsel-projectile))
 
 ;;; General programming concerns
 ;;;; Parentheses

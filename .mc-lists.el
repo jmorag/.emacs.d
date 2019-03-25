@@ -180,6 +180,7 @@
         mouse-set-region
         multiple-cursors-mode
         ryo:0e93af3b38e44fa93c5656cb1bd98ac3:mc/skip-to-previous-like-this
+        ryo:39ab4d56b894e3818b91a63f128c314d:mc/mark-next-like-this
         ryo:3a1146b874b557308dd23eafa4dde36b:format-all-buffer
         ryo:43a840e32c825f68414b7560417a88ff:mc/skip-to-next-like-this
         ryo:4c795c327d46eee6c51f2df1e7698c37:mc/mark-previous-like-this
