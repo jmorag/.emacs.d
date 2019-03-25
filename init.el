@@ -798,8 +798,7 @@ Inserted by installing org-mode or when a release is made."
   ("g S" flyspell-correct-wrapper))
 
 (use-package darkroom
-  :after (org markdown-mode)
-  :preface
+  :init
   (defun jm/toggle-prose-mode ()
     "Toggle distraction free writing mode for prose."
     (interactive)
@@ -812,21 +811,22 @@ Inserted by installing org-mode or when a release is made."
              (darkroom-mode 1)
              (visual-line-mode 1)
              (flyspell-mode 1))))
-  :commands (darkroom-mode darkroom-tentative-mode)
-  :config
-  (setq darkroom-margins 0.1)
-  (add-hook 'org-mode-hook 'jm/toggle-prose-mode)
-  (add-hook 'markdown-mode-hook 'jm/toggle-prose-mode)
-  (ryo-modal-key "SPC a p" 'jm/toggle-prose-mode)
+  :custom
+  (darkroom-margins 0.1)
+  :hook
+  (org-mode-hook . jm/toggle-prose-mode)
+  (markdown-mode-hook . jm/toggle-prose-mode)
+  :ryo
+  ("SPC a p" jm/toggle-prose-mode)
   )
 
 (straight-use-package 'auctex)
 
 
 ;;;; Email
-(require 'smtpmail)
 (use-package notmuch
   :if (executable-find "notmuch")
+  :init (require 'smtpmail)
   :straight (notmuch
              :local-repo "~/.nix-profile/share/emacs/site-lisp/"
              :files ("notmuch*.elc"))
