@@ -17,6 +17,7 @@
         kak/b
         kak/c
         kak/d
+        kak/deactivate-mark
         kak/downcase
         kak/escape
         kak/gl
@@ -83,6 +84,7 @@
         ryo:d1dd1223b7a7caa4a871db9e9e2bff6c:backward-same-syntax
         ryo:d7762b250433e384b77e82019e29e7d6:move-end-of-line
         ryo:d90fcccac9ed9f6087bc94e7a229b598:kak/select-to-char
+        ryo:ddfec1226be377cadae87b4d7da0b634:kak/backward-same-syntax
         ryo:e4fe141b0e119b6d1fa1fce3dfa14784:end-of-line
         ryo:e5dbb354d557462cb65bb1d6bb3fa5af:evilnc-comment-or-uncomment-lines
         ryo:e7a5212c33f50d09246829cc7289a6d2:forward-char

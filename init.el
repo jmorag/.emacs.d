@@ -55,21 +55,21 @@
   (defun ryo-enter () "Enter normal mode" (interactive) (ryo-modal-mode 1)))
 
 (use-package kakoune
-  :straight (kakoune :local-repo "~/Projects/kakoune.el/")
+  :straight (kakoune :host github :repo "jmorag/kakoune.el")
   :chords ("fd" . ryo-enter)
   :bind ("C-z" . ryo-modal-mode)
   :hook (after-init . my/kakoune-setup)
   :config
+  (defun my/goto-init () (interactive) (find-file user-init-file))
   (defun my/kakoune-setup ()
     "Call kak/setup-keybinds and then add some personal config."
+    (interactive)
     (kak/setup-keybinds)
     (setq ryo-modal-cursor-type 'box)
     (add-hook 'prog-mode-hook #'ryo-enter)
     (define-key ryo-modal-mode-map (kbd "SPC h") 'help-command)
     ;; Access all C-x bindings easily
     (define-key ryo-modal-mode-map (kbd "z") ctl-x-map)
-    ;; I dislike the default kakoune behavior of ;
-    (ryo-modal-unset-key ";")
     (ryo-modal-keys
      ("," save-buffer)
      ("P" counsel-yank-pop)
@@ -84,7 +84,8 @@
      ("M-s" mc/split-region)
      (";" (("q" delete-window)
            ("v" split-window-horizontally)
-           ("s" split-window-vertically)))
+           ("s" split-window-vertically)
+           ("i" my/goto-init)))
      ("C-h" windmove-left)
      ("C-j" windmove-down)
      ("C-k" windmove-up)
@@ -205,10 +206,7 @@
       backup-directory-alist `(("." . ,(concat user-emacs-directory
                                                "backups"))))
 (global-auto-revert-mode t)
-
-(use-package crux
-  :ryo
-  ("; i" crux-find-user-init-file))
+(use-package crux)
 
 ;;; Interface management
 (use-package which-key
