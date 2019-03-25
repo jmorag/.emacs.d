@@ -380,6 +380,35 @@
 
 ;;; Project management
 ;;;; Dired
+(use-package dired-hacks-utils
+  :ryo ("SPC d" dired-jump)
+  :bind (:map dired-mode-map
+              ("h" . dired-up-directory)
+              ("j" . dired-hacks-next-file)
+              ("k" . dired-hacks-previous-file)
+              ("l" . dired-find-alternate-file)
+              ("K" . dired-do-kill-lines)))
+(use-package dired-filter
+  :config (define-key dired-mode-map (kbd "f") dired-filter-map))
+(use-package dired-narrow
+  :bind (:map dired-mode-map
+              ("n" . dired-narrow)))
+(use-package dired-collapse
+  :hook (dired-mode . dired-collapse-mode))
+(use-package dired-subtree
+  :bind (:map dired-mode-map
+              ("i" . dired-subtree-toggle)
+              ("C-j" . dired-subtree-next-sibling)
+              ("C-k" . dired-subtree-previous-sibling)))
+(use-package peep-dired
+  :custom
+  (peed-dired-cleanup-on-disable t)
+  (peep-dired-enable-on-directories t)
+  :bind (:map dired-mode-map
+              ("p" . peep-dired)
+              :map peep-dired-mode-map
+              ("j" . peep-dired-next-file)
+              ("k" . peep-dired-prev-file)))
 
 ;;;; Direnv
 (use-package direnv
@@ -881,3 +910,4 @@ Inserted by installing org-mode or when a release is made."
 (provide 'init)
 ;; init.el ends here
 (put 'narrow-to-region 'disabled nil)
+(put 'dired-find-alternate-file 'disabled nil)
