@@ -198,6 +198,8 @@
 ;; Lifted from technomancy's better-defaults package
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'forward)
+(put 'narrow-to-region 'disabled nil)
+(put 'dired-find-alternate-file 'disabled nil)
 
 (require 'saveplace)
 (setq-default save-place t)
@@ -255,24 +257,11 @@
 (use-package counsel
   :init
   (counsel-mode 1)
-  :commands      ; Load counsel when any of these commands are invoked
-  (counsel-M-x   ; M-x use counsel
-   counsel-find-file          ; C-x C-f use counsel-find-file
-   counsel-recentf            ; search recently edited files
-   counsel-git                ; search for files in git repo
-   counsel-git-grep           ; search for regexp in git repo
-   counsel-ag                 ; search for regexp in git repo using ag
-   counsel-locate             ; search for files or else using locate
-   counsel-rg)                ; search for regexp in git repo using
-  :config
-  (setq counsel-rg-base-command
-	"rg -i -M 120 --follow --glob \"!.git/*\" --no-heading --ignore-case\
-      --line-number --column --color never %s .")
   :ryo
   (":" counsel-M-x)
   ("SPC" (("f f" counsel-find-file)
           ("f r" counsel-recentf)
-          ("/" counsel-rg))))
+          ("/" counsel-ag))))
 
 ;; Swiper
 (use-package swiper
@@ -384,6 +373,7 @@
 ;;; Project management
 ;;;; Dired
 (use-package dired-hacks-utils
+  :custom (dired-clean-confirm-killing-deleted-buffers . nil)
   :ryo ("SPC d" dired-jump)
   :bind (:map dired-mode-map
               ("h" . dired-up-directory)
@@ -565,35 +555,20 @@
 ;;;; Haskell
 (use-package haskell-mode
   :preface
-  (defun haskell-backward-sexp (count)
-    (interactive "p") (haskell-forward-sexp (- count)))
+  ;; (defun haskell-backward-sexp (count)
+  ;; (interactive "p") (haskell-forward-sexp (- count)))
   :hook (haskell-mode . haskell-decl-scan-mode)
   :ryo
   (:mode 'haskell-mode)
-  ("e" haskell-forward-sexp :first '(set-mark-here))
-  ("E" haskell-forward-sexp :first '(set-mark-if-inactive))
-  ("M-e" haskell-backward-sexp :first '(set-mark-here))
-  ("M-E" haskell-backward-sexp :first '(set-mark-if-inactive))
+  ;; ("e" haskell-forward-sexp :first '(set-mark-here))
+  ;; ("E" haskell-forward-sexp :first '(set-mark-if-inactive))
+  ;; ("M-e" haskell-backward-sexp :first '(set-mark-here))
+  ;; ("M-E" haskell-backward-sexp :first '(set-mark-if-inactive))
   ("[ [" haskell-ds-backward-decl :first '(set-mark-here))
   ("{ [" haskell-ds-backward-decl :first '(set-mark-if-inactive))
   ("] ]" haskell-ds-forward-decl :first '(set-mark-here))
   ("} ]" haskell-ds-forward-decl :first '(set-mark-if-inactive))
   )
-
-;; (use-package intero
-;;   :after haskell-mode
-;;   ;; :hook (haskell-mode . intero-mode)
-;;   :config (flycheck-add-next-checker 'intero '(warning . haskell-hlint))
-;;   :ryo
-;;   (:mode 'haskell-mode)
-;;   ("SPC m t" intero-type-at)
-;;   ("SPC m i" intero-info)
-;;   ("SPC m c" intero-repl-eval-region)
-;;   ("SPC m e" intero-expand-splice-at-point)
-;;   ("SPC m l" intero-repl-load)
-;;   ("SPC m r" intero-apply-suggestions)
-;;   ("SPC m z" intero-repl)
-;;   )
 
 (use-package dante
   :after haskell-mode
@@ -935,5 +910,3 @@ Inserted by installing org-mode or when a release is made."
 
 (provide 'init)
 ;; init.el ends here
-(put 'narrow-to-region 'disabled nil)
-(put 'dired-find-alternate-file 'disabled nil)
