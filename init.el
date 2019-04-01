@@ -45,18 +45,17 @@
   :config (global-disable-mouse-mode))
 
 ;;;; Fancy text editing
-(use-package use-package-chords
-  :config
-  (key-chord-mode 1))
-
+(use-package key-chord
+  :config (key-chord-mode 1))
+(use-package key-seq)
 (use-package ryo-modal
   :straight (ryo-modal :host github :repo "jmorag/ryo-modal")
   :config
-  (defun ryo-enter () "Enter normal mode" (interactive) (ryo-modal-mode 1)))
+  (defun ryo-enter () "Enter normal mode" (interactive) (ryo-modal-mode 1))
+  (key-seq-define-global "fd" 'ryo-enter))
 
 (use-package kakoune
   :straight (kakoune :host github :repo "jmorag/kakoune.el")
-  :chords ("fd" . ryo-enter)
   :bind ("C-z" . ryo-modal-mode)
   :hook (after-init . my/kakoune-setup)
   :config
