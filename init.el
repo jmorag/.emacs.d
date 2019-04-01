@@ -392,10 +392,10 @@
               ("l" . dired-find-alternate-file)
               ("K" . dired-do-kill-lines)))
 (use-package dired-filter
-  :config (define-key dired-mode-map (kbd "f") dired-filter-map))
+  :config (define-key dired-mode-map (kbd "F") dired-filter-map))
 (use-package dired-narrow
   :bind (:map dired-mode-map
-              ("n" . dired-narrow)))
+              ("f" . dired-narrow)))
 (use-package dired-collapse
   :hook (dired-mode . dired-collapse-mode))
 (use-package dired-subtree
