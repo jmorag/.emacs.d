@@ -91,13 +91,26 @@
      ("C-k" windmove-up)
      ("C-l" windmove-right)
      ("C-u" scroll-down-command :first '(deactivate-mark))
-     ("C-d" scroll-up-command :first '(deactivate-mark)))))
-
-(use-package visual-regexp
-  :ryo
-  ("s" vr/mc-mark)
-  ("?" vr/replace)
-  ("M-/" vr/query-replace))
+     ("C-d" scroll-up-command :first '(deactivate-mark)))
+    ;; These need to be here because otherwise kakoune defaults would override them
+    (use-package avy
+      :config
+      (setq avy-background t)
+      (setq avy-all-windows t)
+      :ryo
+      ("f" avy-goto-char-in-line :first '(deactivate-mark))
+      ("F" avy-goto-char-in-line :first '(set-mark-if-inactive))
+      ("C-f" avy-goto-char-timer :first '(deactivate-mark)))
+    (use-package embrace
+      :ryo
+      ("S" embrace-commander))
+    (use-package visual-regexp
+      :ryo
+      ("s" vr/mc-mark)
+      ("?" vr/replace)
+      ("M-/" vr/query-replace))
+    )
+  )
 
 (use-package phi-search
   :bind (("C-s" . phi-search)
@@ -352,15 +365,6 @@
   (global-set-key (kbd "C-c s") 'company-yasnippet))
 
 ;;; In buffer navigation
-(use-package avy
-  :config
-  (setq avy-background t)
-  (setq avy-all-windows t)
-  :ryo
-  ("f" avy-goto-char-in-line :first '(deactivate-mark))
-  ("F" avy-goto-char-in-line :first '(set-mark-if-inactive))
-  ("C-f" avy-goto-char-timer :first '(deactivate-mark)))
-
 (use-package outshine
   :config
   (add-hook 'outline-minor-mode-hook 'outshine-mode)
@@ -497,10 +501,6 @@
 (use-package rainbow-delimiters
   :config
   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
-
-(use-package embrace
-  :ryo
-  ("S" embrace-commander))
 
 ;;;; Indentation
 (use-package aggressive-indent
