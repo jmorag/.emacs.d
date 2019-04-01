@@ -529,6 +529,8 @@
 (use-package format-all
   :ryo
   ("SPC =" format-all-buffer))
+(use-package ws-butler
+  :hook (prog-mode . ws-butler-mode))
 
 ;;;; Commenting
 (use-package evil-nerd-commenter
