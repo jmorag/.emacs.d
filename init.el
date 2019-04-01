@@ -470,7 +470,6 @@
         ("RET" . with-editor-finish-if-ryo)))
 
 (use-package git-timemachine
-  :defer t
   :ryo
   ("SPC G" git-timemachine)
   :bind
@@ -478,6 +477,17 @@
         ("j" . git-timemachine-show-next-revision)
         ("k" . git-timemachine-show-previous-revision)
         ("," . write-file)))
+
+(use-package hydra
+  :ryo
+  ("SPC s" :hydra
+   '(hydra-smerge ()
+                  "A hydra for smerge"
+                  ("j" smerge-next "next conflict")
+                  ("k" smerge-prev "previous conflict")
+                  ("u" smerge-keep-upper "keep upper conflict")
+                  ("l" smerge-keep-lower "keep lower conflict")
+                  ("q" nil "cancel" :color blue))))
 
 ;;;; Projectile
 (use-package projectile
