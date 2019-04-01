@@ -697,8 +697,20 @@
   :straight (elm-mode :host github :repo "jcollard/elm-mode"))
 
 ;;;; Ocaml
-(use-package tuareg
-  )
+(use-package tuareg)
+(use-package merlin
+  :straight (merlin
+             :local-repo "~/.nix-profile/share/emacs/site-lisp/"
+             :files ("merlin*.elc"))
+  :config
+  (add-hook 'tuareg-mode-hook 'merlin-mode)
+  (add-hook 'caml-mode-hook 'merlin-mode)
+  (setq merlin-error-after-save nil)
+  (setq merlin-command "/home/joseph/.nix-profile/bin/ocamlmerlin"))
+(use-package flycheck-ocaml
+  :config
+  (flycheck-ocaml-setup)
+  (add-hook 'tuareg-mode-hook 'flycheck-mode))
 
 ;;;; Org mode install
 ;; Installing org mode with straight is annoying
