@@ -539,7 +539,9 @@
 ;;;; Eshell
 (use-package eshell-toggle
   :straight (:host github :repo "4DA/eshell-toggle")
-  :bind ("C-t" . eshell-toggle)
+  :bind
+  ("C-t" . eshell-toggle)
+  ("M-t" . transpose-chars)
   :config
   (setq et-use-projectile-root t)
   (setq et-eshell-height-fraction 3))
@@ -588,7 +590,8 @@
   :init
   (add-hook 'haskell-mode-hook 'flycheck-mode)
   (add-hook 'haskell-mode-hook 'dante-mode)
-  :config (flycheck-add-next-checker 'haskell-dante '(warning . haskell-hlint))
+  :config
+  (flycheck-add-next-checker 'haskell-dante '(warning . haskell-hlint))
   :bind
   (:map dante-mode-map
         ("C-c C-c" . dante-eval-block))
