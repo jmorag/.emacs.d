@@ -10,7 +10,8 @@
  '(org-export-backends (quote (ascii html icalendar latex md odt)))
  '(safe-local-variable-values
    (quote
-    ((eval when
+    ((dante-repl-command-line "nix-shell" "--pure" "--run" "ghci")
+     (eval when
            (and
             (buffer-file-name)
             (file-regular-p

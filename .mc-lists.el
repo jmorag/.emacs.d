@@ -64,11 +64,13 @@
         ryo-modal-repeat
         ryo:05cf1b18d95ef5a653397ec40f07e7e6:forward-same-syntax
         ryo:07a1551edff338532c86f629c151f7d4:next-line
+        ryo:09f9e866cc2a04767fa15b05a4a197f6:forward-same-syntax
         ryo:0bb4aa504aadfd9c58c187b14d5806d6:embrace-commander
         ryo:3384a614304dd5324a6aa723d5ed9e5e:previous-line
         ryo:3a8ba329f32aa4ca26aedb4e0096966d:backward-char
         ryo:3bb381c903c6cfa663a851920ee9f42e:undo-tree-undo
         ryo:3d738d4315c2c23e69c7a6b7358e52f2:forward-char
+        ryo:418ebea3d3c17d65f1caa6d22c93577a:forward-char
         ryo:42f606a03331e6ec0b254a5086c1e672:kak/select-up-to-char
         ryo:4ba44c9869d838fd0f93ea2dabc09909:backward-char
         ryo:5afdf8eb96b1ba206f89586c7bde6655:back-to-indentation
@@ -79,12 +81,14 @@
         ryo:8e022ec1dd956ebb75e780e711bf370d:avy-goto-char-in-line
         ryo:a147c9a24b4efc5e3424c4618b0aa58a:end-of-line
         ryo:b219ebd046736cb61e7239c837f2a722:emacs-surround
+        ryo:bb81d76943a66066379de793522f5418:backward-char
         ryo:bd01dafd864b73f282864790f7d77e3c:kak/d
         ryo:c44301a1d93e869c777c4e24d9131cb5:er/expand-region
         ryo:d1dd1223b7a7caa4a871db9e9e2bff6c:backward-same-syntax
         ryo:d7762b250433e384b77e82019e29e7d6:move-end-of-line
         ryo:d90fcccac9ed9f6087bc94e7a229b598:kak/select-to-char
         ryo:ddfec1226be377cadae87b4d7da0b634:kak/backward-same-syntax
+        ryo:df3281848c0970ceb11792154ad9d8fe:forward-same-syntax
         ryo:e4fe141b0e119b6d1fa1fce3dfa14784:end-of-line
         ryo:e5dbb354d557462cb65bb1d6bb3fa5af:evilnc-comment-or-uncomment-lines
         ryo:e7a5212c33f50d09246829cc7289a6d2:forward-char
