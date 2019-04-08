@@ -3,10 +3,13 @@
 
 (setq mc/cmds-to-run-for-all
       '(
+        LaTeX-insert-left-brace
+        TeX-insert-backslash
         c-electric-brace
         electric-newline-and-maybe-indent
         haskell-indentation-common-electric-command
         holy-exchange
+        indent-for-tab-command
         kak/Gl
         kak/H
         kak/L

@@ -220,7 +220,9 @@
       backup-directory-alist `(("." . ,(concat user-emacs-directory
                                                "backups"))))
 (global-auto-revert-mode t)
-(use-package crux)
+(use-package crux
+  :ryo
+  ("g u" crux-view-url))
 
 ;;; Interface management
 (use-package which-key
@@ -779,7 +781,9 @@ Inserted by installing org-mode or when a release is made."
   :config
   (setq-default pdf-view-display-size 'fit-page)
   :bind (:map pdf-view-mode-map
-              ("q" . kill-this-buffer))
+              ("q" . kill-this-buffer)
+              ("j" . pdf-view-next-page-command)
+              ("k" . pdf-view-previous-page-command))
   )
 
 ;;;; 2048
@@ -850,7 +854,14 @@ Inserted by installing org-mode or when a release is made."
   ("SPC a p" jm/toggle-prose-mode)
   )
 
-(straight-use-package 'auctex)
+(use-package tex-site
+  :straight (auctex
+             :local-repo "~/.nix-profile/share/emacs/site-lisp/"
+             :files ("auctex.el" "tex-site.el" "auctex/*.el"))
+  :config
+  (setq TeX-auto-save t)
+  (setq TeX-parse-self t))
+(use-package company-auctex)
 
 
 ;;;; Email
