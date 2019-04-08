@@ -211,7 +211,7 @@
 (setq save-interprogram-paste-before-kill t
       apropos-do-all t
       mouse-yank-at-point t
-      require-final-newline t
+      require-final-newline nil
       load-prefer-newer t
       ediff-window-setup-function 'ediff-setup-windows-plain
       ediff-split-window-function 'split-window-horizontally
