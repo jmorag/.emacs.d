@@ -6,7 +6,15 @@
         LaTeX-insert-left-brace
         TeX-insert-backslash
         c-electric-brace
+        c-electric-delete-forward
+        c-electric-lt-gt
+        c-electric-paren
+        c-electric-semi&comma
+        c-electric-slash
+        c-electric-star
+        c-indent-new-comment-line
         electric-newline-and-maybe-indent
+        er/mark-inside-pairs
         haskell-indentation-common-electric-command
         holy-exchange
         indent-for-tab-command
@@ -39,6 +47,9 @@
         kak/upcase
         kak/w
         kak/x
+        kakoune-d
+        kakoune-insert-mode
+        kakoune-replace-char
         kill-rectangle
         lispy-backtick
         lispy-braces
@@ -54,6 +65,10 @@
         lispy-space
         lispy-tick
         lispy-yank
+        lpy-barf
+        lpy-delete
+        lpy-parens
+        lpy-space
         modalka-translation
         org-cycle
         org-delete-char
@@ -61,6 +76,38 @@
         org-yank
         outshine-self-insert-command
         phi-search-backward
+        pspecial-digit-argument
+        pspecial-hydra-lispy-move/body
+        pspecial-lispy-back
+        pspecial-lispy-ediff-regions
+        pspecial-lispy-eval
+        pspecial-lispy-eval-and-insert
+        pspecial-lispy-goto-symbol
+        pspecial-lispy-narrow
+        pspecial-lispy-new-copy
+        pspecial-lispy-outline-next
+        pspecial-lispy-outline-prev
+        pspecial-lispy-shifttab
+        pspecial-lispy-widen
+        pspecial-lispy-x
+        pspecial-lpy-avy-symbol
+        pspecial-lpy-contents
+        pspecial-lpy-different
+        pspecial-lpy-down
+        pspecial-lpy-flow
+        pspecial-lpy-goto
+        pspecial-lpy-left
+        pspecial-lpy-mark
+        pspecial-lpy-occur
+        pspecial-lpy-open
+        pspecial-lpy-right
+        pspecial-lpy-tab
+        pspecial-lpy-teleport
+        pspecial-lpy-up
+        pspecial-lpy-view
+        pspecial-pop-tag-mark
+        pspecial-self-insert-command
+        pspecial-undo
         ryo-enter
         ryo-leave
         ryo-modal-mode
@@ -69,30 +116,40 @@
         ryo:07a1551edff338532c86f629c151f7d4:next-line
         ryo:09f9e866cc2a04767fa15b05a4a197f6:forward-same-syntax
         ryo:0bb4aa504aadfd9c58c187b14d5806d6:embrace-commander
+        ryo:300555b81489d6e4d63e3d91a3f97d8e:kakoune-backward-same-syntax
         ryo:3384a614304dd5324a6aa723d5ed9e5e:previous-line
         ryo:3a8ba329f32aa4ca26aedb4e0096966d:backward-char
         ryo:3bb381c903c6cfa663a851920ee9f42e:undo-tree-undo
+        ryo:3c2e1db31deeda45cc2b39b079c6c9d1:forward-word
         ryo:3d738d4315c2c23e69c7a6b7358e52f2:forward-char
+        ryo:3f299e8e98e725fccebe25262de2a036:forward-char
         ryo:418ebea3d3c17d65f1caa6d22c93577a:forward-char
         ryo:42f606a03331e6ec0b254a5086c1e672:kak/select-up-to-char
         ryo:4ba44c9869d838fd0f93ea2dabc09909:backward-char
         ryo:5afdf8eb96b1ba206f89586c7bde6655:back-to-indentation
         ryo:5fa0e76c510678b6c22c30e6e493d5c7:kak/O
+        ryo:664dd2c3bb879b868ad2d6daefa4eee9:end-of-line
         ryo:6b7f269a0c9f62ded5e6ef76672f3722:forward-same-syntax
+        ryo:70e73419d6581ec46daef14b98265a98:kakoune-d
+        ryo:8072e5733a19233579c94e6c32064d09:kak/select-up-to-char
         ryo:852c571a517d85538a1f9b56f60a68f3:backward-same-syntax
         ryo:8ab5d0830a9c4685f6b642216b9c72bd:forward-char
         ryo:8e022ec1dd956ebb75e780e711bf370d:avy-goto-char-in-line
         ryo:a147c9a24b4efc5e3424c4618b0aa58a:end-of-line
+        ryo:afbbc9ea2ae90f1c40fa71ac17a956d5:backward-char
         ryo:b219ebd046736cb61e7239c837f2a722:emacs-surround
         ryo:bb81d76943a66066379de793522f5418:backward-char
+        ryo:bc3c9c55c5e3830a7708366cb8aef9c0:kill-line
         ryo:bd01dafd864b73f282864790f7d77e3c:kak/d
         ryo:c44301a1d93e869c777c4e24d9131cb5:er/expand-region
         ryo:d1dd1223b7a7caa4a871db9e9e2bff6c:backward-same-syntax
         ryo:d7762b250433e384b77e82019e29e7d6:move-end-of-line
+        ryo:d840b8a94a20ad9f5899e616d2cdb76b:beginning-of-line
         ryo:d90fcccac9ed9f6087bc94e7a229b598:kak/select-to-char
         ryo:ddfec1226be377cadae87b4d7da0b634:kak/backward-same-syntax
         ryo:df3281848c0970ceb11792154ad9d8fe:forward-same-syntax
         ryo:e4fe141b0e119b6d1fa1fce3dfa14784:end-of-line
+        ryo:e5884e5d9e03a92b8a235a1d72c9947a:next-line
         ryo:e5dbb354d557462cb65bb1d6bb3fa5af:evilnc-comment-or-uncomment-lines
         ryo:e7a5212c33f50d09246829cc7289a6d2:forward-char
         ryo:eac1488896d62c02d1ece92d73bb9d26:kak/o

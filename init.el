@@ -55,7 +55,7 @@
   (key-seq-define-global "fd" 'ryo-enter))
 
 (use-package kakoune
-  :straight (kakoune :host github :repo "jmorag/kakoune.el")
+  :straight (kakoune :local-repo "~/Projects/kakoune.el/" :files ("*.el"))
   :bind ("C-z" . ryo-modal-mode)
   :hook (after-init . my/kakoune-setup)
   :config
@@ -63,7 +63,7 @@
   (defun my/kakoune-setup ()
     "Call kak/setup-keybinds and then add some personal config."
     (interactive)
-    (kak/setup-keybinds)
+    (kakoune-setup-keybinds)
     (setq ryo-modal-cursor-type 'box)
     (add-hook 'prog-mode-hook #'ryo-enter)
     (define-key ryo-modal-mode-map (kbd "SPC h") 'help-command)
@@ -113,7 +113,7 @@
 
 (use-package phi-search
   :bind (("C-s" . phi-search)
-	 ("C-r" . phi-search-backward)))
+	     ("C-r" . phi-search-backward)))
 
 ;;;; Sane undo and redo
 (use-package undo-tree
@@ -191,6 +191,8 @@
 (setq-default
  ring-bell-function               'ignore ;; Stop ringing bell
  sentence-end-double-space        nil	  ; I prefer single space
+ tab-width                        4       ; 8 is enormous
+ initial-scratch-message          nil     ; I know what the scratch buffer is for
  )
 
 (defalias 'yes-or-no-p #'y-or-n-p)
@@ -222,7 +224,8 @@
 (global-auto-revert-mode t)
 (use-package crux
   :ryo
-  ("g u" crux-view-url))
+  ("g u" crux-view-url)
+  ("g U" browse-url-chrome))
 
 ;;; Interface management
 (use-package which-key
@@ -375,7 +378,8 @@
 ;;; Project management
 ;;;; Dired
 (use-package dired-hacks-utils
-  :custom (dired-clean-confirm-killing-deleted-buffers . nil)
+  :custom
+  (dired-clean-confirm-killing-deleted-buffers . nil)
   :ryo ("SPC d" dired-jump)
   :bind (:map dired-mode-map
               ("h" . dired-up-directory)
@@ -387,7 +391,8 @@
   :config (define-key dired-mode-map (kbd "F") dired-filter-map))
 (use-package dired-narrow
   :bind (:map dired-mode-map
-              ("f" . dired-narrow)))
+              ("f" . dired-narrow)
+              ("/" . dired-narrow)))
 (use-package dired-collapse
   :hook (dired-mode . dired-collapse-mode))
 (use-package dired-subtree
@@ -404,6 +409,10 @@
               :map peep-dired-mode-map
               ("j" . peep-dired-next-file)
               ("k" . peep-dired-prev-file)))
+(use-package dired+
+  :straight (dired+ :host github :repo "emacsmirror/dired-plus")
+  :config
+  (add-hook 'dired-mode-hook '(lambda () (diredp-toggle-find-file-reuse-dir 1))))
 
 ;;;; Direnv
 (use-package direnv
@@ -572,33 +581,45 @@
   :hook (eshell-mode . esh-autosuggest-mode))
 (use-package eshell-autojump)
 
+(defun display-ansi-colors ()
+  "Function to display ansi color codes in read-only buffer"
+  (interactive)
+  (let ((inhibit-read-only t))
+    (ansi-color-apply-on-region (point-min) (point-max))))
+
 ;;; Language specific programming concerns
 ;;;; Haskell
 (use-package haskell-mode
   :preface
-  ;; (defun haskell-backward-sexp (count)
-  ;; (interactive "p") (haskell-forward-sexp (- count)))
-  :hook (haskell-mode . haskell-decl-scan-mode)
-  :ryo
-  (:mode 'haskell-mode)
-  ;; ("e" haskell-forward-sexp :first '(set-mark-here))
-  ;; ("E" haskell-forward-sexp :first '(set-mark-if-inactive))
-  ;; ("M-e" haskell-backward-sexp :first '(set-mark-here))
-  ;; ("M-E" haskell-backward-sexp :first '(set-mark-if-inactive))
-  ("[ [" haskell-ds-backward-decl :first '(set-mark-here))
-  ("{ [" haskell-ds-backward-decl :first '(set-mark-if-inactive))
-  ("] ]" haskell-ds-forward-decl :first '(set-mark-here))
-  ("} ]" haskell-ds-forward-decl :first '(set-mark-if-inactive))
-  )
+  :hook (haskell-mode . haskell-decl-scan-mode))
 
 (use-package dante
-  :after haskell-mode
   :commands 'dante-mode
   :init
   (add-hook 'haskell-mode-hook 'flycheck-mode)
   (add-hook 'haskell-mode-hook 'dante-mode)
+  ;; Doom
+  (setq dante-load-flags '(;; defaults:
+                           "+c"
+                           "-Wwarn=missing-home-modules"
+                           "-fno-diagnostics-show-caret"
+                           ;; neccessary to make attrap-attrap useful:
+                           "-Wall"
+                           ;; necessary to make company completion useful:
+                           "-fdefer-typed-holes"
+                           "-fdefer-type-errors"))
   :config
   (flycheck-add-next-checker 'haskell-dante '(warning . haskell-hlint))
+  (defun +haskell*restore-modified-state (orig-fn &rest args)
+    "Dante quietly saves the current buffer (without triggering save hooks) before
+invoking flycheck, unexpectedly leaving the buffer in an unmodified state. This
+is annoying if we depend on save hooks to do work on the buffer (like
+reformatting), so we restore a (false) modified state."
+    (let ((modified-p (buffer-modified-p)))
+      (apply orig-fn args)
+      (if modified-p (set-buffer-modified-p t))))
+  (advice-add #'dante-async-load-current-buffer :around #'+haskell*restore-modified-state)
+
   :bind
   (:map dante-mode-map
         ("C-c C-c" . dante-eval-block))
@@ -606,9 +627,12 @@
   (:mode 'haskell-mode)
   ("SPC m t" dante-type-at)
   ("SPC m i" dante-info)
-  ("SPC m e" dante-eval-block)
-  )
+  ("SPC m e" dante-eval-block))
 
+(use-package attrap
+  :ryo
+  (:mode 'haskell-mode)
+  ("SPC m f" attrap-attrap))
 (use-package shakespeare-mode)
 (use-package shm
   :after haskell-mode
@@ -618,7 +642,6 @@
   (:mode 'haskell-mode)
   ("SPC m s" structured-haskell-mode)
   )
-
 
 ;;;; Idris
 (use-package idris-mode
@@ -685,10 +708,13 @@
   :config
   (add-hook 'ryo-modal-mode-hook
             (lambda ()
-              (when (eq major-mode 'emacs-lisp-mode)
+              (when (find major-mode '(emacs-lisp-mode clojure-mode))
         	(if (bound-and-true-p ryo-modal-mode)
                     (lispy-mode -1)
                   (lispy-mode 1))))))
+
+(use-package clojure-mode)
+(use-package cider)
 
 (use-package elisp-slime-nav
   :config
@@ -696,8 +722,7 @@
     (add-hook hook 'turn-on-elisp-slime-nav-mode)))
 
 ;;;; Nix
-(use-package nix-mode
-  )
+(use-package nix-mode)
 
 ;;;; Elm
 (use-package reformatter
@@ -721,6 +746,34 @@
   :config
   (flycheck-ocaml-setup)
   (add-hook 'tuareg-mode-hook 'flycheck-mode))
+
+;;;; Python
+(use-package anaconda-mode
+  :hook (python-mode . anaconda-mode)
+  (python-mode . anaconda-eldoc-mode))
+(use-package company-anaconda
+  :config
+  (eval-after-load "company"
+    '(add-to-list 'company-backends '(company-anaconda :with company-capf))))
+(use-package lpy
+  :straight (lpy :host github :repo "abo-abo/lpy")
+  :config
+  (add-hook 'ryo-modal-mode-hook
+            (lambda ()
+              (when (find major-mode '(python-mode))
+        	    (if (bound-and-true-p ryo-modal-mode)
+                    (lpy-mode -1)
+                  (lpy-mode 1))))))
+
+;;;; C
+(use-package cc-mode
+  :custom (c-basic-offset 2)
+  :mode (("\\.mc\\'" . c-mode)))
+
+;;;; LLVM - for when we need to look at llvm
+(use-package llvm-mode
+  :straight (llvm-mode :local-repo "~/.emacs.d/llvm"
+                       :files ("*.el")))
 
 ;;;; Org mode install
 ;; Installing org mode with straight is annoying
@@ -884,36 +937,6 @@ Inserted by installing org-mode or when a release is made."
 
 
 ;;;; Email
-(use-package notmuch
-  :if (executable-find "notmuch")
-  :init (require 'smtpmail)
-  :straight (notmuch
-             :local-repo "~/.nix-profile/share/emacs/site-lisp/"
-             :files ("notmuch*.elc"))
-  :commands (notmuch)
-  :custom
-  (notmuch-search-oldest-first . nil))
-
-;;;; Calendar
-;; (use-package org-gcal
-;;   :config
-;;   (require 'org-gcal)
-;;   (setq org-gcal-client-id "598036041241-s9r8dgpa6umicqeerum2f4afb06qirs9.apps.googleusercontent.com"
-;;         org-gcal-client-secret "NkMuYHH-HAhOCYjYCZO986aW"
-;;         org-gcal-file-alist '(("sefim96@gmail.com" .  "~/Personal/calendar.org")))
-;;   (setq org-agenda-files (list "~/Personal/calendar.org")))
-
-;; (use-package calfw
-;;   :straight (calfw :host github :repo "kiwanami/emacs-calfw")
-;;   :config
-;;   (require 'calfw)
-;;   (require 'calfw-org)
-;;   (require 'calfw-ical)
-;;   (require 'calfw-cal)
-;;   (defun my-open-calendar ()
-;;     (interactive)
-;;     (cfw:open-ical-calendar "https://calendar.google.com/calendar/ical/sefim96%40gmail.com/private-e18a0b7ec41c3551534d98a6e6dad582/basic.ics"))
-;;   )
 
 ;;;; Wifi management
 (use-package nm

@@ -11,7 +11,13 @@
  '(org-export-backends (quote (ascii html icalendar latex md odt)))
  '(safe-local-variable-values
    (quote
-    ((dante-repl-command-line "nix-shell" "--pure" "--run" "ghci")
+    ((dante-repl-command-line "stack" "repl")
+     (dante-repl-command-line "stack repl")
+     (dante-repl-command-line "nix-shell" "--run" "cabal new-repl")
+     (dante-repl-command-line "nix-shell" "--pure" "--run"
+                              (concat "cabal" "new-repl"))
+     (dante-repl-command-line "nix-shell" "--pure" "--run" "cabal new-repl")
+     (dante-repl-command-line "nix-shell" "--pure" "--run" "ghci")
      (eval when
            (and
             (buffer-file-name)
