@@ -48,8 +48,10 @@
         kak/w
         kak/x
         kakoune-d
+        kakoune-exchange
         kakoune-insert-mode
         kakoune-replace-char
+        kakoune-x
         kill-rectangle
         lispy-backtick
         lispy-braces
@@ -116,6 +118,7 @@
         ryo:07a1551edff338532c86f629c151f7d4:next-line
         ryo:09f9e866cc2a04767fa15b05a4a197f6:forward-same-syntax
         ryo:0bb4aa504aadfd9c58c187b14d5806d6:embrace-commander
+        ryo:1f824378cd608ad59429e475834c37bf:forward-same-syntax
         ryo:300555b81489d6e4d63e3d91a3f97d8e:kakoune-backward-same-syntax
         ryo:3384a614304dd5324a6aa723d5ed9e5e:previous-line
         ryo:3a8ba329f32aa4ca26aedb4e0096966d:backward-char
@@ -135,6 +138,7 @@
         ryo:852c571a517d85538a1f9b56f60a68f3:backward-same-syntax
         ryo:8ab5d0830a9c4685f6b642216b9c72bd:forward-char
         ryo:8e022ec1dd956ebb75e780e711bf370d:avy-goto-char-in-line
+        ryo:934fcd130f5f2ad6db92d3fce1489dc5:kakoune-backward-same-syntax
         ryo:a147c9a24b4efc5e3424c4618b0aa58a:end-of-line
         ryo:afbbc9ea2ae90f1c40fa71ac17a956d5:backward-char
         ryo:b219ebd046736cb61e7239c837f2a722:emacs-surround
@@ -234,10 +238,12 @@
 (setq mc/cmds-to-run-once
       '(
         counsel-M-x
+        dante-eval-block
         describe-key
         disable-mouse--handle
         eldoc-eval-expression
         electric-pair-delete-pair
+        eval-print-last-sexp
         idris-load-file
         iedit-switch-to-mc-mode
         insert-register

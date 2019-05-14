@@ -39,11 +39,6 @@
 (setq straight-use-package-by-default t)
 
 ;;; Core editor facilities
-;;;; Turn off the mouse on linux
-(use-package disable-mouse
-  :if (string= (system-name) "jnix")
-  :config (global-disable-mouse-mode))
-
 ;;;; Fancy text editing
 (use-package key-chord
   :config (key-chord-mode 1))
@@ -228,6 +223,11 @@
   ("g U" browse-url-chrome))
 
 ;;; Interface management
+(use-package disable-mouse
+  :if (string= (system-name) "jnix")
+  :config (global-disable-mouse-mode)
+  :ryo ("SPC a m" global-disable-mouse-mode))
+
 (use-package which-key
   :config
   (which-key-mode)
@@ -775,6 +775,8 @@ reformatting), so we restore a (false) modified state."
   :straight (llvm-mode :local-repo "~/.emacs.d/llvm"
                        :files ("*.el")))
 
+;;;; Zig
+(use-package zig-mode)
 ;;;; Org mode install
 ;; Installing org mode with straight is annoying
 ;; https://github.com/raxod502/straight.el#installing-org-with-straightel
