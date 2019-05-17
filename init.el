@@ -937,28 +937,6 @@ Inserted by installing org-mode or when a release is made."
   (setq TeX-parse-self t))
 (use-package company-auctex)
 
-
-;;;; Email
-
-;;;; Wifi management
-(use-package nm
-  :if (executable-find "nmcli")
-  :commands (nm/list-access-points
-             nm/list-active-connections
-             nm/show-wifi-status
-             nm/set-interface
-             nm/connect-basic
-             nm/connect-with-profile
-             nm/connect-vpn-profile)
-  :straight (emacs-nm :host github :repo "Kodkollektivet/emacs-nm")
-  )
-
-;;;; Package management
-(use-package system-packages
-  :commands (system-pacakges-search
-             system-pacakges-install
-             system-pacakges-uninstall))
-
 ;;; End
 ;; Revert garbage collection to default after loading init
 (setq gc-cons-threshold 1000000)
