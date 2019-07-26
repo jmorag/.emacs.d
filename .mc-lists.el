@@ -51,6 +51,7 @@
         kakoune-exchange
         kakoune-insert-mode
         kakoune-replace-char
+        kakoune-upcase
         kakoune-x
         kill-rectangle
         lispy-backtick
@@ -119,6 +120,7 @@
         ryo:09f9e866cc2a04767fa15b05a4a197f6:forward-same-syntax
         ryo:0bb4aa504aadfd9c58c187b14d5806d6:embrace-commander
         ryo:1f824378cd608ad59429e475834c37bf:forward-same-syntax
+        ryo:2ca75fbe69f21223f194a1b0549c853e:end-of-line
         ryo:300555b81489d6e4d63e3d91a3f97d8e:kakoune-backward-same-syntax
         ryo:3384a614304dd5324a6aa723d5ed9e5e:previous-line
         ryo:3a8ba329f32aa4ca26aedb4e0096966d:backward-char
@@ -133,6 +135,7 @@
         ryo:5fa0e76c510678b6c22c30e6e493d5c7:kak/O
         ryo:664dd2c3bb879b868ad2d6daefa4eee9:end-of-line
         ryo:6b7f269a0c9f62ded5e6ef76672f3722:forward-same-syntax
+        ryo:6eb92d470ae10c8dd8e9bd39f484d6d5:kakoune-select-up-to-char
         ryo:70e73419d6581ec46daef14b98265a98:kakoune-d
         ryo:8072e5733a19233579c94e6c32064d09:kak/select-up-to-char
         ryo:852c571a517d85538a1f9b56f60a68f3:backward-same-syntax

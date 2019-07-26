@@ -119,10 +119,10 @@
   ("U" undo-tree-redo)
   ("SPC u" undo-tree-visualize)
   :bind (:map undo-tree-visualizer-mode-map
-	      ("h" . undo-tree-visualize-switch-branch-left)
-	      ("j" . undo-tree-visualize-redo)
-	      ("k" . undo-tree-visualize-undo)
-	      ("l" . undo-tree-visualize-switch-branch-right)))
+	          ("h" . undo-tree-visualize-switch-branch-left)
+	          ("j" . undo-tree-visualize-redo)
+	          ("k" . undo-tree-visualize-undo)
+	          ("l" . undo-tree-visualize-switch-branch-right)))
 
 ;;; Mac specific
 (use-package exec-path-from-shell
@@ -165,8 +165,8 @@
   :config
   (dashboard-setup-startup-hook)
   :bind (:map dashboard-mode-map
-	      ("j" . widget-forward)
-	      ("k" . widget-backward)))
+	          ("j" . widget-forward)
+	          ("k" . widget-backward)))
 
 ;; Start fullscreen
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
@@ -343,7 +343,7 @@
 (defun company-mode/backend-with-yas (backend)
   "Add yasnippets to a company mode BACKEND."
   (if (or (not company-mode/enable-yas)
-	  (and (listp backend) (member 'company-yasnippet backend)))
+	      (and (listp backend) (member 'company-yasnippet backend)))
       backend
     (append (if (consp backend) backend (list backend))
             '(:with company-yasnippet))))
@@ -365,12 +365,12 @@
 
 (use-package navi-mode
   :bind (:map navi-mode-map
-	      ("j" . occur-next)
-	      ("k" . occur-prev)
-	      ("d" . navi-kill-thing-at-point)
-	      ("C-d" . scroll-up-command)
-	      ("C-u" . scroll-down-command)
-	      ("SPC" . occur-mode-display-occurrence)))
+	          ("j" . occur-next)
+	          ("k" . occur-prev)
+	          ("d" . navi-kill-thing-at-point)
+	          ("C-d" . scroll-up-command)
+	          ("C-u" . scroll-down-command)
+	          ("SPC" . occur-mode-display-occurrence)))
 
 (use-package goto-last-change
   :ryo ("g ;" goto-last-change))
@@ -437,36 +437,36 @@
   (defun with-editor-finish-if-ryo ()
     (interactive)
     (if (bound-and-true-p ryo-modal-mode)
-	(with-editor-finish nil)
+	    (with-editor-finish nil)
       (newline)))
   :bind
   (:map magit-status-mode-map
-	("j" . magit-section-forward)
-	("k" . magit-section-backward)
-	("C-j" . magit-section-forward-sibling)
-	("C-k" . magit-section-backward-sibling)
-	("g r" . magit-refresh)
-	("q" . magit-quit-session)
-	("g n" . magit-jump-to-untracked)
-	("g s" . magit-jump-to-staged)
-	("g t" . magit-jump-to-tracked)
-	("g u" . magit-jump-to-unstaged)
-	("g z" . magit-jump-to-stashes)
-	("g p p" . magit-jump-to-unpushed-to-pushremote)
-	("g p u" . magit-jump-to-unpushed-to-upstream)
-	("g f p" . magit-jump-to-unpulled-from-pushremote)
-	("g f u" . magit-jump-to-unpulled-from-upstream)
-	("p" . magit-push)
-	("P" . magit-pull)
+	    ("j" . magit-section-forward)
+	    ("k" . magit-section-backward)
+	    ("C-j" . magit-section-forward-sibling)
+	    ("C-k" . magit-section-backward-sibling)
+	    ("g r" . magit-refresh)
+	    ("q" . magit-quit-session)
+	    ("g n" . magit-jump-to-untracked)
+	    ("g s" . magit-jump-to-staged)
+	    ("g t" . magit-jump-to-tracked)
+	    ("g u" . magit-jump-to-unstaged)
+	    ("g z" . magit-jump-to-stashes)
+	    ("g p p" . magit-jump-to-unpushed-to-pushremote)
+	    ("g p u" . magit-jump-to-unpushed-to-upstream)
+	    ("g f p" . magit-jump-to-unpulled-from-pushremote)
+	    ("g f u" . magit-jump-to-unpulled-from-upstream)
+	    ("p" . magit-push)
+	    ("P" . magit-pull)
         ("M-k" . magit-discard)
-	;; It seems as if we will have to repeat ourselves
-	;; or learn how macros work...
-	:map magit-file-section-map
-	("C-j" . magit-section-forward-sibling)
-	("C-k" . magit-section-backward-sibling)
-	:map magit-hunk-section-map
-	("C-j" . magit-section-forward-sibling)
-	("C-k" . magit-section-backward-sibling)
+	    ;; It seems as if we will have to repeat ourselves
+	    ;; or learn how macros work...
+	    :map magit-file-section-map
+	    ("C-j" . magit-section-forward-sibling)
+	    ("C-k" . magit-section-backward-sibling)
+	    :map magit-hunk-section-map
+	    ("C-j" . magit-section-forward-sibling)
+	    ("C-k" . magit-section-backward-sibling)
         :map with-editor-mode-map
         ("RET" . with-editor-finish-if-ryo)))
 
@@ -533,7 +533,10 @@
 
 ;;;; Indentation
 (use-package aggressive-indent
-  :hook (emacs-lisp-mode . aggressive-indent-mode))
+  :hook (emacs-lisp-mode . aggressive-indent-mode)
+  :hook (scheme-mode . aggressive-indent-mode)
+  :hook (clojure-mode . aggressive-indent-mode)
+  :hook (racket-mode . aggressive-indent-mode))
 
 ;;;; Linting
 (use-package flycheck
@@ -706,20 +709,27 @@ reformatting), so we restore a (false) modified state."
 ;; (since all of my time is spent in emacs, I should have a lisp plugin)
 (use-package lispy
   :config
+  (defun is-lisp ()
+    (find major-mode '(racket-mode emacs-lisp-mode clojure-mode scheme-mode)))
   (add-hook 'ryo-modal-mode-hook
             (lambda ()
-              (when (find major-mode '(emacs-lisp-mode clojure-mode))
-        	(if (bound-and-true-p ryo-modal-mode)
+              (when (is-lisp)
+                (if (bound-and-true-p ryo-modal-mode)
                     (lispy-mode -1)
                   (lispy-mode 1))))))
 
 (use-package clojure-mode)
 (use-package cider)
 
+;; (use-package geiser)
+;; (use-package quack)
+(use-package racket-mode)
+
 (use-package elisp-slime-nav
   :config
   (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook))
     (add-hook hook 'turn-on-elisp-slime-nav-mode)))
+(use-package package-lint)
 
 ;;;; Nix
 (use-package nix-mode)
@@ -858,7 +868,11 @@ Inserted by installing org-mode or when a release is made."
               ("q" . kill-this-buffer)
               ("j" . pdf-view-next-page-command)
               ("k" . pdf-view-previous-page-command))
-  )
+  :ryo
+  (:mode 'pdf-view-mode)
+  ("j" pdf-view-next-page-command)
+  ("k" pdf-view-previous-page-command))
+
 
 ;;;; 2048
 (use-package 2048-game
@@ -925,8 +939,7 @@ Inserted by installing org-mode or when a release is made."
   (org-mode-hook . jm/toggle-prose-mode)
   (markdown-mode-hook . jm/toggle-prose-mode)
   :ryo
-  ("SPC a p" jm/toggle-prose-mode)
-  )
+  ("SPC a p" jm/toggle-prose-mode))
 
 (use-package tex-site
   :straight (auctex
