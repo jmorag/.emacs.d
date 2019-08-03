@@ -47,7 +47,8 @@
   :straight (ryo-modal :host github :repo "jmorag/ryo-modal")
   :config
   (defun ryo-enter () "Enter normal mode" (interactive) (ryo-modal-mode 1))
-  (key-seq-define-global "fd" 'ryo-enter))
+  (key-seq-define-global "fd" 'ryo-enter)
+  (global-set-key (kbd "<escape>") 'ryo-enter))
 
 (use-package kakoune
   :straight (kakoune :local-repo "~/Projects/kakoune.el/" :files ("*.el"))

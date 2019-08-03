@@ -48,6 +48,7 @@
         kak/w
         kak/x
         kakoune-d
+        kakoune-downcase
         kakoune-exchange
         kakoune-insert-mode
         kakoune-replace-char
