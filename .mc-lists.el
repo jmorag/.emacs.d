@@ -52,6 +52,7 @@
         kakoune-exchange
         kakoune-insert-mode
         kakoune-replace-char
+        kakoune-replace-selection
         kakoune-upcase
         kakoune-x
         kill-rectangle
