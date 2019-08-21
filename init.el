@@ -696,8 +696,10 @@ reformatting), so we restore a (false) modified state."
   (add-hook 'racer-mode-hook #'company-mode)
   (add-hook 'racer-mode-hook #'racer-reload)
   (setq racer-rust-src-path nil)
-  (advice-add 'direnv-update-directory-environment :after #'racer-reload)
-  )
+  (advice-add 'direnv-update-directory-environment :after #'racer-reload))
+
+;;;; Go
+(use-package go-mode)
 
 ;;;; Yaml
 (use-package yaml-mode
@@ -722,8 +724,6 @@ reformatting), so we restore a (false) modified state."
 (use-package clojure-mode)
 (use-package cider)
 
-;; (use-package geiser)
-;; (use-package quack)
 (use-package racket-mode)
 
 (use-package elisp-slime-nav
@@ -744,15 +744,20 @@ reformatting), so we restore a (false) modified state."
 
 ;;;; Ocaml
 (use-package tuareg)
-(use-package merlin
-  :straight (merlin
-             :local-repo "~/.nix-profile/share/emacs/site-lisp/"
-             :files ("merlin*.elc"))
-  :config
-  (add-hook 'tuareg-mode-hook 'merlin-mode)
-  (add-hook 'caml-mode-hook 'merlin-mode)
-  (setq merlin-error-after-save nil)
-  (setq merlin-command "/home/joseph/.nix-profile/bin/ocamlmerlin"))
+
+(let ((opam-share (ignore-errors (car (process-lines "opam" "config" "var" "share"))))
+      (ocamlmerlin-command (ignore-errors (car (process-lines "which" "ocamlmerlin")))))
+  (when (and opam-share ocamlmerlin-command (file-directory-p opam-share))
+    (use-package merlin
+      :straight (merlin
+                 :local-repo (expand-file-name "emacs/site-lisp" opam-share)
+                 :files ("merlin*.elc"))
+      :config
+      (add-hook 'tuareg-mode-hook 'merlin-mode)
+      (add-hook 'caml-mode-hook 'merlin-mode)
+      (setq merlin-error-after-save nil)
+      (setq merlin-command ocamlmerlin-command))))
+
 (use-package flycheck-ocaml
   :config
   (flycheck-ocaml-setup)
