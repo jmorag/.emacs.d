@@ -73,6 +73,7 @@
         lpy-barf
         lpy-delete
         lpy-parens
+        lpy-quotes
         lpy-space
         modalka-translation
         org-cycle
