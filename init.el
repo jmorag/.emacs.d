@@ -383,6 +383,7 @@
   (dired-clean-confirm-killing-deleted-buffers . nil)
   :ryo ("SPC d" dired-jump)
   :bind (:map dired-mode-map
+              (";" . wdired-change-to-wdired-mode)
               ("h" . dired-up-directory)
               ("j" . dired-hacks-next-file)
               ("k" . dired-hacks-previous-file)
@@ -781,6 +782,8 @@ reformatting), so we restore a (false) modified state."
                     (lpy-mode -1)
                   (lpy-mode 1))))))
 
+;;;; Lua
+(use-package lua-mode)
 ;;;; C
 (use-package cc-mode
   :custom (c-basic-offset 2)
