@@ -853,7 +853,8 @@ Inserted by installing org-mode or when a release is made."
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown")
-  :hook (markdown . ryo-modal-mode))
+  :hook
+  ((markdown-mode gfm-mode) . ryo-modal-mode))
 
 ;;;; Lilypond
 (when (and (executable-find "lilypond") (eq system-type 'darwin))
