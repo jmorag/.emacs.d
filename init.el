@@ -150,8 +150,19 @@
 
 (use-package doom-themes
   :config
+  (doom-themes-org-config)
   (load-theme 'doom-one t)
-  (doom-themes-org-config))
+  (defvar current-theme "doom-one" "Which doom theme is active.")
+  (defun toggle-theme ()
+    "Toggle between doom-one and doom-solarized-light themes."
+    (interactive)
+    (if (string-equal current-theme "doom-one")
+        (progn (counsel-load-theme-action "doom-solarized-light")
+               (setq current-theme "doom-solarized-light"))
+      (progn (counsel-load-theme-action "doom-one")
+             (setq current-theme "doom-one"))))
+  :ryo
+  ("SPC a l" toggle-theme))
 
 ;; Required for dashboard
 (use-package page-break-lines
@@ -306,6 +317,8 @@
 ;;;; Company
 (use-package company
   :hook (prog-mode . company-mode)
+  :ryo
+  ("SPC a c" company-mode)
   :config
   (company-tng-configure-default)
   (setq company-minimum-prefix-length 2)
