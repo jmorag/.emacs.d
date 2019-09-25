@@ -877,11 +877,15 @@ Inserted by installing org-mode or when a release is made."
   :bind (:map pdf-view-mode-map
               ("q" . kill-this-buffer)
               ("j" . pdf-view-next-page-command)
-              ("k" . pdf-view-previous-page-command))
+              ("k" . pdf-view-previous-page-command)
+              ("l" . image-forward-hscroll)
+              ("h" . image-backward-hscroll))
   :ryo
   (:mode 'pdf-view-mode)
   ("j" pdf-view-next-page-command)
-  ("k" pdf-view-previous-page-command))
+  ("k" pdf-view-previous-page-command)
+  ("l" image-forward-hscroll)
+  ("h" image-backward-hscroll))
 
 
 ;;;; 2048
@@ -957,12 +961,37 @@ Inserted by installing org-mode or when a release is made."
              :files ("auctex.el" "tex-site.el" "auctex/*.el"))
   :config
   (setq TeX-auto-save t)
-  (setq TeX-parse-self t))
-(use-package company-auctex)
+  (setq TeX-parse-self t)
+  ;; Turn on RefTeX in AUCTeX
+  (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+  (add-hook 'LaTeX-mode-hook 'company-mode)
+  ;; Activate nice interface between RefTeX and AUCTeX
+  (setq reftex-plug-into-AUCTeX t)
+  ;; Use pdf-tools to open PDF files
+  (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
+        TeX-source-correlate-start-server t)
+  ;; Update PDF buffers after successful LaTeX runs
+  (add-hook 'TeX-after-compilation-finished-functions
+            #'TeX-revert-document-buffer)
+  (with-eval-after-load 'auctex
+    (ryo-modal-major-mode-keys
+     'latex-mode
+     ("=" preview-at-point)
+     ("+" preview-clearout))))
+(use-package company-auctex
+  :config
+  (company-auctex-init))
+(use-package company-reftex
+  :config
+  (eval-after-load "company"
+    '(add-to-list 'company-backends '(company-reftex-citations company-reftex-labels))))
 
+;;;; Restart Emacs from Emacs!
+(use-package restart-emacs)
 ;;; End
 ;; Revert garbage collection to default after loading init
 (setq gc-cons-threshold 1000000)
 
 (provide 'init)
 ;; init.el ends here
+(put 'LaTeX-narrow-to-environment 'disabled nil)

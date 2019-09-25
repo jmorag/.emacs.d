@@ -56,6 +56,7 @@
         kakoune-upcase
         kakoune-x
         kill-rectangle
+        kill-region
         lispy-backtick
         lispy-braces
         lispy-brackets
@@ -126,6 +127,7 @@
         ryo:2ca75fbe69f21223f194a1b0549c853e:end-of-line
         ryo:300555b81489d6e4d63e3d91a3f97d8e:kakoune-backward-same-syntax
         ryo:3384a614304dd5324a6aa723d5ed9e5e:previous-line
+        ryo:3a1fea3126694e285a71c97002c4afe1:forward-same-syntax
         ryo:3a8ba329f32aa4ca26aedb4e0096966d:backward-char
         ryo:3bb381c903c6cfa663a851920ee9f42e:undo-tree-undo
         ryo:3c2e1db31deeda45cc2b39b079c6c9d1:forward-word
@@ -266,6 +268,7 @@
         ryo:7383f6bec9b60a5d69520a6dc68ea1f2:mc/mark-all-like-this
         ryo:73ac12fcb39da89064b04736b28f5f0f:mc/mark-next-like-this
         ryo:9668f7b8424ef98fc7eed0e23d2b6bc3:scroll-down-command
+        ryo:afa43d3f76a1cd6565c5d033d560f21c:forward-word
         ryo:b1589c12e9cf3a7dadf52ae6a5e3c310:rust-format-buffer
         ryo:f27938a88c89decb111731da89fe4793:vr/mc-mark
         wdired-finish-edit

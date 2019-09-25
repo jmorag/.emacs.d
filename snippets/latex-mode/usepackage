@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
 # name: usepackage
-# key: pkg
+# key: up
 # --
 \usepackage{$0}
