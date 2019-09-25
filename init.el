@@ -785,15 +785,10 @@ reformatting), so we restore a (false) modified state."
   :config
   (eval-after-load "company"
     '(add-to-list 'company-backends '(company-anaconda :with company-capf))))
-(use-package lpy
-  :straight (lpy :host github :repo "abo-abo/lpy")
-  :config
-  (add-hook 'ryo-modal-mode-hook
-            (lambda ()
-              (when (find major-mode '(python-mode))
-        	    (if (bound-and-true-p ryo-modal-mode)
-                    (lpy-mode -1)
-                  (lpy-mode 1))))))
+(use-package ein
+  :ryo
+  (:mode 'ein:notebook-multilang-mode)
+  ("," ein:notebook-save-notebook-command))
 
 ;;;; Lua
 (use-package lua-mode)
