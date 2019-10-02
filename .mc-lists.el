@@ -241,6 +241,7 @@
         yaml-electric-backspace
         yaml-electric-dash-and-dot
         yank-rectangle
+        yas-expand
         ))
 
 (setq mc/cmds-to-run-once
@@ -249,6 +250,7 @@
         dante-eval-block
         describe-key
         disable-mouse--handle
+        ein:worksheet-execute-cell
         eldoc-eval-expression
         electric-pair-delete-pair
         eval-print-last-sexp

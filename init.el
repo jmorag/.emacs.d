@@ -150,8 +150,6 @@
 
 (use-package doom-themes
   :config
-  (doom-themes-org-config)
-  (load-theme 'doom-one t)
   (defvar current-theme "doom-one" "Which doom theme is active.")
   (defun toggle-theme ()
     "Toggle between doom-one and doom-solarized-light themes."
@@ -161,6 +159,8 @@
                (setq current-theme "doom-solarized-light"))
       (progn (counsel-load-theme-action "doom-one")
              (setq current-theme "doom-one"))))
+  (load-theme 'doom-one t)
+  (doom-themes-org-config)
   :ryo
   ("SPC a l" toggle-theme))
 
@@ -954,7 +954,8 @@ Inserted by installing org-mode or when a release is made."
       (progn (display-line-numbers-mode 0)
              (darkroom-mode 1)
              (visual-line-mode 1)
-             (flyspell-mode 1))))
+             (flyspell-mode 1)
+             (text-scale-adjust -2))))
   :custom
   (darkroom-margins 0.1)
   :hook
@@ -964,6 +965,7 @@ Inserted by installing org-mode or when a release is made."
   ("SPC a p" jm/toggle-prose-mode))
 
 (use-package tex-site
+  :demand t
   :straight (auctex
              :local-repo "~/.nix-profile/share/emacs/site-lisp/"
              :files ("auctex.el" "tex-site.el" "auctex/*.el"))
@@ -977,7 +979,8 @@ Inserted by installing org-mode or when a release is made."
   (setq reftex-plug-into-AUCTeX t)
   ;; Use pdf-tools to open PDF files
   (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
-        TeX-source-correlate-start-server t)
+        TeX-source-correlate-start-server t
+        TeX-source-correlate-method 'synctex)
   ;; Update PDF buffers after successful LaTeX runs
   (add-hook 'TeX-after-compilation-finished-functions
             #'TeX-revert-document-buffer)
@@ -1003,3 +1006,4 @@ Inserted by installing org-mode or when a release is made."
 (provide 'init)
 ;; init.el ends here
 (put 'LaTeX-narrow-to-environment 'disabled nil)
+(put 'TeX-narrow-to-group 'disabled nil)
