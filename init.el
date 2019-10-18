@@ -103,9 +103,7 @@
       :ryo
       ("s" vr/mc-mark)
       ("?" vr/replace)
-      ("M-/" vr/query-replace))
-    )
-  )
+      ("M-/" vr/query-replace))))
 
 (use-package phi-search
   :bind (("C-s" . phi-search)
@@ -130,8 +128,7 @@
   :config
   (when (memq window-system '(mac ns x))
     ;; (setenv "SHELL" "/bin/bash")
-    (exec-path-from-shell-initialize)
-    ))
+    (exec-path-from-shell-initialize)))
 
 ;; Use command as meta on mac
 (when (eq system-type 'darwin)
@@ -264,7 +261,8 @@
   (define-key ivy-minibuffer-map "\C-k" 'ivy-previous-line)
   (define-key ivy-minibuffer-map (kbd "C-SPC") 'ivy-toggle-fuzzy)
   :ryo
-  ("SPC" (("b" ivy-switch-buffer))))
+  ("SPC" (("b" ivy-switch-buffer)
+          ("r" ivy-resume))))
 
 (use-package ivy-rich
   :after (counsel)
@@ -278,7 +276,7 @@
   (":" counsel-M-x)
   ("SPC" (("f f" counsel-find-file)
           ("f r" counsel-recentf)
-          ("/" counsel-ag))))
+          ("/" counsel-git-grep))))
 
 ;; Swiper
 (use-package swiper
@@ -436,6 +434,7 @@
   (direnv-mode))
 
 ;;;; Magit
+;; token here for now e54e2cf7066da40b187951f394f6886b36369e4d
 (use-package magit
   :ryo
   ("SPC g" magit-status)
@@ -714,7 +713,7 @@ reformatting), so we restore a (false) modified state."
 
 ;;;; Go
 (use-package go-mode)
-
+;;;; Javascript
 ;;;; Yaml
 (use-package yaml-mode
   :config
@@ -887,7 +886,8 @@ Inserted by installing org-mode or when a release is made."
               ("j" . pdf-view-next-page-command)
               ("k" . pdf-view-previous-page-command)
               ("l" . image-forward-hscroll)
-              ("h" . image-backward-hscroll))
+              ("h" . image-backward-hscroll)
+              ("x" . other-window))
   :ryo
   (:mode 'pdf-view-mode)
   ("j" pdf-view-next-page-command)
@@ -938,6 +938,7 @@ Inserted by installing org-mode or when a release is made."
     (setq ispell-really-aspell t))
   (setq flyspell-correct-interface #'flyspell-correct-dummy)
   :ryo
+  ("SPC a s" flyspell-mode)
   ("g s" flyspell-auto-correct-word)
   ("g S" flyspell-correct-wrapper))
 
@@ -996,6 +997,9 @@ Inserted by installing org-mode or when a release is made."
   :config
   (eval-after-load "company"
     '(add-to-list 'company-backends '(company-reftex-citations company-reftex-labels))))
+
+;;;; Passwords
+(use-package ivy-pass)
 
 ;;;; Restart Emacs from Emacs!
 (use-package restart-emacs)

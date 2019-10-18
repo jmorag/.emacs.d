@@ -50,6 +50,7 @@
         kakoune-d
         kakoune-downcase
         kakoune-exchange
+        kakoune-indent-left
         kakoune-insert-mode
         kakoune-replace-char
         kakoune-replace-selection
@@ -64,6 +65,7 @@
         lispy-delete
         lispy-delete-backward
         lispy-kill
+        lispy-kill-word
         lispy-move-end-of-line
         lispy-parens
         lispy-quotes
@@ -142,18 +144,21 @@
         ryo:6b7f269a0c9f62ded5e6ef76672f3722:forward-same-syntax
         ryo:6eb92d470ae10c8dd8e9bd39f484d6d5:kakoune-select-up-to-char
         ryo:70e73419d6581ec46daef14b98265a98:kakoune-d
+        ryo:78ae37e0597b744a01e030137a4a62a5:forward-same-syntax
         ryo:8072e5733a19233579c94e6c32064d09:kak/select-up-to-char
         ryo:852c571a517d85538a1f9b56f60a68f3:backward-same-syntax
         ryo:8ab5d0830a9c4685f6b642216b9c72bd:forward-char
         ryo:8e022ec1dd956ebb75e780e711bf370d:avy-goto-char-in-line
         ryo:934fcd130f5f2ad6db92d3fce1489dc5:kakoune-backward-same-syntax
         ryo:a147c9a24b4efc5e3424c4618b0aa58a:end-of-line
+        ryo:afa43d3f76a1cd6565c5d033d560f21c:forward-word
         ryo:afbbc9ea2ae90f1c40fa71ac17a956d5:backward-char
         ryo:b219ebd046736cb61e7239c837f2a722:emacs-surround
         ryo:bb81d76943a66066379de793522f5418:backward-char
         ryo:bc3c9c55c5e3830a7708366cb8aef9c0:kill-line
         ryo:bd01dafd864b73f282864790f7d77e3c:kak/d
         ryo:c44301a1d93e869c777c4e24d9131cb5:er/expand-region
+        ryo:ce23f3bf4d226c8c8a7280b45c0c8ac3:backward-word
         ryo:d1dd1223b7a7caa4a871db9e9e2bff6c:backward-same-syntax
         ryo:d7762b250433e384b77e82019e29e7d6:move-end-of-line
         ryo:d840b8a94a20ad9f5899e616d2cdb76b:beginning-of-line
@@ -267,10 +272,10 @@
         ryo:43a840e32c825f68414b7560417a88ff:mc/skip-to-next-like-this
         ryo:4c795c327d46eee6c51f2df1e7698c37:mc/mark-previous-like-this
         ryo:61c916a9417cba6c72baaceae23ec80b:scroll-up-command
+        ryo:6bddb139fd58c2dd2037c51ba701b56c:goto-last-change
         ryo:7383f6bec9b60a5d69520a6dc68ea1f2:mc/mark-all-like-this
         ryo:73ac12fcb39da89064b04736b28f5f0f:mc/mark-next-like-this
         ryo:9668f7b8424ef98fc7eed0e23d2b6bc3:scroll-down-command
-        ryo:afa43d3f76a1cd6565c5d033d560f21c:forward-word
         ryo:b1589c12e9cf3a7dadf52ae6a5e3c310:rust-format-buffer
         ryo:f27938a88c89decb111731da89fe4793:vr/mc-mark
         wdired-finish-edit
