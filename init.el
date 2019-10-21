@@ -103,7 +103,22 @@
       :ryo
       ("s" vr/mc-mark)
       ("?" vr/replace)
-      ("M-/" vr/query-replace))))
+      ("M-/" vr/query-replace))
+    (use-package doom-themes
+      :config
+      (defvar current-theme "doom-one" "Which doom theme is active.")
+      (defun toggle-theme ()
+        "Toggle between doom-one and doom-solarized-light themes."
+        (interactive)
+        (if (string-equal current-theme "doom-one")
+            (progn (counsel-load-theme-action "doom-solarized-light")
+                   (setq current-theme "doom-solarized-light"))
+          (progn (counsel-load-theme-action "doom-one")
+                 (setq current-theme "doom-one"))))
+      (doom-themes-org-config)
+      :ryo
+      ("SPC a l" toggle-theme))
+    (load-theme 'doom-one t)))
 
 (use-package phi-search
   :bind (("C-s" . phi-search)
@@ -145,21 +160,7 @@
 (when (version<= "26.0.50" emacs-version)
   (add-hook 'prog-mode-hook 'display-line-numbers-mode))
 
-(use-package doom-themes
-  :config
-  (defvar current-theme "doom-one" "Which doom theme is active.")
-  (defun toggle-theme ()
-    "Toggle between doom-one and doom-solarized-light themes."
-    (interactive)
-    (if (string-equal current-theme "doom-one")
-        (progn (counsel-load-theme-action "doom-solarized-light")
-               (setq current-theme "doom-solarized-light"))
-      (progn (counsel-load-theme-action "doom-one")
-             (setq current-theme "doom-one"))))
-  (load-theme 'doom-one t)
-  (doom-themes-org-config)
-  :ryo
-  ("SPC a l" toggle-theme))
+
 
 ;; Required for dashboard
 (use-package page-break-lines
@@ -788,6 +789,11 @@ reformatting), so we restore a (false) modified state."
   :ryo
   (:mode 'ein:notebook-multilang-mode)
   ("," ein:notebook-save-notebook-command))
+(use-package lpy
+  :straight (lpy :host github :repo "abo-abo/lpy")
+  :ryo
+  (:mode 'python-mode)
+  ("e" lispy-eval))
 
 ;;;; Lua
 (use-package lua-mode)
