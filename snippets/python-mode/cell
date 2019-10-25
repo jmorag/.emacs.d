@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: cell
+# key: c
+# group : definitions
+# --
+#*
+$0
