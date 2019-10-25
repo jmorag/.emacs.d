@@ -426,8 +426,16 @@
 (use-package dired+
   :straight (dired+ :host github :repo "emacsmirror/dired-plus")
   :config
+  (setq dired-listing-switches "-alh")
   (add-hook 'dired-mode-hook '(lambda () (diredp-toggle-find-file-reuse-dir 1))))
 
+;;;; Disk Usage
+(use-package disk-usage
+  :bind (:map disk-usage-mode-map
+              ("j" . next-line)
+              ("k" . previous-line)
+              ("H" . disk-usage-toggle-human-readable)
+              ("h" . disk-usage-up)))
 ;;;; Direnv
 (use-package direnv
   :if (executable-find "direnv")
@@ -435,7 +443,6 @@
   (direnv-mode))
 
 ;;;; Magit
-;; token here for now e54e2cf7066da40b187951f394f6886b36369e4d
 (use-package magit
   :ryo
   ("SPC g" magit-status)
