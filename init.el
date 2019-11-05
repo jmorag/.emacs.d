@@ -160,8 +160,6 @@
 (when (version<= "26.0.50" emacs-version)
   (add-hook 'prog-mode-hook 'display-line-numbers-mode))
 
-
-
 ;; Required for dashboard
 (use-package page-break-lines
   :demand t
@@ -191,6 +189,38 @@
 (use-package ace-popup-menu
   :config
   (ace-popup-menu-mode 1))
+
+;; Window niceties
+(use-package windower
+  :straight (windower :host gitlab :repo "ambrevar/emacs-windower")
+  :ryo
+  ("C-w" :hydra
+   '(hydra-windower (:hint nil)
+                    "
+^Move^                      ^Swap^
+^^^^^^^^------------------------------------------------
+_h_: move border left       _H_: swap border left
+_j_: move border up         _J_: swap border above
+_k_: move border down       _K_: swap border below
+_l_: move border right      _L_: swap border right
+"
+                    ("h" windower-move-border-left)
+                    ("j" windower-move-border-below)
+                    ("k" windower-move-border-above)
+                    ("l" windower-move-border-right)
+                    ("<left>" windower-move-border-left)
+                    ("<down>" windower-move-border-below)
+                    ("<up>" windower-move-border-above)
+                    ("<right>" windower-move-border-right)
+                    ("H" windower-swap-left)
+                    ("J" windower-swap-below)
+                    ("K" windower-swap-above)
+                    ("L" windower-swap-right)
+                    ("<S-left>" windower-swap-left)
+                    ("<S-down>" windower-swap-below)
+                    ("<S-up>" windower-swap-above)
+                    ("<S-right>" windower-swap-right)
+                    ("q" nil "cancel" :color blue))))
 
 ;;; Saner defaults
 (setq-default

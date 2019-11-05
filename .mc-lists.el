@@ -170,8 +170,10 @@
         ryo:e5884e5d9e03a92b8a235a1d72c9947a:next-line
         ryo:e5dbb354d557462cb65bb1d6bb3fa5af:evilnc-comment-or-uncomment-lines
         ryo:e7a5212c33f50d09246829cc7289a6d2:forward-char
+        ryo:e947d70d27198067ad4e4c1ea4303452:forward-same-syntax
         ryo:ea80f75f66a07fe88fd0f8f1e98f3fa9:backward-word
         ryo:eac1488896d62c02d1ece92d73bb9d26:kak/o
+        ryo:efdebd9b62a393eaec270c14ff58e96b:org-promote-subtree
         ryo:f373378c24f87b7c18ea00255b859322:beginning-of-line
         ryo:fc7eefa7332e9195f27e3ba02ec62ae7:beginning-of-line
         shm/del
