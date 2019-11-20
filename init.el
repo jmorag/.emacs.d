@@ -908,6 +908,9 @@ Inserted by installing org-mode or when a release is made."
   :init (setq markdown-command "multimarkdown")
   :hook
   ((markdown-mode gfm-mode) . ryo-modal-mode))
+(use-package apib-mode
+  :config
+  (add-to-list 'auto-mode-alist '("\\.apib\\'" . apib-mode)))
 
 ;;;; Lilypond
 (when (and (executable-find "lilypond") (eq system-type 'darwin))
@@ -927,6 +930,7 @@ Inserted by installing org-mode or when a release is made."
   :mode ("\\.pdf\\'" . pdf-view-mode)
   :config
   (setq-default pdf-view-display-size 'fit-page)
+  (add-hook 'pdf-view-mode-hook #'(lambda () (ryo-modal-mode -1)))
   :bind (:map pdf-view-mode-map
               ("q" . kill-this-buffer)
               ("j" . pdf-view-next-page-command)
