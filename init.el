@@ -192,8 +192,18 @@
 
 ;; Window niceties
 (use-package windower
-  :straight (windower :host gitlab :repo "ambrevar/emacs-windower")
+  :straight (windower :host gitlab :repo "ambrevar/emacs-windower"))
+
+(use-package hydra
   :ryo
+  ("SPC s" :hydra
+   '(hydra-smerge ()
+                  "A hydra for smerge"
+                  ("j" smerge-next "next conflict")
+                  ("k" smerge-prev "previous conflict")
+                  ("u" smerge-keep-upper "keep upper conflict")
+                  ("l" smerge-keep-lower "keep lower conflict")
+                  ("q" nil "cancel" :color blue)))
   ("C-w" :hydra
    '(hydra-windower (:hint nil)
                     "
@@ -550,17 +560,6 @@ _l_: move border right      _L_: swap border right
   ("] g" git-gutter:next-hunk)
   ("[ g" git-gutter:previous-hunk))
 
-(use-package hydra
-  :ryo
-  ("SPC s" :hydra
-   '(hydra-smerge ()
-                  "A hydra for smerge"
-                  ("j" smerge-next "next conflict")
-                  ("k" smerge-prev "previous conflict")
-                  ("u" smerge-keep-upper "keep upper conflict")
-                  ("l" smerge-keep-lower "keep lower conflict")
-                  ("q" nil "cancel" :color blue))))
-
 ;;;; Projectile
 (use-package projectile
   :config
@@ -660,6 +659,11 @@ _l_: move border right      _L_: swap border right
                            "-fno-diagnostics-show-caret"
                            ;; neccessary to make attrap-attrap useful:
                            "-Wall"
+                           ;; I don't care if you defalut to Integer
+                           "-Wno-type-defaults"
+                           "-XOverloadedStrings"
+                           "-XQuasiQuotes"
+                           "-XTemplateHaskell"
                            ;; necessary to make company completion useful:
                            "-fdefer-typed-holes"
                            "-fdefer-type-errors"))
@@ -695,8 +699,7 @@ reformatting), so we restore a (false) modified state."
               ("C-0" . shm/goto-last-point))
   :ryo
   (:mode 'haskell-mode)
-  ("SPC m s" structured-haskell-mode)
-  )
+  ("SPC m s" structured-haskell-mode))
 
 ;;;; Idris
 (use-package idris-mode

@@ -52,6 +52,7 @@
         kakoune-exchange
         kakoune-indent-left
         kakoune-insert-mode
+        kakoune-join
         kakoune-p
         kakoune-replace-char
         kakoune-replace-selection
@@ -79,6 +80,8 @@
         lpy-parens
         lpy-quotes
         lpy-space
+        markdown-cycle
+        markdown-outdent-or-delete
         modalka-translation
         org-cycle
         org-delete-char
@@ -282,6 +285,7 @@
         ryo:73ac12fcb39da89064b04736b28f5f0f:mc/mark-next-like-this
         ryo:9668f7b8424ef98fc7eed0e23d2b6bc3:scroll-down-command
         ryo:b1589c12e9cf3a7dadf52ae6a5e3c310:rust-format-buffer
+        ryo:c8439fcc4371f6b9c5ebcbb0b776616b:avy-goto-char-timer
         ryo:f27938a88c89decb111731da89fe4793:vr/mc-mark
         wdired-finish-edit
         wgrep-change-to-wgrep-mode
