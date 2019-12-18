@@ -4,14 +4,20 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(LaTeX-math-abbrev-prefix ";")
+ '(c-basic-offset 2 t)
  '(custom-safe-themes
    (quote
     ("8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" default)))
+ '(darkroom-margins 0.1 t)
+ '(dired-clean-confirm-killing-deleted-buffers nil)
  '(electric-indent-mode nil)
  '(org-export-backends (quote (ascii html icalendar latex md odt)))
+ '(peed-dired-cleanup-on-disable t t)
+ '(peep-dired-enable-on-directories t t)
  '(safe-local-variable-values
    (quote
-    ((dante-repl-command-line "stack" "repl")
+    ((dante-command-line "nix-shell" "--pure" "--run" "ghci")
+     (dante-repl-command-line "stack" "repl")
      (dante-repl-command-line "stack repl")
      (dante-repl-command-line "nix-shell" "--run" "cabal new-repl")
      (dante-repl-command-line "nix-shell" "--pure" "--run"

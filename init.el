@@ -366,6 +366,8 @@ _l_: move border right      _L_: swap border right
   (setq company-idle-delay 0.1)
   (define-key company-active-map "\C-j" 'company-select-next)
   (define-key company-active-map "\C-k" 'company-select-previous)
+  (define-key company-active-map (kbd "<down>") 'company-select-next)
+  (define-key company-active-map (kbd "<up>") 'company-select-previous)
   (define-key company-active-map (kbd "TAB") nil)
   (define-key company-active-map (kbd "<tab>") nil))
 
@@ -646,7 +648,7 @@ _l_: move border right      _L_: swap border right
 ;;; Language specific programming concerns
 ;;;; Haskell
 (use-package haskell-mode
-  :preface
+  :custom (haskell-literate-default 'tex)
   :hook (haskell-mode . haskell-decl-scan-mode))
 
 (use-package dante
@@ -896,6 +898,9 @@ Inserted by installing org-mode or when a release is made."
   :config
   (require 'ox-md nil t)
   (setq org-confirm-babel-evaluate nil)
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((python . t)))
   :ryo
   (:mode 'org-mode)
   (">" org-demote-subtree)
@@ -940,13 +945,16 @@ Inserted by installing org-mode or when a release is made."
   :config
   (setq-default pdf-view-display-size 'fit-page)
   (add-hook 'pdf-view-mode-hook #'(lambda () (ryo-modal-mode -1)))
+  :hook (pdf-view . pdf-isearch-minor-mode)
   :bind (:map pdf-view-mode-map
               ("q" . kill-this-buffer)
               ("j" . pdf-view-next-page-command)
               ("k" . pdf-view-previous-page-command)
               ("l" . image-forward-hscroll)
               ("h" . image-backward-hscroll)
-              ("x" . other-window))
+              ("x" . other-window)
+              ("C-s" . isearch-forward)
+              ("C-r" . isearch-backward))
   :ryo
   (:mode 'pdf-view-mode)
   ("j" pdf-view-next-page-command)
@@ -1046,9 +1054,11 @@ Inserted by installing org-mode or when a release is made."
             #'TeX-revert-document-buffer)
   (with-eval-after-load 'auctex
     (ryo-modal-major-mode-keys
-     'latex-mode
+     'tex-mode
      ("=" preview-at-point)
      ("+" preview-clearout))))
+(use-package calctex
+  :straight (calctex :host github :repo "johnbcoughlin/calctex"))
 (use-package company-auctex
   :config
   (company-auctex-init))

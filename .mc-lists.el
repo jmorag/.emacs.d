@@ -83,12 +83,15 @@
         markdown-cycle
         markdown-outdent-or-delete
         modalka-translation
+        mouse-buffer-menu
         org-cycle
         org-delete-char
+        org-end-of-line
         org-self-insert-command
         org-yank
         outshine-self-insert-command
         phi-search-backward
+        previous-buffer
         pspecial-digit-argument
         pspecial-hydra-lispy-move/body
         pspecial-lispy-back
@@ -147,6 +150,7 @@
         ryo:664dd2c3bb879b868ad2d6daefa4eee9:end-of-line
         ryo:6b7f269a0c9f62ded5e6ef76672f3722:forward-same-syntax
         ryo:6eb92d470ae10c8dd8e9bd39f484d6d5:kakoune-select-up-to-char
+        ryo:7082fb59b5d5de08c355c52b4893b905:vr/replace
         ryo:70e73419d6581ec46daef14b98265a98:kakoune-d
         ryo:78ae37e0597b744a01e030137a4a62a5:forward-same-syntax
         ryo:8072e5733a19233579c94e6c32064d09:kak/select-up-to-char
