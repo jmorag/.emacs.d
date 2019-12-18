@@ -231,7 +231,8 @@ _l_: move border right      _L_: swap border right
                     ("<S-down>" windower-swap-below)
                     ("<S-up>" windower-swap-above)
                     ("<S-right>" windower-swap-right)
-                    ("q" nil "cancel" :color blue))))
+                    ("q" nil "cancel" :color blue)
+                    ("<return>" nil nil))))
 
 ;;; Saner defaults
 (setq-default
