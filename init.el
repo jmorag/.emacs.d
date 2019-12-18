@@ -143,7 +143,8 @@
   :config
   (when (memq window-system '(mac ns x))
     ;; (setenv "SHELL" "/bin/bash")
-    (exec-path-from-shell-initialize)))
+    (progn (exec-path-from-shell-copy-env "GOPATH")
+           (exec-path-from-shell-initialize))))
 
 ;; Use command as meta on mac
 (when (eq system-type 'darwin)
@@ -754,6 +755,13 @@ reformatting), so we restore a (false) modified state."
 
 ;;;; Go
 (use-package go-mode)
+(use-package company-go
+  :config
+  (eval-after-load "company"
+    '(add-to-list 'company-backends '(company-go :with company-capf))))
+(use-package gorepl-mode
+  :config (add-hook 'go-mode-hook #'gorepl-mode))
+
 ;;;; Javascript
 ;;;; Yaml
 (use-package yaml-mode
