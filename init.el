@@ -214,6 +214,7 @@ _h_: move border left       _H_: swap border left
 _j_: move border up         _J_: swap border above
 _k_: move border down       _K_: swap border below
 _l_: move border right      _L_: swap border right
+                          _t_: toggle vertical or horizontal split
 "
                     ("h" windower-move-border-left)
                     ("j" windower-move-border-below)
@@ -231,6 +232,7 @@ _l_: move border right      _L_: swap border right
                     ("<S-down>" windower-swap-below)
                     ("<S-up>" windower-swap-above)
                     ("<S-right>" windower-swap-right)
+                    ("t" windower-toggle-split)
                     ("q" nil "cancel" :color blue)
                     ("<return>" nil nil))))
 
@@ -319,13 +321,16 @@ _l_: move border right      _L_: swap border right
   (":" counsel-M-x)
   ("SPC" (("f f" counsel-find-file)
           ("f r" counsel-recentf)
-          ("/" counsel-git-grep))))
+          ("/" counsel-git-grep)
+          ("." counsel-find-file))))
 
 ;; Swiper
 (use-package swiper
   :after (ivy ivy-hydra)
   :commands swiper
-  :ryo ("/" swiper))
+  :ryo ("/" swiper)
+  :custom
+  (swiper-goto-start-of-match t))
 
 ;; Remeber searches
 (use-package prescient
@@ -436,7 +441,12 @@ _l_: move border right      _L_: swap border right
 ;;;; Dired
 (use-package dired-hacks-utils
   :custom
-  (dired-clean-confirm-killing-deleted-buffers . nil)
+  (dired-auto-revert-buffer t)
+  (dired-clean-confirm-killing-deleted-buffers nil)
+  (dired-dwim-target t)
+  (delete-by-moving-to-trash t)
+  (dired-recursive-deletes 'always)
+  (dired-recursive-copies 'always)
   :ryo ("SPC d" dired-jump)
   :bind (:map dired-mode-map
               (";" . wdired-change-to-wdired-mode)
@@ -665,7 +675,8 @@ _l_: move border right      _L_: swap border right
                            "-Wall"
                            ;; I don't care if you defalut to Integer
                            "-Wno-type-defaults"
-                           "-XOverloadedStrings"
+                           ;; Overloaded strings can break type inference very often
+                           ;; "-XOverloadedStrings"
                            "-XQuasiQuotes"
                            "-XTemplateHaskell"
                            ;; necessary to make company completion useful:
@@ -858,6 +869,8 @@ reformatting), so we restore a (false) modified state."
   :straight (llvm-mode :local-repo "~/.emacs.d/llvm"
                        :files ("*.el")))
 
+;;;; Fish
+(use-package fish-mode)
 ;;;; Zig
 (use-package zig-mode)
 ;;;; Org mode install
@@ -911,7 +924,9 @@ Inserted by installing org-mode or when a release is made."
   :after org)
 
 (use-package ox-moderncv
-  :straight (ox-moderncv :host gitlab :repo "Titan-C/org-cv"))
+  :straight (ox-moderncv :host gitlab :repo "Titan-C/org-cv")
+  :config
+  (require 'ox-moderncv))
 
 ;;;; Markdown
 (use-package markdown-mode
@@ -945,7 +960,7 @@ Inserted by installing org-mode or when a release is made."
   :config
   (setq-default pdf-view-display-size 'fit-page)
   (add-hook 'pdf-view-mode-hook #'(lambda () (ryo-modal-mode -1)))
-  :hook (pdf-view . pdf-isearch-minor-mode)
+  (add-hook 'pdf-view-mode-hook #'pdf-isearch-minor-mode)
   :bind (:map pdf-view-mode-map
               ("q" . kill-this-buffer)
               ("j" . pdf-view-next-page-command)
@@ -972,6 +987,14 @@ Inserted by installing org-mode or when a release is made."
         ("j" . 2048-down)
         ("k" . 2048-up)
         ("l" . 2048-right)))
+
+;;;; tetris
+(advice-add 'tetris :before
+            (lambda ()
+              (setq gamegrid-xpm (with-temp-buffer
+                                   (insert-file-contents-literally "~/.emacs.d/tetris.xpm")
+                                   (buffer-string)))
+              (setq gamegrid-glyph-height 64)))
 
 ;;;; xkcd
 (use-package xkcd

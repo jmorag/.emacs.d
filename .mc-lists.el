@@ -13,6 +13,7 @@
         c-electric-slash
         c-electric-star
         c-indent-new-comment-line
+        count-words-region
         electric-newline-and-maybe-indent
         er/mark-inside-pairs
         haskell-indentation-common-electric-command
@@ -47,6 +48,7 @@
         kak/upcase
         kak/w
         kak/x
+        kakoune-X
         kakoune-d
         kakoune-downcase
         kakoune-exchange
@@ -134,6 +136,7 @@
         ryo:0bb4aa504aadfd9c58c187b14d5806d6:embrace-commander
         ryo:1f824378cd608ad59429e475834c37bf:forward-same-syntax
         ryo:2ca75fbe69f21223f194a1b0549c853e:end-of-line
+        ryo:2f73978d4422e540c99388f1d7bf31b6:kakoune-o
         ryo:300555b81489d6e4d63e3d91a3f97d8e:kakoune-backward-same-syntax
         ryo:3384a614304dd5324a6aa723d5ed9e5e:previous-line
         ryo:3a1fea3126694e285a71c97002c4afe1:forward-same-syntax
