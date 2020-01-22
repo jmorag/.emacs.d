@@ -1,6 +1,7 @@
 ;; Code:
 
 ;;; Startup improvements
+(setq package-enable-at-startup nil)
 ;;;; Turn off mouse interface early in startup to avoid momentary display
 (setq-default cursor-type '(bar . 2))
 (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
@@ -509,20 +510,8 @@ _l_: move border right      _L_: swap border right
   :ryo
   ("SPC g" magit-status)
   :config
-  ;; Stolen from magnars whattheemacs.d
-  (defadvice magit-status (around magit-fullscreen activate)
-    (window-configuration-to-register :magit-fullscreen)
-    ad-do-it
-    (delete-other-windows))
-  (defun magit-quit-session ()
-    (interactive)
-    (kill-buffer)
-    (jump-to-register :magit-fullscreen))
-  ;; (defun with-editor-finish-if-ryo ()
-  ;;   (interactive)
-  ;;   (if (bound-and-true-p ryo-modal-mode)
-  ;;       (with-editor-finish nil)
-  ;;     (newline)))
+  ;; https://github.com/magit/magit/issues/1953
+  (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
   :bind
   (:map magit-status-mode-map
         ;; ("j" . magit-section-forward)
@@ -530,7 +519,6 @@ _l_: move border right      _L_: swap border right
         ("C-j" . magit-section-forward-sibling)
         ("C-k" . magit-section-backward-sibling)
         ("g r" . magit-refresh)
-        ("q" . magit-quit-session)
         ("g n" . magit-jump-to-untracked)
         ("g s" . magit-jump-to-staged)
         ("g t" . magit-jump-to-tracked)
