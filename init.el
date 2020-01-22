@@ -509,25 +509,13 @@ _l_: move border right      _L_: swap border right
 (use-package magit
   :ryo
   ("SPC g" magit-status)
-  :config
-  ;; https://github.com/magit/magit/issues/1953
-  (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
   :bind
   (:map magit-status-mode-map
-        ;; ("j" . magit-section-forward)
+        ("j" . magit-section-forward)
         ("k" . magit-section-backward)
         ("C-j" . magit-section-forward-sibling)
         ("C-k" . magit-section-backward-sibling)
-        ("g r" . magit-refresh)
-        ("g n" . magit-jump-to-untracked)
-        ("g s" . magit-jump-to-staged)
-        ("g t" . magit-jump-to-tracked)
-        ("g u" . magit-jump-to-unstaged)
-        ("g z" . magit-jump-to-stashes)
-        ("g p p" . magit-jump-to-unpushed-to-pushremote)
-        ("g p u" . magit-jump-to-unpushed-to-upstream)
-        ("g f p" . magit-jump-to-unpulled-from-pushremote)
-        ("g f u" . magit-jump-to-unpulled-from-upstream)
+        ("g" . magit-status-jump)
         ("p" . magit-push)
         ("P" . magit-pull)
         ("M-k" . magit-discard)
@@ -538,7 +526,11 @@ _l_: move border right      _L_: swap border right
         ("C-k" . magit-section-backward-sibling)
         :map magit-hunk-section-map
         ("C-j" . magit-section-forward-sibling)
-        ("C-k" . magit-section-backward-sibling)))
+        ("C-k" . magit-section-backward-sibling))
+  :config
+  ;; https://github.com/magit/magit/issues/1953
+  (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
+  )
 
 (use-package git-timemachine
   :ryo
@@ -571,14 +563,10 @@ _l_: move border right      _L_: swap border right
 (use-package forge
   :after magit
   :config
-  (unbind-key "j p" magit-status-mode-map)
-  (unbind-key "j i" magit-status-mode-map)
-  :bind
-  (:map magit-status-mode-map
-        ("g i" . forge-jump-to-issue)
-        ("g P" . forge-jump-to-pullreqs)
-        ("j" . magit-section-forward)
-        ))
+  (transient-append-suffix 'magit-status-jump '(0 -1 -1)
+    '("i" "Issues" forge-jump-to-issues))
+  (transient-append-suffix 'magit-status-jump '(0 -1 -1)
+    '("P" "Pullreqs" forge-jump-to-pullreqs)))
 
 (use-package git-link)
 ;;;; Projectile

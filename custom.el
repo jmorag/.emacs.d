@@ -9,14 +9,32 @@
    (quote
     ("8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" default)))
  '(darkroom-margins 0.1 t)
+ '(dired-auto-revert-buffer t)
  '(dired-clean-confirm-killing-deleted-buffers nil)
+ '(dired-dwim-target t)
+ '(dired-recursive-copies (quote always))
+ '(dired-recursive-deletes (quote always))
  '(electric-indent-mode nil)
+ '(haskell-literate-default (quote tex))
  '(org-export-backends (quote (ascii html icalendar latex md odt)))
  '(peed-dired-cleanup-on-disable t t)
  '(peep-dired-enable-on-directories t t)
  '(safe-local-variable-values
    (quote
-    ((dante-command-line "nix-shell" "--pure" "--run" "ghci")
+    ((org-src-preserve-indentation)
+     (eval and
+           (featurep
+            (quote ox-extra))
+           (ox-extras-activate
+            (quote
+             (ignore-headlines))))
+     (eval require
+           (quote ox-texinfo+)
+           nil t)
+     (eval require
+           (quote ox-extra)
+           nil t)
+     (dante-command-line "nix-shell" "--pure" "--run" "ghci")
      (dante-repl-command-line "stack" "repl")
      (dante-repl-command-line "stack repl")
      (dante-repl-command-line "nix-shell" "--run" "cabal new-repl")
@@ -60,7 +78,8 @@
      (intero-stack-yaml . "/Users/josephmorag/Code/crossword-helper/stack.yaml"))))
  '(send-mail-function (quote smtpmail-send-it))
  '(smtpmail-smtp-server "smtp.gmail.com")
- '(smtpmail-smtp-service 25))
+ '(smtpmail-smtp-service 25)
+ '(swiper-goto-start-of-match t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
