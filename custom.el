@@ -70,12 +70,8 @@
             (make-local-variable
              (quote package-build-recipes-dir))
             default-directory))
-     (intero-targets "othaskell:lib" "othaskell:exe:othaskell-exe" "othaskell:test:othaskell-test")
-     (intero-targets "mcc:lib" "mcc:exe:mcc" "mcc:test:testall")
      (haskell-indent-spaces . 2)
-     (haskell-process-use-ghci . t)
-     (haskell-indent-spaces . 4)
-     (intero-stack-yaml . "/Users/josephmorag/Code/crossword-helper/stack.yaml"))))
+     (haskell-process-use-ghci . t))))
  '(send-mail-function (quote smtpmail-send-it))
  '(smtpmail-smtp-server "smtp.gmail.com")
  '(smtpmail-smtp-service 25)

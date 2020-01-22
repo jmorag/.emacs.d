@@ -563,10 +563,9 @@ _l_: move border right      _L_: swap border right
 (use-package forge
   :after magit
   :config
-  (transient-append-suffix 'magit-status-jump '(0 -1 -1)
-    '("i" "Issues" forge-jump-to-issues))
-  (transient-append-suffix 'magit-status-jump '(0 -1 -1)
-    '("P" "Pullreqs" forge-jump-to-pullreqs)))
+  (transient-append-suffix 'magit-status-jump '(0 -1)
+    [("i" "Issues" forge-jump-to-issues)
+     ("P" "Pullreqs" forge-jump-to-pullreqs)]))
 
 (use-package git-link)
 ;;;; Projectile
