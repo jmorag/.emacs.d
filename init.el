@@ -85,6 +85,7 @@
      ("C-j" windmove-down)
      ("C-k" windmove-up)
      ("C-l" windmove-right)
+     ("g r" revert-buffer)
      ("C-u" scroll-down-command :first '(deactivate-mark))
      ("C-d" scroll-up-command :first '(deactivate-mark)))
     ;; These need to be here because otherwise kakoune defaults would override them
@@ -388,7 +389,7 @@ _l_: move border right      _L_: swap border right
 (use-package company-prescient
   :config (company-prescient-mode))
 
-;; Add help to compnay
+;; Add help to company
 (use-package company-quickhelp
   :after company
   :config
@@ -411,6 +412,14 @@ _l_: move border right      _L_: swap border right
             '(:with company-yasnippet))))
 
 (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
+
+;; helpful help
+(use-package helpful
+  :config
+  (setq counsel-describe-function-function #'helpful-callable)
+  (setq counsel-describe-variable-function #'helpful-variable)
+  (defalias #'describe-key #'helpful-key)
+  (defalias #'describe-symbol #'helpful-symbol))
 
 ;;;; Snippets
 ;; Yasnipet
@@ -444,7 +453,6 @@ _l_: move border right      _L_: swap border right
   (dired-auto-revert-buffer t)
   (dired-clean-confirm-killing-deleted-buffers nil)
   (dired-dwim-target t)
-  (delete-by-moving-to-trash t)
   (dired-recursive-deletes 'always)
   (dired-recursive-copies 'always)
   :ryo ("SPC d" dired-jump)
@@ -510,41 +518,39 @@ _l_: move border right      _L_: swap border right
     (interactive)
     (kill-buffer)
     (jump-to-register :magit-fullscreen))
-  (defun with-editor-finish-if-ryo ()
-    (interactive)
-    (if (bound-and-true-p ryo-modal-mode)
-	    (with-editor-finish nil)
-      (newline)))
+  ;; (defun with-editor-finish-if-ryo ()
+  ;;   (interactive)
+  ;;   (if (bound-and-true-p ryo-modal-mode)
+  ;;       (with-editor-finish nil)
+  ;;     (newline)))
   :bind
   (:map magit-status-mode-map
-	    ("j" . magit-section-forward)
-	    ("k" . magit-section-backward)
-	    ("C-j" . magit-section-forward-sibling)
-	    ("C-k" . magit-section-backward-sibling)
-	    ("g r" . magit-refresh)
-	    ("q" . magit-quit-session)
-	    ("g n" . magit-jump-to-untracked)
-	    ("g s" . magit-jump-to-staged)
-	    ("g t" . magit-jump-to-tracked)
-	    ("g u" . magit-jump-to-unstaged)
-	    ("g z" . magit-jump-to-stashes)
-	    ("g p p" . magit-jump-to-unpushed-to-pushremote)
-	    ("g p u" . magit-jump-to-unpushed-to-upstream)
-	    ("g f p" . magit-jump-to-unpulled-from-pushremote)
-	    ("g f u" . magit-jump-to-unpulled-from-upstream)
-	    ("p" . magit-push)
-	    ("P" . magit-pull)
+        ;; ("j" . magit-section-forward)
+        ("k" . magit-section-backward)
+        ("C-j" . magit-section-forward-sibling)
+        ("C-k" . magit-section-backward-sibling)
+        ("g r" . magit-refresh)
+        ("q" . magit-quit-session)
+        ("g n" . magit-jump-to-untracked)
+        ("g s" . magit-jump-to-staged)
+        ("g t" . magit-jump-to-tracked)
+        ("g u" . magit-jump-to-unstaged)
+        ("g z" . magit-jump-to-stashes)
+        ("g p p" . magit-jump-to-unpushed-to-pushremote)
+        ("g p u" . magit-jump-to-unpushed-to-upstream)
+        ("g f p" . magit-jump-to-unpulled-from-pushremote)
+        ("g f u" . magit-jump-to-unpulled-from-upstream)
+        ("p" . magit-push)
+        ("P" . magit-pull)
         ("M-k" . magit-discard)
-	    ;; It seems as if we will have to repeat ourselves
-	    ;; or learn how macros work...
-	    :map magit-file-section-map
-	    ("C-j" . magit-section-forward-sibling)
-	    ("C-k" . magit-section-backward-sibling)
-	    :map magit-hunk-section-map
-	    ("C-j" . magit-section-forward-sibling)
-	    ("C-k" . magit-section-backward-sibling)
-        :map with-editor-mode-map
-        ("RET" . with-editor-finish-if-ryo)))
+        ;; It seems as if we will have to repeat ourselves
+        ;; or learn how macros work...
+        :map magit-file-section-map
+        ("C-j" . magit-section-forward-sibling)
+        ("C-k" . magit-section-backward-sibling)
+        :map magit-hunk-section-map
+        ("C-j" . magit-section-forward-sibling)
+        ("C-k" . magit-section-backward-sibling)))
 
 (use-package git-timemachine
   :ryo
@@ -574,6 +580,19 @@ _l_: move border right      _L_: swap border right
   ("] g" git-gutter:next-hunk)
   ("[ g" git-gutter:previous-hunk))
 
+(use-package forge
+  :after magit
+  :config
+  (unbind-key "j p" magit-status-mode-map)
+  (unbind-key "j i" magit-status-mode-map)
+  :bind
+  (:map magit-status-mode-map
+        ("g i" . forge-jump-to-issue)
+        ("g P" . forge-jump-to-pullreqs)
+        ("j" . magit-section-forward)
+        ))
+
+(use-package git-link)
 ;;;; Projectile
 (use-package projectile
   :config
@@ -797,6 +816,8 @@ reformatting), so we restore a (false) modified state."
                     (lispy-mode -1)
                   (lispy-mode 1))))))
 
+(use-package parseedn
+  :straight (parseedn :host github :repo "clojure-emacs/parseedn"))
 (use-package clojure-mode)
 (use-package cider)
 
@@ -969,13 +990,18 @@ Inserted by installing org-mode or when a release is made."
               ("h" . image-backward-hscroll)
               ("x" . other-window)
               ("C-s" . isearch-forward)
-              ("C-r" . isearch-backward))
+              ("C-r" . isearch-backward)
+              ("O" . pdf-outline)
+              :map pdf-outline-buffer-mode-map
+              ("j" . next-line)
+              ("k" . previous-line))
   :ryo
   (:mode 'pdf-view-mode)
   ("j" pdf-view-next-page-command)
   ("k" pdf-view-previous-page-command)
   ("l" image-forward-hscroll)
-  ("h" image-backward-hscroll))
+  ("h" image-backward-hscroll)
+  ("O" pdf-outline))
 
 
 ;;;; 2048
