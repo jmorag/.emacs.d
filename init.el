@@ -338,6 +338,7 @@ _l_: move border right      _L_: swap border right
 (use-package prescient
   :config (prescient-persist-mode))
 (use-package ivy-prescient
+  :after counsel
   :config (ivy-prescient-mode))
 
 ;; Workspaces
@@ -667,12 +668,16 @@ _l_: move border right      _L_: swap border right
                            "-fno-diagnostics-show-caret"
                            ;; neccessary to make attrap-attrap useful:
                            "-Wall"
-                           ;; I don't care if you defalut to Integer
+                           ;; I don't care if you default to Integer
                            "-Wno-type-defaults"
                            ;; Overloaded strings can break type inference very often
                            ;; "-XOverloadedStrings"
                            "-XQuasiQuotes"
                            "-XTemplateHaskell"
+                           "-XRankNTypes"
+                           "-XFlexibleContexts"
+                           "-XFlexibleInstances"
+                           "-XGADTs"
                            ;; necessary to make company completion useful:
                            "-fdefer-typed-holes"
                            "-fdefer-type-errors"))

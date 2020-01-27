@@ -53,6 +53,7 @@
         kakoune-downcase
         kakoune-exchange
         kakoune-indent-left
+        kakoune-insert-line-below
         kakoune-insert-mode
         kakoune-join
         kakoune-p
