@@ -971,10 +971,7 @@ Inserted by installing org-mode or when a release is made."
               ("x" . other-window)
               ("C-s" . isearch-forward)
               ("C-r" . isearch-backward)
-              ("O" . pdf-outline)
-              :map pdf-outline-buffer-mode-map
-              ("j" . next-line)
-              ("k" . previous-line))
+              ("O" . pdf-outline))
   :ryo
   (:mode 'pdf-view-mode)
   ("j" pdf-view-next-page-command)
@@ -983,6 +980,9 @@ Inserted by installing org-mode or when a release is made."
   ("h" image-backward-hscroll)
   ("O" pdf-outline))
 
+(use-package nov
+  :config
+  (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode)))
 
 ;;;; 2048
 (use-package 2048-game
