@@ -70,6 +70,7 @@
         lispy-comment
         lispy-delete
         lispy-delete-backward
+        lispy-hash
         lispy-kill
         lispy-kill-word
         lispy-move-end-of-line

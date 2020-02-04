@@ -54,74 +54,54 @@
 (use-package kakoune
   :straight (kakoune :local-repo "~/Projects/kakoune.el/" :files ("*.el"))
   :bind ("C-z" . ryo-modal-mode)
-  :hook (after-init . my/kakoune-setup)
+  :init
+  (kakoune-setup-keybinds)
   :config
   (defun my/goto-init () (interactive) (find-file user-init-file))
-  (defun my/kakoune-setup ()
-    "Call kak/setup-keybinds and then add some personal config."
-    (interactive)
-    (kakoune-setup-keybinds)
-    (setq ryo-modal-cursor-type 'box)
-    (add-hook 'prog-mode-hook #'ryo-enter)
-    (define-key ryo-modal-mode-map (kbd "SPC h") 'help-command)
-    ;; Access all C-x bindings easily
-    (define-key ryo-modal-mode-map (kbd "z") ctl-x-map)
-    (ryo-modal-keys
-     ("," save-buffer)
-     ("P" counsel-yank-pop)
-     ("m" mc/mark-next-like-this)
-     ("M" mc/skip-to-next-like-this)
-     ("n" mc/mark-previous-like-this)
-     ("N" mc/skip-to-previous-like-this)
-     ("M-m" mc/edit-lines)
-     ("*" mc/mark-all-like-this)
-     ("v" er/expand-region)
-     ("C-v" set-rectangular-region-anchor)
-     ("M-s" mc/split-region)
-     (";" (("q" delete-window)
-           ("v" split-window-horizontally)
-           ("s" split-window-vertically)
-           ("i" my/goto-init)))
-     ("C-h" windmove-left)
-     ("C-j" windmove-down)
-     ("C-k" windmove-up)
-     ("C-l" windmove-right)
-     ("g r" revert-buffer)
-     ("C-u" scroll-down-command :first '(deactivate-mark))
-     ("C-d" scroll-up-command :first '(deactivate-mark)))
-    ;; These need to be here because otherwise kakoune defaults would override them
-    (use-package avy
-      :config
-      (setq avy-background t)
-      (setq avy-all-windows t)
-      :ryo
-      ("f" avy-goto-char-in-line :first '(deactivate-mark))
-      ("F" avy-goto-char-in-line :first '(set-mark-if-inactive))
-      ("C-f" avy-goto-char-timer :first '(deactivate-mark)))
-    (use-package embrace
-      :ryo
-      ("S" embrace-commander))
-    (use-package visual-regexp
-      :ryo
-      ("s" vr/mc-mark)
-      ("?" vr/replace)
-      ("M-/" vr/query-replace))
-    (use-package doom-themes
-      :config
-      (defvar current-theme "doom-one" "Which doom theme is active.")
-      (defun toggle-theme ()
-        "Toggle between doom-one and doom-solarized-light themes."
-        (interactive)
-        (if (string-equal current-theme "doom-one")
-            (progn (counsel-load-theme-action "doom-solarized-light")
-                   (setq current-theme "doom-solarized-light"))
-          (progn (counsel-load-theme-action "doom-one")
-                 (setq current-theme "doom-one"))))
-      (doom-themes-org-config)
-      :ryo
-      ("SPC a l" toggle-theme))
-    (load-theme 'doom-one t)))
+  (setq ryo-modal-cursor-type 'box)
+  (add-hook 'prog-mode-hook #'ryo-modal-mode)
+  (define-key ryo-modal-mode-map (kbd "SPC h") 'help-command)
+  ;; Access all C-x bindings easily
+  (define-key ryo-modal-mode-map (kbd "z") ctl-x-map)
+  (ryo-modal-keys
+   ("," save-buffer)
+   ("m" mc/mark-next-like-this)
+   ("M" mc/skip-to-next-like-this)
+   ("n" mc/mark-previous-like-this)
+   ("N" mc/skip-to-previous-like-this)
+   ("M-m" mc/edit-lines)
+   ("*" mc/mark-all-like-this)
+   ("v" er/expand-region)
+   ("C-v" set-rectangular-region-anchor)
+   ("M-s" mc/split-region)
+   (";" (("q" delete-window)
+         ("v" split-window-horizontally)
+         ("s" split-window-vertically)
+         ("i" my/goto-init)))
+   ("C-h" windmove-left)
+   ("C-j" windmove-down)
+   ("C-k" windmove-up)
+   ("C-l" windmove-right)
+   ("g r" revert-buffer)
+   ("C-u" scroll-down-command :first '(deactivate-mark))
+   ("C-d" scroll-up-command :first '(deactivate-mark))))
 
+(use-package avy
+  :config
+  (setq avy-background t)
+  (setq avy-all-windows t)
+  :ryo
+  ("f" avy-goto-char-in-line :first '(deactivate-mark))
+  ("F" avy-goto-char-in-line :first '(set-mark-if-inactive))
+  ("C-f" avy-goto-char-timer :first '(deactivate-mark)))
+(use-package embrace
+  :ryo
+  ("S" embrace-commander))
+(use-package visual-regexp
+  :ryo
+  ("s" vr/mc-mark)
+  ("?" vr/replace)
+  ("M-/" vr/query-replace))
 (use-package phi-search
   :bind (("C-s" . phi-search)
 	     ("C-r" . phi-search-backward)))
@@ -181,6 +161,22 @@
 
 ;; Start fullscreen
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
+
+;; Theme
+(use-package doom-themes
+  :config
+  (defvar current-theme "doom-one" "Which doom theme is active.")
+  (defun toggle-theme ()
+    "Toggle between doom-one and doom-solarized-light themes."
+    (interactive)
+    (if (string-equal current-theme "doom-one")
+        (progn (counsel-load-theme-action "doom-solarized-light")
+               (setq current-theme "doom-solarized-light"))
+      (progn (counsel-load-theme-action "doom-one")
+             (setq current-theme "doom-one"))))
+  (doom-themes-org-config)
+  :ryo
+  ("SPC a l" toggle-theme))
 
 ;; Modeline
 (use-package doom-modeline
@@ -321,6 +317,7 @@ _l_: move border right      _L_: swap border right
   (counsel-mode 1)
   :ryo
   (":" counsel-M-x)
+  ("P" counsel-yank-pop)
   ("SPC" (("f f" counsel-find-file)
           ("f r" counsel-recentf)
           ("/" counsel-git-grep)
@@ -556,6 +553,9 @@ _l_: move border right      _L_: swap border right
     nil nil '(center repeated))
   (define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240]
     nil nil 'bottom)
+  :config
+  (advice-add #'magit-stage-file   :after #'git-gutter)
+  (advice-add #'magit-unstage-file :after #'git-gutter)
   :ryo
   ("SPC a g" git-gutter-mode)
   ("] g" git-gutter:next-hunk)
@@ -1062,10 +1062,7 @@ Inserted by installing org-mode or when a release is made."
   ("SPC a p" jm/toggle-prose-mode))
 
 (use-package tex-site
-  :demand t
-  :straight (auctex
-             :local-repo "~/.nix-profile/share/emacs/site-lisp/"
-             :files ("auctex.el" "tex-site.el" "auctex/*.el"))
+  :straight auctex
   :config
   (setq TeX-auto-save t)
   (setq TeX-parse-self t)
@@ -1081,11 +1078,11 @@ Inserted by installing org-mode or when a release is made."
   ;; Update PDF buffers after successful LaTeX runs
   (add-hook 'TeX-after-compilation-finished-functions
             #'TeX-revert-document-buffer)
-  (with-eval-after-load 'auctex
-    (ryo-modal-major-mode-keys
-     'tex-mode
-     ("=" preview-at-point)
-     ("+" preview-clearout))))
+  (require 'preview)
+  :ryo
+  (:mode 'tex-mode)
+  ("=" preview-at-point)
+  ("+" preview-clearout))
 (use-package calctex
   :straight (calctex :host github :repo "johnbcoughlin/calctex"))
 (use-package company-auctex
@@ -1106,6 +1103,7 @@ Inserted by installing org-mode or when a release is made."
 (setq gc-cons-threshold 1000000)
 
 (provide 'init)
-;; init.el ends here
 (put 'LaTeX-narrow-to-environment 'disabled nil)
 (put 'TeX-narrow-to-group 'disabled nil)
+(load-theme 'doom-one t)
+;; init.el ends here
