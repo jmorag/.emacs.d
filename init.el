@@ -836,7 +836,10 @@ reformatting), so we restore a (false) modified state."
   :config
   (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook))
     (add-hook hook 'turn-on-elisp-slime-nav-mode)))
-(use-package package-lint)
+;; (use-package package-lint)
+
+;; Could be fun... write python in lisp
+(use-package hy-mode)
 
 ;;;; Nix
 (use-package nix-mode)
@@ -1051,7 +1054,7 @@ Inserted by installing org-mode or when a release is made."
   (require 'emms-setup)
   (emms-all)
   (emms-default-players)
-  ;; (setq emms-source-file-default-directory "~/Music/iTunes/iTunes Media/Music/")
+  (setq emms-source-file-default-directory "~/Music/")
   (require 'emms-info-libtag)
   (setq emms-info-functions '(emms-info-libtag)))
 
