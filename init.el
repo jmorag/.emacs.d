@@ -1065,7 +1065,9 @@ Inserted by installing org-mode or when a release is made."
   :ryo
   ("SPC a s" flyspell-mode)
   ("g s" flyspell-auto-correct-word)
-  ("g S" flyspell-correct-wrapper))
+  ("g S" flyspell-correct-wrapper)
+  ("[ s" flyspell-correct-previous)
+  ("] s" flyspell-correct-next))
 
 (use-package darkroom
   :init
