@@ -128,9 +128,9 @@
 (use-package exec-path-from-shell
   :config
   (when (memq window-system '(mac ns x))
-    ;; (setenv "SHELL" "/bin/bash")
-    (progn (exec-path-from-shell-copy-env "GOPATH")
-           (exec-path-from-shell-initialize))))
+    (progn
+      (setq exec-path-from-shell-variables '("PATH" "GOPATH"))
+      (exec-path-from-shell-initialize))))
 
 ;; Use command as meta on mac
 (when (eq system-type 'darwin)
