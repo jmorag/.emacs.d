@@ -16,7 +16,7 @@
  '(dired-recursive-deletes (quote always))
  '(electric-indent-mode nil)
  '(haskell-literate-default (quote tex))
- '(org-export-backends (quote (ascii html icalendar latex md odt)))
+ '(org-export-backends (quote (ascii html icalendar latex md odt moderncv)))
  '(peed-dired-cleanup-on-disable t t)
  '(peep-dired-enable-on-directories t t)
  '(safe-local-variable-values

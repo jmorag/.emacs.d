@@ -333,6 +333,7 @@ _l_: move border right      _L_: swap border right
 
 ;; Remeber searches
 (use-package prescient
+  :after counsel
   :config (prescient-persist-mode))
 (use-package ivy-prescient
   :after counsel
