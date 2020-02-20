@@ -40,6 +40,10 @@
 (setq straight-use-package-by-default t)
 
 ;;; Core editor facilities
+;;;; I only use GUI mode emacs so keys should do sane things
+(define-key input-decode-map [?\C-i] [C-i])
+(define-key input-decode-map [?\C-m] [C-m])
+(define-key input-decode-map [?\C-\[] [C-\[])
 ;;;; Fancy text editing
 (use-package key-chord
   :config (key-chord-mode 1))
