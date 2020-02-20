@@ -786,6 +786,25 @@ reformatting), so we restore a (false) modified state."
   :config (add-hook 'go-mode-hook #'gorepl-mode))
 
 ;;;; Javascript
+(use-package rjsx-mode
+  :config
+  (add-hook 'rjsx-mode-hook #'flycheck-mode)
+  (add-hook 'rjsx-mode-hook #'company-mode)
+  (add-to-list 'auto-mode-alist '("\\.js\\'" . rjsx-mode))
+  (setq js2-strict-missing-semi-warning nil))
+
+(use-package json-mode)
+(use-package typescript-mode)
+(use-package tide
+  :hook ((typescript-mode . tide-setup)
+         (typescript-mode . tide-hl-identifier-mode)
+         (rjsx-mode . tide-setup)
+         (rjsx-mode . tide-hl-identifier-mode))
+  :config
+  (flycheck-add-next-checker 'javascript-eslint 'jsx-tide 'append)
+  (setq-default flycheck-disabled-checkers
+                (append flycheck-disabled-checkers '(javascript-jshint))))
+
 ;;;; Yaml
 (use-package yaml-mode
   :config
