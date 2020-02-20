@@ -1130,6 +1130,70 @@ Inserted by installing org-mode or when a release is made."
 ;;;; Passwords
 (use-package ivy-pass)
 
+;;;; Email
+(use-package notmuch
+  :config
+  (setq notmuch-search-oldest-first nil
+        send-mail-function 'sendmail-sent-it
+        sendmail-program "/run/current-system/sw/bin/msmtp"
+        message-send-mail-function 'message-send-mail-with-sendmail
+        mail-host-address "josephmorag.com"
+        user-full-name "Joseph Morag"
+        notmuch-poll-script "/home/joseph/Mail/checkmail.sh"
+        notmuch-show-logo nil)
+  ;; The following stolen from evil-collection
+  (defun notmuch-toggle-tag (tag mode &optional next-function)
+    "Toggle TAG tag for message in MODE."
+    (let ((get (intern (format "notmuch-%s-get-tags" mode)))
+          (set (intern (format "notmuch-%s-tag" mode)))
+          (next (or next-function (intern (format "notmuch-%s-next-message" mode)))))
+      (funcall set (list (concat (if (member tag (funcall get))
+                                     "-" "+")
+                                 tag)))
+      (funcall next)))
+  (defun notmuch-show-toggle-delete ()
+    "Toggle deleted tag for message."
+    (interactive)
+    (notmuch-toggle-tag "deleted" "show"))
+
+  (defun notmuch-tree-toggle-delete ()
+    "Toggle deleted tag for message."
+    (interactive)
+    (notmuch-toggle-tag "deleted" "tree"))
+
+  (defun notmuch-search-toggle-delete ()
+    "Toggle deleted tag for message."
+    (interactive)
+    (notmuch-toggle-tag "deleted" "search" 'notmuch-search-next-thread))
+
+  (defun notmuch-tree-toggle-unread ()
+    "Toggle unread tag for message."
+    (interactive)
+    (notmuch-toggle-tag "unread" "tree"))
+
+  (defun notmuch-search-toggle-unread ()
+    "Toggle unread tag for message."
+    (interactive)
+    (notmuch-toggle-tag "unread" "search" 'notmuch-search-next-thread))
+
+  (defun notmuch-tree-toggle-flagged ()
+    "Toggle flagged tag for message."
+    (interactive)
+    (notmuch-toggle-tag "flagged" "tree"))
+
+  (defun notmuch-search-toggle-flagged ()
+    "Toggle flagged tag for message."
+    (interactive)
+    (notmuch-toggle-tag "flagged" "search"))
+  :bind
+  (("C-c m" . notmuch)
+   :map notmuch-search-mode-map
+   ("u" . notmuch-search-toggle-unread)
+   ("f" . notmuch-search-toggle-flagged)
+   :map notmuch-tree-mode-map
+   ("u" . notmuch-tree-toggle-unread)
+   ("f" . notmuch-tree-toggle-flagged)))
+
 ;;;; Restart Emacs from Emacs!
 (use-package restart-emacs)
 ;;; End
