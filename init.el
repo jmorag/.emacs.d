@@ -504,7 +504,9 @@ _l_: move border right      _L_: swap border right
               ("j" . next-line)
               ("k" . previous-line)
               ("H" . disk-usage-toggle-human-readable)
-              ("h" . disk-usage-up)))
+              ("h" . disk-usage-up)
+              :map dired-mode-map
+              ("," . disk-usage-here)))
 ;;;; Direnv
 (use-package direnv
   :if (executable-find "direnv")
