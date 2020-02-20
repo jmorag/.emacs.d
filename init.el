@@ -363,6 +363,9 @@ _l_: move border right      _L_: swap border right
           ("7" eyebrowse-switch-to-window-config-7)
           ("8" eyebrowse-switch-to-window-config-8)
           ("9" eyebrowse-switch-to-window-config-9))))
+(winner-mode 1)
+(ryo-modal-key "] w" 'winner-redo)
+(ryo-modal-key "[ w" 'winner-undo)
 
 ;;; Autocompletion
 ;;;; Company
