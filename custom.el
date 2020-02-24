@@ -4,7 +4,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(LaTeX-math-abbrev-prefix ";")
- '(c-basic-offset 2 t)
+ '(c-basic-offset 2)
  '(custom-safe-themes
    (quote
     ("8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" default)))
@@ -16,6 +16,17 @@
  '(dired-recursive-deletes (quote always))
  '(electric-indent-mode nil)
  '(haskell-literate-default (quote tex))
+ '(notmuch-saved-searches
+   (quote
+    ((:name "inbox" :query "tag:inbox" :key "i")
+     (:name "unread" :query "tag:unread" :key "u")
+     (:name "flagged" :query "tag:flagged" :key "f")
+     (:name "sent" :query "tag:sent" :key "t")
+     (:name "drafts" :query "tag:draft" :key "d")
+     (:name "all mail" :query "*" :key "a")
+     (:name "digest" :query "tag:digest")
+     (:name "lists" :query "tag:lists")
+     (:name "recurse" :query "to:@lists.community.recurse.com"))))
  '(org-export-backends (quote (ascii html icalendar latex md odt moderncv)))
  '(peed-dired-cleanup-on-disable t t)
  '(peep-dired-enable-on-directories t t)

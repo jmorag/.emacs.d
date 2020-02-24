@@ -97,6 +97,7 @@
         org-self-insert-command
         org-yank
         outshine-self-insert-command
+        phi-search
         phi-search-backward
         previous-buffer
         pspecial-digit-argument
@@ -154,6 +155,7 @@
         ryo:418ebea3d3c17d65f1caa6d22c93577a:forward-char
         ryo:42f606a03331e6ec0b254a5086c1e672:kak/select-up-to-char
         ryo:445b8d530ee1df2ba439d177ab178368:kakoune-backward-same-syntax
+        ryo:456ddb3bb8e95dedc67e391ef55ce5bb:kakoune-select-up-to-char
         ryo:4ba44c9869d838fd0f93ea2dabc09909:backward-char
         ryo:5afdf8eb96b1ba206f89586c7bde6655:back-to-indentation
         ryo:5fa0e76c510678b6c22c30e6e493d5c7:kak/O
