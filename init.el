@@ -431,6 +431,8 @@ _l_: move border right      _L_: swap border right
 ;;;; Snippets
 ;; Yasnipet
 (use-package yasnippet
+  :commands
+  (yas/expand)
   :config
   (yas-global-mode 1)
   (global-set-key (kbd "C-c s") 'company-yasnippet))
@@ -606,7 +608,8 @@ _l_: move border right      _L_: swap border right
   :hook (emacs-lisp-mode . aggressive-indent-mode)
   :hook (scheme-mode . aggressive-indent-mode)
   :hook (clojure-mode . aggressive-indent-mode)
-  :hook (racket-mode . aggressive-indent-mode))
+  :hook (racket-mode . aggressive-indent-mode)
+  :hook (lisp-mode . aggressive-indent-mode))
 
 ;;;; Linting
 (use-package flycheck
@@ -805,6 +808,18 @@ reformatting), so we restore a (false) modified state."
   (setq-default flycheck-disabled-checkers
                 (append flycheck-disabled-checkers '(javascript-jshint))))
 
+;;;; Purescript
+(use-package purescript-mode
+  :hook (purescript-mode . purescript-decl-scan-mode))
+(use-package psc-ide
+  :config
+  (add-hook 'purescript-mode-hook
+            (lambda ()
+              (psc-ide-mode)
+              (company-mode)
+              (flycheck-mode)
+              (turn-on-purescript-indentation))))
+
 ;;;; Yaml
 (use-package yaml-mode
   :config
@@ -817,7 +832,8 @@ reformatting), so we restore a (false) modified state."
 (use-package lispy
   :config
   (defun is-lisp ()
-    (find major-mode '(racket-mode emacs-lisp-mode clojure-mode scheme-mode)))
+    (find major-mode
+          '(racket-mode emacs-lisp-mode clojure-mode scheme-mode lisp-mode)))
   (add-hook 'ryo-modal-mode-hook
             (lambda ()
               (when (is-lisp)
@@ -957,6 +973,7 @@ Inserted by installing org-mode or when a release is made."
   :after org)
 
 (use-package ox-moderncv
+  :commands (org-mode)
   :straight (ox-moderncv :host gitlab :repo "Titan-C/org-cv")
   :config
   (require 'ox-moderncv))
@@ -1049,6 +1066,7 @@ Inserted by installing org-mode or when a release is made."
 ;;;; Music
 ;; Surprisingly, this works, but it can use some tweaking
 (use-package emms
+  :commands (emms)
   :straight (:repo "git://git.sv.gnu.org/emms.git")
   :config
   (require 'emms-setup)
@@ -1140,7 +1158,8 @@ Inserted by installing org-mode or when a release is made."
         mail-host-address "josephmorag.com"
         user-full-name "Joseph Morag"
         notmuch-poll-script "/home/joseph/Mail/checkmail.sh"
-        notmuch-show-logo nil)
+        notmuch-show-logo nil
+        notmuch-always-prompt-for-sender t)
   ;; The following stolen from evil-collection
   (defun notmuch-toggle-tag (tag mode &optional next-function)
     "Toggle TAG tag for message in MODE."
@@ -1190,9 +1209,20 @@ Inserted by installing org-mode or when a release is made."
    :map notmuch-search-mode-map
    ("u" . notmuch-search-toggle-unread)
    ("f" . notmuch-search-toggle-flagged)
+   ("j" . notmuch-search-next-thread)
+   ("k" . notmuch-search-previous-thread)
+   (";" . notmuch-jump-search)
+   ("K" . notmuch-tag-jump)
    :map notmuch-tree-mode-map
    ("u" . notmuch-tree-toggle-unread)
-   ("f" . notmuch-tree-toggle-flagged)))
+   ("f" . notmuch-tree-toggle-flagged)
+   ("j" . notmuch-tree-next-matching-message)
+   ("k" . notmuch-tree-prev-matching-message)
+   (";" . notmuch-jump-search)
+   ("K" . notmuch-tag-jump)))
+
+;;;; Calendar
+;; todo
 
 ;;;; Restart Emacs from Emacs!
 (use-package restart-emacs)
