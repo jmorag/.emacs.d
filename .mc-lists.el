@@ -91,6 +91,7 @@
         markdown-outdent-or-delete
         modalka-translation
         mouse-buffer-menu
+        org-ctrl-c-ctrl-c
         org-cycle
         org-delete-char
         org-end-of-line

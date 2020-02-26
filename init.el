@@ -324,7 +324,7 @@ _l_: move border right      _L_: swap border right
   ("P" counsel-yank-pop)
   ("SPC" (("f f" counsel-find-file)
           ("f r" counsel-recentf)
-          ("/" counsel-git-grep)
+          ("/" counsel-rg)
           ("." counsel-find-file))))
 
 ;; Swiper
