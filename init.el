@@ -500,6 +500,12 @@ _l_: move border right      _L_: swap border right
   (setq dired-listing-switches "-alh")
   (add-hook 'dired-mode-hook '(lambda () (diredp-toggle-find-file-reuse-dir 1))))
 
+;;;; Treemacs
+(use-package treemacs
+  :ryo ("\\" treemacs)
+  :bind (:map treemacs-mode-map
+              ("j" . treemacs-next-line)
+              ("k" . treemacs-previous-line)))
 ;;;; Disk Usage
 (use-package disk-usage
   :bind (:map disk-usage-mode-map
