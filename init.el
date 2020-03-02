@@ -545,8 +545,7 @@ _l_: move border right      _L_: swap border right
         ("C-k" . magit-section-backward-sibling))
   :config
   ;; https://github.com/magit/magit/issues/1953
-  (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
-  )
+  (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
 
 (use-package git-timemachine
   :ryo
@@ -669,6 +668,26 @@ _l_: move border right      _L_: swap border right
   (let ((inhibit-read-only t))
     (ansi-color-apply-on-region (point-min) (point-max))))
 
+;;;; LSP
+(setq lsp-keymap-prefix "M-l")
+(use-package lsp-mode
+  :straight (lsp-mode :host github :repo "emacs-lsp/lsp-mode")
+  :hook ((go-mode . lsp)
+         (python-mode . lsp)
+         (clojure-mode . lsp)
+         (lua-mode . lsp)
+         (rust-mode . lsp)
+         (lsp-mode . flycheck-mode)
+         (lsp-mode . lsp-enable-which-key-integration))
+  :commands lsp
+  :config
+  (setq lsp-rust-analyzer-server-command '("/home/joseph/.cargo/bin/rust-analyzer")))
+(use-package lsp-ui)
+(use-package company-lsp :commands company-lsp)
+(use-package lsp-ivy
+  :straight (lsp-ivy :host github :repo "emacs-lsp/lsp-ivy")
+  :commands lsp-ivy-workspace-symbol)
+
 ;;; Language specific programming concerns
 ;;;; Haskell
 (use-package haskell-mode
@@ -763,36 +782,12 @@ reformatting), so we restore a (false) modified state."
                                     :compile "cargo build"
                                     :test "cargo test"
                                     :run "cargo run"))
+(use-package cargo
+  :hook ((rust-mode . cargo-minor-mode)))
 
-(use-package flycheck-rust
-  :after (flycheck rust-mode)
-  :config
-  (add-hook 'rust-mode-hook #'flycheck-mode)
-  (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
-
-(use-package racer
-  :after (rust-mode company direnv)
-  :config
-  (add-hook 'rust-mode-hook #'racer-mode)
-  (defun racer-reload (&rest args)
-    "Try again to find the racer executable"
-    (interactive)
-    (let ((racer-executable (executable-find "racer")))
-      (when racer-executable (setq racer-cmd racer-executable))))
-  (add-hook 'racer-mode-hook #'eldoc-mode)
-  (add-hook 'racer-mode-hook #'company-mode)
-  (add-hook 'racer-mode-hook #'racer-reload)
-  (setq racer-rust-src-path nil)
-  (advice-add 'direnv-update-directory-environment :after #'racer-reload))
 
 ;;;; Go
 (use-package go-mode)
-(use-package company-go
-  :config
-  (eval-after-load "company"
-    '(add-to-list 'company-backends '(company-go :with company-capf))))
-(use-package gorepl-mode
-  :config (add-hook 'go-mode-hook #'gorepl-mode))
 
 ;;;; Javascript
 (use-package rjsx-mode
@@ -894,14 +889,14 @@ reformatting), so we restore a (false) modified state."
   (flycheck-ocaml-setup)
   (add-hook 'tuareg-mode-hook 'flycheck-mode))
 
-;;;; Python
-(use-package anaconda-mode
-  :hook (python-mode . anaconda-mode)
-  (python-mode . anaconda-eldoc-mode))
-(use-package company-anaconda
-  :config
-  (eval-after-load "company"
-    '(add-to-list 'company-backends '(company-anaconda :with company-capf))))
+;;;; Python (superceded by lsp)
+;; (use-package anaconda-mode
+;;   :hook (python-mode . anaconda-mode)
+;;   (python-mode . anaconda-eldoc-mode))
+;; (use-package company-anaconda
+;;   :config
+;;   (eval-after-load "company"
+;;     '(add-to-list 'company-backends '(company-anaconda :with company-capf))))
 (use-package ein
   :ryo
   (:mode 'ein:notebook-multilang-mode)
