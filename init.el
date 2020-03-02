@@ -234,7 +234,7 @@ _l_: move border right      _L_: swap border right
                     ("<S-down>" windower-swap-below)
                     ("<S-up>" windower-swap-above)
                     ("<S-right>" windower-swap-right)
-                    ("t" windower-toggle-split)
+                    ("t" windower-toggle-split :exit t)
                     ("q" nil "cancel" :color blue)
                     ("<return>" nil nil))))
 
