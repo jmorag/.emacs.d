@@ -774,7 +774,6 @@ reformatting), so we restore a (false) modified state."
 
 ;;;; Rust
 (use-package rust-mode
-  :defer t
   :after (projectile)
   :config
   (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
@@ -853,7 +852,6 @@ reformatting), so we restore a (false) modified state."
   :config
   (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook))
     (add-hook hook 'turn-on-elisp-slime-nav-mode)))
-;; (use-package package-lint)
 
 ;; Could be fun... write python in lisp
 (use-package hy-mode)
@@ -991,6 +989,9 @@ Inserted by installing org-mode or when a release is made."
 (use-package apib-mode
   :config
   (add-to-list 'auto-mode-alist '("\\.apib\\'" . apib-mode)))
+
+;;;; Asciidoc
+(use-package adoc-mode)
 
 ;;;; Lilypond
 (when (and (executable-find "lilypond") (eq system-type 'darwin))
