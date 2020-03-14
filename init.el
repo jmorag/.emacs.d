@@ -3,10 +3,13 @@
 ;;; Startup improvements
 (setq package-enable-at-startup nil)
 ;;;; Turn off mouse interface early in startup to avoid momentary display
-(setq-default cursor-type '(bar . 2))
-(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
-(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+;; for newer emacs this happens in early-init.el
+(when (< emacs-major-version 27)
+  (progn
+    (setq-default cursor-type '(bar . 2))
+    (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+    (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+    (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))))
 ;;;; Fonts and scrolling
 (column-number-mode 1)
 (when (eq system-type 'darwin)
@@ -57,7 +60,12 @@
 
 (use-package kakoune
   :straight (kakoune :local-repo "~/Projects/kakoune.el/" :files ("*.el"))
-  :bind ("C-z" . ryo-modal-mode)
+  :bind (("C-z" . ryo-modal-mode)
+         ("C-<left>" . windmove-left)
+         ("C-<down>" . windmove-down)
+         ("C-<up>" . windmove-up)
+         ("C-<right>" . windmove-right)
+         ("<XF86Tools>" . er/expand-region))
   :init
   (kakoune-setup-keybinds)
   :config
@@ -187,7 +195,8 @@
   :straight (doom-modeline :host github :repo "seagle0128/doom-modeline")
   :hook (after-init . doom-modeline-init)
   :config
-  (setq doom-modeline-bar-width 4))
+  (setq doom-modeline-bar-width 4)
+  (setq doom-modeline-height 36))
 
 (use-package ace-popup-menu
   :config
@@ -235,15 +244,17 @@ _l_: move border right      _L_: swap border right
                     ("<S-up>" windower-swap-above)
                     ("<S-right>" windower-swap-right)
                     ("t" windower-toggle-split :exit t)
+                    ("s" windower-swap :exit t)
                     ("q" nil "cancel" :color blue)
                     ("<return>" nil nil))))
 
 ;;; Saner defaults
 (setq-default
- ring-bell-function               'ignore ;; Stop ringing bell
+ ring-bell-function              'ignore ;; Stop ringing bell
  sentence-end-double-space        nil	  ; I prefer single space
  tab-width                        4       ; 8 is enormous
  initial-scratch-message          nil     ; I know what the scratch buffer is for
+ vc-follow-symlinks               t       ; I never don't want to follow them
  )
 
 (defalias 'yes-or-no-p #'y-or-n-p)
@@ -505,7 +516,8 @@ _l_: move border right      _L_: swap border right
   :ryo ("\\" treemacs)
   :bind (:map treemacs-mode-map
               ("j" . treemacs-next-line)
-              ("k" . treemacs-previous-line)))
+              ("k" . treemacs-previous-line)
+              ("\\" . treemacs-quit)))
 ;;;; Disk Usage
 (use-package disk-usage
   :bind (:map disk-usage-mode-map
@@ -576,7 +588,8 @@ _l_: move border right      _L_: swap border right
   :ryo
   ("SPC a g" git-gutter-mode)
   ("] g" git-gutter:next-hunk)
-  ("[ g" git-gutter:previous-hunk))
+  ("[ g" git-gutter:previous-hunk)
+  ("g R" git-gutter:revert-hunk))
 
 (use-package forge
   :after magit
@@ -660,10 +673,12 @@ _l_: move border right      _L_: swap border right
 
 (use-package esh-autosuggest
   :hook (eshell-mode . esh-autosuggest-mode))
-(use-package eshell-autojump)
+;; (use-package eshell-autojump)
+(use-package fish-completion
+  :config (global-fish-completion-mode))
 
 (defun display-ansi-colors ()
-  "Function to display ansi color codes in read-only buffer"
+  "Function to display ansi color codes in read-only buffer."
   (interactive)
   (let ((inhibit-read-only t))
     (ansi-color-apply-on-region (point-min) (point-max))))
@@ -674,15 +689,21 @@ _l_: move border right      _L_: swap border right
   :straight (lsp-mode :host github :repo "emacs-lsp/lsp-mode")
   :hook ((go-mode . lsp)
          (python-mode . lsp)
-         (clojure-mode . lsp)
+         ;; (clojure-mode . lsp) ;; too slow
          (lua-mode . lsp)
          (rust-mode . lsp)
+         (js-mode . lsp)
          (lsp-mode . flycheck-mode)
          (lsp-mode . lsp-enable-which-key-integration))
   :commands lsp
   :config
   (setq lsp-rust-analyzer-server-command '("/home/joseph/.cargo/bin/rust-analyzer")))
-(use-package lsp-ui)
+(use-package lsp-ui
+  :custom
+  (lsp-ui-sideline-enable nil)
+  :config
+  (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+  (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references))
 (use-package company-lsp :commands company-lsp)
 (use-package lsp-ivy
   :straight (lsp-ivy :host github :repo "emacs-lsp/lsp-ivy")
@@ -744,6 +765,14 @@ reformatting), so we restore a (false) modified state."
   :ryo
   (:mode 'haskell-mode)
   ("SPC m f" attrap-attrap))
+
+(use-package ormolu
+  :straight (ormolu :host github :repo "vyorkin/ormolu.el")
+  ;; :hook (haskell-mode . ormolu-format-on-save-mode)
+  :bind
+  (:map haskell-mode-map
+        ("C-c r" . ormolu-format-buffer)))
+
 (use-package shakespeare-mode)
 (use-package shm
   :after haskell-mode
@@ -789,24 +818,17 @@ reformatting), so we restore a (false) modified state."
 (use-package go-mode)
 
 ;;;; Javascript
-(use-package rjsx-mode
-  :config
-  (add-hook 'rjsx-mode-hook #'flycheck-mode)
-  (add-hook 'rjsx-mode-hook #'company-mode)
-  (add-to-list 'auto-mode-alist '("\\.js\\'" . rjsx-mode))
-  (setq js2-strict-missing-semi-warning nil))
-
+;; emacs 27 natively parses jsx correctly
+(when (< emacs-major-version 27)
+  (use-package rjsx-mode
+    :config
+    (add-hook 'rjsx-mode-hook #'flycheck-mode)
+    (add-hook 'rjsx-mode-hook #'company-mode)
+    (add-to-list 'auto-mode-alist '("\\.js\\'" . rjsx-mode))
+    (setq js2-strict-missing-semi-warning nil)))
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . js-mode))
 (use-package json-mode)
 (use-package typescript-mode)
-(use-package tide
-  :hook ((typescript-mode . tide-setup)
-         (typescript-mode . tide-hl-identifier-mode)
-         (rjsx-mode . tide-setup)
-         (rjsx-mode . tide-hl-identifier-mode))
-  :config
-  (flycheck-add-next-checker 'javascript-eslint 'jsx-tide 'append)
-  (setq-default flycheck-disabled-checkers
-                (append flycheck-disabled-checkers '(javascript-jshint))))
 
 ;;;; Purescript
 (use-package purescript-mode
@@ -858,6 +880,8 @@ reformatting), so we restore a (false) modified state."
 
 ;;;; Nix
 (use-package nix-mode)
+(use-package nix-env-install
+  :straight (nix-env-install :host github :repo "akirak/nix-env-install"))
 
 ;;;; Elm
 (use-package reformatter
@@ -1226,10 +1250,30 @@ Inserted by installing org-mode or when a release is made."
 ;;;; Calendar
 ;; todo
 
+;;;; Twitter
+(use-package twittering-mode
+  :commands twit
+  :config
+  (setq twittering-icon-mode t))
+
+;;;; Slack
+(use-package slack
+  :commands (slack-start)
+  :init
+  (setq slack-buffer-emojify t) ;; if you want to enable emoji, default nil
+  (setq slack-prefer-current-team t)
+  :config
+  (slack-register-team
+   :name "lantern"
+   :default t
+   :token "xoxs-2246113876-717856427008-931568812887-8ebd826020dc4bf2f890761f83db6c99e88463a584d52e3c01c2a3c537b81170"
+   :full-and-display-names t))
+
 ;;;; Restart Emacs from Emacs!
 (use-package restart-emacs)
 ;;; End
 ;; Revert garbage collection to default after loading init
+;; or maybe don't
 (setq gc-cons-threshold 1000000)
 
 (provide 'init)

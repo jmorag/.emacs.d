@@ -49,6 +49,7 @@
         kak/w
         kak/x
         kakoune-X
+        kakoune-Y
         kakoune-d
         kakoune-downcase
         kakoune-exchange
