@@ -47,6 +47,8 @@
 (define-key input-decode-map [?\C-i] [C-i])
 (define-key input-decode-map [?\C-m] [C-m])
 (define-key input-decode-map [?\C-\[] [C-\[])
+(define-key special-mode-map (kbd "j") #'next-line)
+(define-key special-mode-map (kbd "k") #'previous-line)
 ;;;; Fancy text editing
 (use-package key-chord
   :config (key-chord-mode 1))
@@ -514,6 +516,7 @@ _l_: move border right      _L_: swap border right
 ;;;; Treemacs
 (use-package treemacs
   :ryo ("\\" treemacs)
+  :config (treemacs-follow-mode)
   :bind (:map treemacs-mode-map
               ("j" . treemacs-next-line)
               ("k" . treemacs-previous-line)
@@ -693,6 +696,7 @@ _l_: move border right      _L_: swap border right
          (lua-mode . lsp)
          (rust-mode . lsp)
          (js-mode . lsp)
+         (typescript-mode . lsp)
          (lsp-mode . flycheck-mode)
          (lsp-mode . lsp-enable-which-key-integration))
   :commands lsp
@@ -773,10 +777,9 @@ reformatting), so we restore a (false) modified state."
 
 (use-package ormolu
   :straight (ormolu :host github :repo "vyorkin/ormolu.el")
-  ;; :hook (haskell-mode . ormolu-format-on-save-mode)
   :bind
   (:map haskell-mode-map
-        ("C-c r" . ormolu-format-buffer)))
+        ("C-c r" . ormolu-format-region)))
 
 (use-package shakespeare-mode)
 (use-package shm
@@ -860,7 +863,7 @@ reformatting), so we restore a (false) modified state."
   :config
   (defun is-lisp ()
     (find major-mode
-          '(racket-mode emacs-lisp-mode clojure-mode scheme-mode lisp-mode)))
+          '(racket-mode emacs-lisp-mode clojure-mode scheme-mode lisp-mode lisp-interaction-mode)))
   (add-hook 'ryo-modal-mode-hook
             (lambda ()
               (when (is-lisp)
@@ -973,7 +976,8 @@ reformatting), so we restore a (false) modified state."
 
 (use-package ox-moderncv
   :commands (org-mode)
-  :straight (ox-moderncv :host gitlab :repo "Titan-C/org-cv")
+  :straight (ox-moderncv :host gitlab :repo "Titan-C/org-cv"
+                         :fork (:host github :repo "jmorag/org-cv"))
   :config
   (require 'ox-moderncv))
 
