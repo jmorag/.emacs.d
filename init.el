@@ -945,40 +945,11 @@ reformatting), so we restore a (false) modified state."
 (use-package fish-mode)
 ;;;; Zig
 (use-package zig-mode)
-;;;; Org mode install
-;; Installing org mode with straight is annoying
-;; https://github.com/raxod502/straight.el#installing-org-with-straightel
-(require 'subr-x)
-(straight-use-package 'git)
 
-(defun org-git-version ()
-  "The Git version of org-mode.
-Inserted by installing org-mode or when a release is made."
-  (require 'git)
-  (let ((git-repo (expand-file-name
-                   "straight/repos/org/" user-emacs-directory)))
-    (string-trim
-     (git-run "describe"
-              "--match=release\*"
-              "--abbrev=6"
-              "HEAD"))))
-
-(defun org-release ()
-  "The release version of org-mode.
-Inserted by installing org-mode or when a release is made."
-  (require 'git)
-  (let ((git-repo (expand-file-name
-                   "straight/repos/org/" user-emacs-directory)))
-    (string-trim
-     (string-remove-prefix
-      "release_"
-      (git-run "describe" "--match=release\*" "--abbrev=0"
-               "HEAD")))))
-
-(provide 'org-version)
-
-;;;; Org config
+;;;; Org
+(straight-use-package '(org :type built-in))
 (use-package org
+  :straight nil
   :hook (org . ryo-modal-mode)
   :config
   (require 'ox-md nil t)
@@ -1255,19 +1226,6 @@ Inserted by installing org-mode or when a release is made."
   :commands twit
   :config
   (setq twittering-icon-mode t))
-
-;;;; Slack
-(use-package slack
-  :commands (slack-start)
-  :init
-  (setq slack-buffer-emojify t) ;; if you want to enable emoji, default nil
-  (setq slack-prefer-current-team t)
-  :config
-  (slack-register-team
-   :name "lantern"
-   :default t
-   :token "xoxs-2246113876-717856427008-931568812887-8ebd826020dc4bf2f890761f83db6c99e88463a584d52e3c01c2a3c537b81170"
-   :full-and-display-names t))
 
 ;;;; Restart Emacs from Emacs!
 (use-package restart-emacs)

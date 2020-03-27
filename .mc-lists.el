@@ -5,6 +5,7 @@
       '(
         LaTeX-insert-left-brace
         TeX-insert-backslash
+        beginning-of-visual-line
         c-electric-brace
         c-electric-delete-forward
         c-electric-lt-gt
@@ -14,6 +15,7 @@
         c-electric-star
         c-indent-new-comment-line
         count-words-region
+        ctrlf-forward
         electric-newline-and-maybe-indent
         er/mark-inside-pairs
         haskell-indentation-common-electric-command
@@ -162,6 +164,7 @@
         ryo:5afdf8eb96b1ba206f89586c7bde6655:back-to-indentation
         ryo:5fa0e76c510678b6c22c30e6e493d5c7:kak/O
         ryo:664dd2c3bb879b868ad2d6daefa4eee9:end-of-line
+        ryo:668f75bcd7cc5940f6e9313b1717b5b5:beginning-of-buffer
         ryo:6b7f269a0c9f62ded5e6ef76672f3722:forward-same-syntax
         ryo:6eb92d470ae10c8dd8e9bd39f484d6d5:kakoune-select-up-to-char
         ryo:7082fb59b5d5de08c355c52b4893b905:vr/replace
@@ -173,8 +176,10 @@
         ryo:8e022ec1dd956ebb75e780e711bf370d:avy-goto-char-in-line
         ryo:934fcd130f5f2ad6db92d3fce1489dc5:kakoune-backward-same-syntax
         ryo:a147c9a24b4efc5e3424c4618b0aa58a:end-of-line
+        ryo:a6f467289ba024bc2b8a77c16834b94d:back-to-indentation
         ryo:afa43d3f76a1cd6565c5d033d560f21c:forward-word
         ryo:afbbc9ea2ae90f1c40fa71ac17a956d5:backward-char
+        ryo:b217f924e4069372c5cc60e9b4b5359a:next-line
         ryo:b219ebd046736cb61e7239c837f2a722:emacs-surround
         ryo:bb81d76943a66066379de793522f5418:backward-char
         ryo:bc3c9c55c5e3830a7708366cb8aef9c0:kill-line
@@ -196,6 +201,7 @@
         ryo:eac1488896d62c02d1ece92d73bb9d26:kak/o
         ryo:efdebd9b62a393eaec270c14ff58e96b:org-promote-subtree
         ryo:f373378c24f87b7c18ea00255b859322:beginning-of-line
+        ryo:fc42e686ca18a791f17ec994c6dca72c:beginning-of-line
         ryo:fc7eefa7332e9195f27e3ba02ec62ae7:beginning-of-line
         shm/del
         special-digit-argument
