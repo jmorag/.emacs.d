@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: export_path
+# key: path
+# --
+with import <nixpkgs> { };
+stdenv.mkDerivation {
+  name = "${1:name}";
+  shellHook = ''
+    export PATH=${2:node_modules/.bin}:$PATH
+  '';
+}
