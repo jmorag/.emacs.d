@@ -700,15 +700,20 @@ _l_: move border right      _L_: swap border right
   (setq lsp-rust-analyzer-server-command '("/home/joseph/.cargo/bin/rust-analyzer")))
 (use-package lsp-ui
   :custom
-  (lsp-ui-sideline-enable nil)
-  :config
-  (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
-  (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references))
+  (lsp-ui-sideline-enable nil))
 (use-package company-lsp :commands company-lsp)
 (use-package lsp-ivy
   :straight (lsp-ivy :host github :repo "emacs-lsp/lsp-ivy")
   :commands lsp-ivy-workspace-symbol)
+(use-package lsp-treemacs
+  :straight (lsp-treemacs :host github :repo "emacs-lsp/lsp-treemacs" :files ("lsp-treemacs.el"))
+  :config (lsp-treemacs-sync-mode 1))
 
+;;;; Dash Documentation
+(use-package dash-docs
+  :straight (dash-docs :host github :repo "dash-docs-el/dash-docs"))
+(use-package counsel-dash
+  :after dash-docs)
 ;;; Language specific programming concerns
 ;;;; Haskell
 (use-package haskell-mode
