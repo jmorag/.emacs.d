@@ -43,6 +43,10 @@
 (setq straight-use-package-by-default t)
 
 ;;; Core editor facilities
+;;;; Fix keyboard layout
+(use-package colemak-mode
+  :straight (colemak-mode :local-repo "~/.emacs.d/colemak")
+  :bind (("C-c c" . colemak-mode)))
 ;;;; I only use GUI mode emacs so keys should do sane things
 (define-key input-decode-map [?\C-i] [C-i])
 (define-key input-decode-map [?\C-m] [C-m])

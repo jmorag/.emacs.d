@@ -283,6 +283,7 @@
 
 (setq mc/cmds-to-run-once
       '(
+        colemak-mode
         counsel-M-x
         dante-eval-block
         describe-key
