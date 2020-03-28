@@ -296,11 +296,6 @@ _l_: move border right      _L_: swap border right
   ("g U" browse-url-chrome))
 
 ;;; Interface management
-(use-package disable-mouse
-  :if (string= (system-name) "jnix")
-  :config (global-disable-mouse-mode)
-  :ryo ("SPC a m" global-disable-mouse-mode))
-
 (use-package which-key
   :config
   (which-key-mode)
@@ -316,7 +311,7 @@ _l_: move border right      _L_: swap border right
   (wgrep-change-to-wgrep-mode))
 
 (use-package ivy
-  :init (ivy-mode 1)                  ; enable ivy globally at startup
+  :init (ivy-mode 1)               ; enable ivy globally at startup
   :config
   (setq ivy-use-virtual-buffers t) ; extend searching to bookmarks and …
   (setq ivy-height 10)             ; set height of the ivy window
@@ -1012,6 +1007,8 @@ reformatting), so we restore a (false) modified state."
     :hook
     (lilypond . ryo-modal-mode)))
 
+;;;; Vimscript (lol)
+(use-package vimrc-mode)
 ;;; Kitchen sink
 ;;;; Pdf
 ;; Stolen from doom
