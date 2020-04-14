@@ -283,6 +283,7 @@ _l_: move border right      _L_: swap border right
       mouse-yank-at-point t
       require-final-newline nil
       load-prefer-newer t
+      echo-keystrokes 0.1
       ediff-window-setup-function 'ediff-setup-windows-plain
       ediff-split-window-function 'split-window-horizontally
       save-place-file (concat user-emacs-directory "places")
@@ -292,8 +293,8 @@ _l_: move border right      _L_: swap border right
 (global-auto-revert-mode t)
 (use-package crux
   :ryo
-  ("g u" crux-view-url)
-  ("g U" browse-url-chrome))
+  ("g U" crux-view-url)
+  ("g u" browse-url-chrome))
 
 ;;; Interface management
 (use-package which-key
@@ -601,6 +602,10 @@ _l_: move border right      _L_: swap border right
      ("P" "Pullreqs" forge-jump-to-pullreqs)]))
 
 (use-package git-link)
+
+(use-package gitignore
+  :straight (gitignore :host github :repo "syohex/emacs-gitignore"))
+
 ;;;; Projectile
 (use-package projectile
   :config
@@ -700,7 +705,8 @@ _l_: move border right      _L_: swap border right
          (lsp-mode . lsp-enable-which-key-integration))
   :commands lsp
   :config
-  (setq lsp-rust-analyzer-server-command '("/home/joseph/.cargo/bin/rust-analyzer")))
+  (setq lsp-rust-analyzer-server-command '("/home/joseph/.cargo/bin/rust-analyzer"))
+  (setq lsp-pyls-plugins-pycodestyle-ignore t))
 (use-package lsp-ui
   :custom
   (lsp-ui-sideline-enable nil))
@@ -876,6 +882,7 @@ reformatting), so we restore a (false) modified state."
 (use-package cider)
 
 (use-package racket-mode)
+(use-package geiser)
 
 (use-package elisp-slime-nav
   :config
@@ -919,13 +926,6 @@ reformatting), so we restore a (false) modified state."
   (add-hook 'tuareg-mode-hook 'flycheck-mode))
 
 ;;;; Python (superceded by lsp)
-;; (use-package anaconda-mode
-;;   :hook (python-mode . anaconda-mode)
-;;   (python-mode . anaconda-eldoc-mode))
-;; (use-package company-anaconda
-;;   :config
-;;   (eval-after-load "company"
-;;     '(add-to-list 'company-backends '(company-anaconda :with company-capf))))
 (use-package ein
   :ryo
   (:mode 'ein:notebook-multilang-mode)
@@ -947,6 +947,12 @@ reformatting), so we restore a (false) modified state."
 (use-package llvm-mode
   :straight (llvm-mode :local-repo "~/.emacs.d/llvm"
                        :files ("*.el")))
+
+;;;; Graphviz
+(use-package graphviz-dot-mode
+  :config
+  (setq graphviz-dot-indent-width 4)
+  (require 'company-graphviz-dot))
 
 ;;;; Fish
 (use-package fish-mode)

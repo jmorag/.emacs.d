@@ -5,6 +5,7 @@
       '(
         LaTeX-insert-left-brace
         TeX-insert-backslash
+        TeX-insert-sub-or-superscript
         beginning-of-visual-line
         c-electric-brace
         c-electric-delete-forward
@@ -94,6 +95,7 @@
         markdown-outdent-or-delete
         modalka-translation
         mouse-buffer-menu
+        org-beginning-of-line
         org-ctrl-c-ctrl-c
         org-cycle
         org-delete-char
@@ -300,6 +302,7 @@
         mouse-set-region
         multiple-cursors-mode
         ryo:0e93af3b38e44fa93c5656cb1bd98ac3:mc/skip-to-previous-like-this
+        ryo:28601557288652d3a73402a9c323bae0:swiper
         ryo:39ab4d56b894e3818b91a63f128c314d:mc/mark-next-like-this
         ryo:3a1146b874b557308dd23eafa4dde36b:format-all-buffer
         ryo:43a840e32c825f68414b7560417a88ff:mc/skip-to-next-like-this

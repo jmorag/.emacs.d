@@ -7,7 +7,7 @@
  '(c-basic-offset 2)
  '(custom-safe-themes
    '("8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" default))
- '(darkroom-margins 0.1 t)
+ '(darkroom-margins 0.1)
  '(dired-auto-revert-buffer t)
  '(dired-clean-confirm-killing-deleted-buffers nil)
  '(dired-dwim-target t)
@@ -30,7 +30,14 @@
  '(peed-dired-cleanup-on-disable t t)
  '(peep-dired-enable-on-directories t t)
  '(safe-local-variable-values
-   '((dante-repl-command-line "nix-shell" "--pure" "--run" "cabal" "new-repl")
+   '((projectile-project-run-cmd . "make lantern && ./lantern -uiaddr=\":58735\" -headless")
+     (projectile-project-run-cmd . "yarn start")
+     (projectile-project-compilation-cmd . "hugo server -D --disableFastRender")
+     (lsp-enabled-clients quote
+                          (mspyls))
+     (lsp-enabled-clients quote
+                          (lsp-python-ms))
+     (dante-repl-command-line "nix-shell" "--pure" "--run" "cabal" "new-repl")
      (org-src-preserve-indentation)
      (eval and
            (featurep 'ox-extra)
