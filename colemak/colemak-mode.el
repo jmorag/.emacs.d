@@ -8,6 +8,7 @@
 
 (require 'dash)
 (require 'cl-lib)
+(require 'f)
 (defvar colemak-translations
   (-tree-map #'kbd '(("h" "n")
                      ("j" "e")
@@ -95,6 +96,7 @@
                do (define-key keymap (if apply to from) command)))))
 
 
+(defvar keyboard-layout "QWERTY")
 
 ;;;###autoload
 (define-minor-mode colemak-mode
@@ -102,11 +104,17 @@
   :init-value nil
   :lighter " Colemak"
   :global t
-  (progn
-    (setq global-mode-string (when colemak-mode "Colemak"))
-    (doom-modeline-refresh-frame)
-    (cl-loop for map in colemak-translation-maps
-             do (apply-or-revert-translations colemak-translations map colemak-mode))))
+  (add-to-list 'mode-line-misc-info '(keyboard-layout (" " keyboard-layout " ")))
+  (setq keyboard-layout (if colemak-mode "Colemak" "QWERTY"))
+  (f-delete (f-long "~/.config/i3/config") t)
+  (f-symlink (f-long (if colemak-mode "~/.config/i3/config-colemak"
+                       "~/.config/i3/config-qwerty"))
+             (f-long "~/.config/i3/config"))
+  (shell-command "i3-msg restart")
+  (doom-modeline-refresh-frame)
+  (cl-loop for map in colemak-translation-maps
+           do (apply-or-revert-translations
+               colemak-translations map colemak-mode)))
 
 (provide 'colemak-mode)
 ;;; colemak-mode.el ends here
