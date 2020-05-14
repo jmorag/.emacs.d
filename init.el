@@ -774,7 +774,10 @@ reformatting), so we restore a (false) modified state."
   :straight (ormolu :host github :repo "vyorkin/ormolu.el")
   :bind
   (:map haskell-mode-map
-        ("C-c r" . ormolu-format-region)))
+        ("C-c r" . ormolu-format-region))
+  :ryo
+  (:mode 'haskell-mode)
+  ("SPC =" ormolu-format-buffer))
 
 (use-package shakespeare-mode)
 (use-package shm
