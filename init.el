@@ -1242,6 +1242,52 @@ reformatting), so we restore a (false) modified state."
 
 ;;;; Restart Emacs from Emacs!
 (use-package restart-emacs)
+;;;; Services
+(use-package prodigy
+  :bind
+  (("C-c p" . prodigy)
+   :map prodigy-mode-map
+   ("j" . prodigy-next)
+   ("k" . prodigy-prev)
+   ("g g" . revert-buffer)
+   ("g d" . prodigy-jump-file-manager)
+   ("g m" . prodigy-jump-magit))
+  :config
+  (prodigy-define-service
+    :name "lantern-desktop-ui"
+    :command "yarn"
+    :args '("start")
+    :stop-signal 'sigint
+    :cwd "~/Projects/getlantern/lantern-desktop-ui"
+    :tags '(yarn lantern))
+  (prodigy-define-service
+    :name "flashlight"
+    :path '("~/Projects/go/src/github.com/getlantern/flashlight")
+    :command "lantern"
+    :args '("-uiaddr" ":58735" "-headless")
+    :stop-signal 'sigint
+    :cwd "~/Projects/go/src/github.com/getlantern/flashlight"
+    :tags '(go lantern))
+  (prodigy-define-service
+    :name "yinbi-server"
+    :cwd "~/Projects/go/src/github.com/getlantern/yinbi-server"
+    :command "bash"
+    :args '("run-admin.bash")
+    :tags '(go yinbi)
+    :stop-signal 'sigkill)
+  (prodigy-define-tag
+    :name 'yinbi-web
+    :command "yarn"
+    :cwd "~/Projects/getlantern/yinbi-web")
+  (prodigy-define-service
+    :name "yinbi-web"
+    :tags '(yinbi yarn yinbi-web)
+    :args '("dev"))
+  (prodigy-define-service
+    :name "yinbi-web-admin"
+    :tags '(yinbi yarn yinbi-web)
+    :args '("start:admin")))
+
 ;;; End
 ;; Revert garbage collection to default after loading init
 ;; or maybe don't
