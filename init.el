@@ -856,15 +856,19 @@ reformatting), so we restore a (false) modified state."
   (yaml-mode . ryo-modal-mode))
 
 ;;;; Lisps
-;; (since all of my time is spent in emacs, I should have a lisp plugin)
+(defconst lisp-modes
+  '(racket-mode emacs-lisp-mode clojure-mode scheme-mode lisp-mode lisp-interaction-mode))
+
+(use-package aggressive-indent
+  :config
+  (dolist (mode lisp-modes)
+    (add-hook (intern (concat (symbol-name mode) "-hook")) 'aggressive-indent-mode)))
+
 (use-package lispy
   :config
-  (defun is-lisp ()
-    (find major-mode
-          '(racket-mode emacs-lisp-mode clojure-mode scheme-mode lisp-mode lisp-interaction-mode)))
   (add-hook 'ryo-modal-mode-hook
             (lambda ()
-              (when (is-lisp)
+              (when (find major-mode lisp-modes)
                 (if (bound-and-true-p ryo-modal-mode)
                     (lispy-mode -1)
                   (lispy-mode 1))))))
