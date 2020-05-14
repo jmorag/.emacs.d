@@ -7,7 +7,7 @@
  '(c-basic-offset 2)
  '(custom-safe-themes
    '("8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" default))
- '(darkroom-margins 0.1)
+ '(darkroom-margins 0.1 t)
  '(dired-auto-revert-buffer t)
  '(dired-clean-confirm-killing-deleted-buffers nil)
  '(dired-dwim-target t)
@@ -30,7 +30,10 @@
  '(peed-dired-cleanup-on-disable t t)
  '(peep-dired-enable-on-directories t t)
  '(safe-local-variable-values
-   '((projectile-project-run-cmd . "make lantern && ./lantern -uiaddr=\":58735\" -headless")
+   '((projectile-project-compile-cmd . "nix-shell --run 'make lantern")
+     (projectile-project-run-cmd . "nix-shell --run 'make lantern && ./lantern -uiaddr=\":58735\" -headless'")
+     (checkdoc-package-keywords-flag)
+     (projectile-project-run-cmd . "make lantern && ./lantern -uiaddr=\":58735\" -headless")
      (projectile-project-run-cmd . "yarn start")
      (projectile-project-compilation-cmd . "hugo server -D --disableFastRender")
      (lsp-enabled-clients quote

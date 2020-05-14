@@ -3,7 +3,6 @@
 ;;; Startup improvements
 (setq package-enable-at-startup nil)
 ;;;; Turn off mouse interface early in startup to avoid momentary display
-;; for newer emacs this happens in early-init.el
 (when (< emacs-major-version 27)
   (progn
     (setq-default cursor-type '(bar . 2))
@@ -509,9 +508,8 @@ _l_: move border right      _L_: swap border right
               ("k" . peep-dired-prev-file)))
 (use-package dired+
   :straight (dired+ :host github :repo "emacsmirror/dired-plus")
-  :config
-  (setq dired-listing-switches "-alh")
-  (add-hook 'dired-mode-hook '(lambda () (diredp-toggle-find-file-reuse-dir 1))))
+  :custom
+  (dired-listing-switches "-alh"))
 
 ;;;; Treemacs
 (use-package treemacs
@@ -627,14 +625,6 @@ _l_: move border right      _L_: swap border right
 (use-package rainbow-delimiters
   :config
   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
-
-;;;; Indentation
-(use-package aggressive-indent
-  :hook (emacs-lisp-mode . aggressive-indent-mode)
-  :hook (scheme-mode . aggressive-indent-mode)
-  :hook (clojure-mode . aggressive-indent-mode)
-  :hook (racket-mode . aggressive-indent-mode)
-  :hook (lisp-mode . aggressive-indent-mode))
 
 ;;;; Linting
 (use-package flycheck
