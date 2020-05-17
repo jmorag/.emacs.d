@@ -2,13 +2,10 @@
 
 ;;; Startup improvements
 (setq package-enable-at-startup nil)
-;;;; Turn off mouse interface early in startup to avoid momentary display
-(when (< emacs-major-version 27)
-  (progn
-    (setq-default cursor-type '(bar . 2))
-    (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
-    (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-    (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))))
+(setq-default cursor-type '(bar . 2))
+(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 ;;;; Fonts and scrolling
 (column-number-mode 1)
 (when (eq system-type 'darwin)
@@ -20,7 +17,7 @@
 (setq gc-cons-threshold most-positive-fixnum)
 
 ;;;; Don't dump custom variables into init.el
-(setq custom-file "~/.emacs.d/custom.el")
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (load custom-file)
 
 ;;;; Bootstrap straight.el
@@ -44,7 +41,7 @@
 ;;; Core editor facilities
 ;;;; Fix keyboard layout
 (use-package colemak-mode
-  :straight (colemak-mode :local-repo "~/.emacs.d/colemak")
+  :straight (colemak-mode :local-repo "~/emacs/colemak/")
   :bind (("C-c c" . colemak-mode)))
 ;;;; I only use GUI mode emacs so keys should do sane things
 (define-key input-decode-map [?\C-i] [C-i])
@@ -59,7 +56,7 @@
 (use-package ryo-modal
   :straight (ryo-modal :host github :repo "jmorag/ryo-modal")
   :config
-  (defun ryo-enter () "Enter normal mode" (interactive) (ryo-modal-mode 1))
+  (defun ryo-enter () (interactive) (ryo-modal-mode 1))
   (key-seq-define-global "fd" 'ryo-enter)
   (global-set-key (kbd "<escape>") 'ryo-enter))
 
@@ -74,7 +71,7 @@
   :init
   (kakoune-setup-keybinds)
   :config
-  (defun my/goto-init () (interactive) (find-file user-init-file))
+  (defun my/goto-init () (interactive) (find-file (expand-file-name "init.el" user-emacs-directory)))
   (setq ryo-modal-cursor-type 'box)
   (add-hook 'prog-mode-hook #'ryo-modal-mode)
   (define-key ryo-modal-mode-map (kbd "SPC h") 'help-command)
@@ -89,7 +86,7 @@
    ("M-m" mc/edit-lines)
    ("*" mc/mark-all-like-this)
    ("v" er/expand-region)
-   ("C-v" set-rectangular-region-anchor)
+   ("C-v" rectangle-mark-mode)
    ("M-s" mc/split-region)
    (";" (("q" delete-window)
          ("v" split-window-horizontally)
@@ -896,11 +893,10 @@ reformatting), so we restore a (false) modified state."
   :straight (nix-env-install :host github :repo "akirak/nix-env-install"))
 
 ;;;; Elm
-(use-package reformatter
-  :straight (reformatter :host github :repo "purcell/reformatter.el"))
-(use-package elm-mode
-  :after reformatter
-  :straight (elm-mode :host github :repo "jcollard/elm-mode"))
+;; (use-package reformatter
+;;   :straight (reformatter :host github :repo "purcell/reformatter.el"))
+;; (use-package elm-mode
+;;   :straight (elm-mode :host github :repo "jcollard/elm-mode"))
 
 ;;;; Ocaml
 (use-package tuareg)
@@ -924,10 +920,10 @@ reformatting), so we restore a (false) modified state."
   (add-hook 'tuareg-mode-hook 'flycheck-mode))
 
 ;;;; Python (superceded by lsp)
-(use-package ein
-  :ryo
-  (:mode 'ein:notebook-multilang-mode)
-  ("," ein:notebook-save-notebook-command))
+;; (use-package ein
+;;   :ryo
+;;   (:mode 'ein:notebook-multilang-mode)
+;;   ("," ein:notebook-save-notebook-command))
 (use-package lpy
   :straight (lpy :host github :repo "abo-abo/lpy")
   :ryo
@@ -943,7 +939,7 @@ reformatting), so we restore a (false) modified state."
 
 ;;;; LLVM - for when we need to look at llvm
 (use-package llvm-mode
-  :straight (llvm-mode :local-repo "~/.emacs.d/llvm"
+  :straight (llvm-mode :local-repo "~/emacs/llvm/"
                        :files ("*.el")))
 
 ;;;; Graphviz
@@ -1058,7 +1054,7 @@ reformatting), so we restore a (false) modified state."
 (advice-add 'tetris :before
             (lambda ()
               (setq gamegrid-xpm (with-temp-buffer
-                                   (insert-file-contents-literally "~/.emacs.d/tetris.xpm")
+                                   (insert-file-contents-literally (concat user-emacs-directory "tetris.xpm"))
                                    (buffer-string)))
               (setq gamegrid-glyph-height 64)))
 
@@ -1076,16 +1072,16 @@ reformatting), so we restore a (false) modified state."
 
 ;;;; Music
 ;; Surprisingly, this works, but it can use some tweaking
-(use-package emms
-  :commands (emms)
-  :straight (:repo "git://git.sv.gnu.org/emms.git")
-  :config
-  (require 'emms-setup)
-  (emms-all)
-  (emms-default-players)
-  (setq emms-source-file-default-directory "~/Music/")
-  (require 'emms-info-libtag)
-  (setq emms-info-functions '(emms-info-libtag)))
+;; (use-package emms
+;;   :commands (emms)
+;;   :straight (:repo "git://git.sv.gnu.org/emms.git")
+;;   :config
+;;   (require 'emms-setup)
+;;   (emms-all)
+;;   (emms-default-players)
+;;   (setq emms-source-file-default-directory "~/Music/")
+;;   (require 'emms-info-libtag)
+;;   (setq emms-info-functions '(emms-info-libtag)))
 
 ;;;; Fake word processor
 (use-package flyspell-correct
