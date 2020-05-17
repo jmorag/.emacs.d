@@ -650,7 +650,8 @@ _l_: move border right      _L_: swap border right
   :ryo
   ("SPC =" format-all-buffer))
 (use-package ws-butler
-  :hook (prog-mode . ws-butler-mode))
+  :config
+  (ws-butler-global-mode 1))
 
 ;;;; Commenting
 (use-package evil-nerd-commenter
