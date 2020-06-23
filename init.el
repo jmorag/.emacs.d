@@ -13,6 +13,9 @@
 ;; Make scrolling work more like vim's
 (scroll-lock-mode 1)
 
+;;;; Make long lines not kill emacs
+(global-so-long-mode 1)
+
 ;;;; Start off with giant gc threshold
 (setq gc-cons-threshold most-positive-fixnum)
 
@@ -173,24 +176,32 @@
 	          ("j" . widget-forward)
 	          ("k" . widget-backward)))
 
-;; Start fullscreen
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
-
 ;; Theme
+(use-package solarized-theme
+  :custom
+  (solarized-use-mode-italic t)
+  (solarized-scale-org-mode-headlines nil))
+
 (use-package doom-themes
+  :custom (doom-themes-padded-modeline t)
   :config
-  (defvar current-theme "doom-one" "Which doom theme is active.")
+  (defvar current-theme "doom-solarized-dark-high-contrast" "Which doom theme is active.")
+  (defun reload-theme ()
+    (interactive)
+    (straight-rebuild-package "doom-themes")
+    (counsel-load-theme-action current-theme))
   (defun toggle-theme ()
     "Toggle between doom-one and doom-solarized-light themes."
     (interactive)
-    (if (string-equal current-theme "doom-one")
+    (if (string-equal current-theme "doom-solarized-dark-high-contrast")
         (progn (counsel-load-theme-action "doom-solarized-light")
                (setq current-theme "doom-solarized-light"))
-      (progn (counsel-load-theme-action "doom-one")
-             (setq current-theme "doom-one"))))
+      (progn (counsel-load-theme-action "doom-solarized-dark-high-contrast")
+             (setq current-theme "doom-solarized-dark-high-contrast"))))
   (doom-themes-org-config)
   :ryo
-  ("SPC a l" toggle-theme))
+  ("SPC a l" toggle-theme)
+  ("SPC a L" reload-theme))
 
 ;; Modeline
 (use-package doom-modeline
@@ -566,6 +577,14 @@ _l_: move border right      _L_: swap border right
         ("k" . git-timemachine-show-previous-revision)
         ("," . write-file)))
 
+;; WIP git gutter fringe deleted
+(use-package fringe-helper)
+(require 's)
+(defun make-triangle-bitmap (n-rows)
+  (apply 'fringe-helper-convert
+         (cl-loop for i from 0 to n-rows collect
+                  (s-concat (s-repeat i "X") (s-repeat (- n-rows i) ".")))))
+
 (use-package git-gutter-fringe
   :hook (prog-mode . git-gutter-mode)
   :init
@@ -580,7 +599,6 @@ _l_: move border right      _L_: swap border right
     nil nil '(center repeated))
   (define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240]
     nil nil 'bottom)
-  :config
   (advice-add #'magit-stage-file   :after #'git-gutter)
   (advice-add #'magit-unstage-file :after #'git-gutter)
   :ryo
@@ -603,17 +621,12 @@ _l_: move border right      _L_: swap border right
 
 ;;;; Projectile
 (use-package projectile
-  :config
+  :init
+  (define-key ryo-modal-mode-map (kbd "SPC p") 'projectile-command-map)
   (projectile-mode 1)
   (setq projectile-completion-system 'ivy)
-  :init
-  (define-key ryo-modal-mode-map (kbd "SPC p") 'projectile-command-map))
-
-(use-package counsel-projectile
-  :after (projectile counsel)
-  :config (counsel-projectile-mode)
   :ryo
-  ("SPC SPC" counsel-projectile))
+  ("SPC SPC" projectile-find-file))
 
 ;;; General programming concerns
 ;;;; Parentheses
@@ -689,6 +702,7 @@ _l_: move border right      _L_: swap border right
          (rust-mode . lsp)
          (js-mode . lsp)
          (typescript-mode . lsp)
+         (web-mode . lsp)
          (lsp-mode . flycheck-mode)
          (lsp-mode . lsp-enable-which-key-integration))
   :commands lsp
@@ -697,7 +711,7 @@ _l_: move border right      _L_: swap border right
   (setq lsp-pyls-plugins-pycodestyle-ignore t))
 (use-package lsp-ui
   :custom
-  (lsp-ui-sideline-enable nil))
+  (lsp-ui-sideline-enable t))
 (use-package company-lsp :commands company-lsp)
 (use-package lsp-ivy
   :straight (lsp-ivy :host github :repo "emacs-lsp/lsp-ivy")
@@ -739,6 +753,7 @@ _l_: move border right      _L_: swap border right
                            "-XFlexibleContexts"
                            "-XFlexibleInstances"
                            "-XGADTs"
+                           "-XTypeApplications"
                            ;; necessary to make company completion useful:
                            "-fdefer-typed-holes"
                            "-fdefer-type-errors"))
@@ -769,6 +784,7 @@ reformatting), so we restore a (false) modified state."
   ("SPC m f" attrap-attrap))
 
 (use-package ormolu
+  :custom (ormolu-extra-args '("--ghc-opt" "-XTypeApplications"))
   :straight (ormolu :host github :repo "vyorkin/ormolu.el")
   :bind
   (:map haskell-mode-map
@@ -833,6 +849,9 @@ reformatting), so we restore a (false) modified state."
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . js-mode))
 (use-package json-mode)
 (use-package typescript-mode)
+(use-package rainbow-mode)
+
+(use-package web-mode)
 
 ;;;; Purescript
 (use-package purescript-mode
@@ -1010,6 +1029,10 @@ reformatting), so we restore a (false) modified state."
 ;;;; Vimscript (lol)
 (use-package vimrc-mode)
 ;;; Kitchen sink
+;;;; Restclient
+(use-package restclient)
+(use-package company-restclient)
+
 ;;;; Pdf
 ;; Stolen from doom
 (use-package pdf-tools
@@ -1027,7 +1050,11 @@ reformatting), so we restore a (false) modified state."
               ("x" . other-window)
               ("C-s" . isearch-forward)
               ("C-r" . isearch-backward)
-              ("O" . pdf-outline))
+              ("O" . pdf-outline)
+              ;; :map pdf-outline-buffer-mode-map
+              ;; ("j" . next-line)
+              ;; ("k" . previous-line)
+              )
   :ryo
   (:mode 'pdf-view-mode)
   ("j" pdf-view-next-page-command)
@@ -1040,6 +1067,13 @@ reformatting), so we restore a (false) modified state."
   :config
   (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode)))
 
+;;;; Gif recording
+(use-package gif-screencast
+  :bind ("<f9>" . gif-screencast-start-or-stop)
+  :custom ((gif-screencast-scale-factor 2)
+           ;; Probably not great to hardcode the nix path like this
+           (gif-screencast-convert-program "/nix/store/s9zgyg06sqlnk6mss6ixwc5n40bk3rf9-imagemagick-6.9.10-71/bin/convert")
+           (gif-screencast-program "scrot")))
 ;;;; 2048
 (use-package 2048-game
   :commands (2048-game)
@@ -1270,7 +1304,7 @@ reformatting), so we restore a (false) modified state."
     :cwd "~/Projects/go/src/github.com/getlantern/yinbi-server"
     :command "bash"
     :args '("run-admin.bash")
-    :tags '(go yinbi)
+    :tags '(go)
     :stop-signal 'sigkill)
   (prodigy-define-tag
     :name 'yinbi-web
@@ -1293,5 +1327,5 @@ reformatting), so we restore a (false) modified state."
 (provide 'init)
 (put 'LaTeX-narrow-to-environment 'disabled nil)
 (put 'TeX-narrow-to-group 'disabled nil)
-(load-theme 'doom-one t)
+(load-theme 'doom-solarized-dark-high-contrast t)
 ;; init.el ends here

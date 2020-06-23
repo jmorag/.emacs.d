@@ -100,8 +100,11 @@
         org-cycle
         org-delete-char
         org-end-of-line
+        org-force-self-insert
+        org-kill-line
         org-self-insert-command
         org-yank
+        outshine-kbd-TAB
         outshine-self-insert-command
         phi-search
         phi-search-backward
@@ -145,8 +148,10 @@
         ryo-modal-repeat
         ryo:05cf1b18d95ef5a653397ec40f07e7e6:forward-same-syntax
         ryo:07a1551edff338532c86f629c151f7d4:next-line
+        ryo:09202ff11a377f569aa1a6ec973f8565:previous-line
         ryo:09f9e866cc2a04767fa15b05a4a197f6:forward-same-syntax
         ryo:0bb4aa504aadfd9c58c187b14d5806d6:embrace-commander
+        ryo:0f4ba9b740d668fbf21d8f44ea58eefc:eyebrowse-switch-to-window-config-2
         ryo:1f824378cd608ad59429e475834c37bf:forward-same-syntax
         ryo:2ca75fbe69f21223f194a1b0549c853e:end-of-line
         ryo:2f73978d4422e540c99388f1d7bf31b6:kakoune-o
@@ -164,6 +169,7 @@
         ryo:456ddb3bb8e95dedc67e391ef55ce5bb:kakoune-select-up-to-char
         ryo:4ba44c9869d838fd0f93ea2dabc09909:backward-char
         ryo:5afdf8eb96b1ba206f89586c7bde6655:back-to-indentation
+        ryo:5e524bd331365c42b20ee5f8baa6d8a4:backward-char
         ryo:5fa0e76c510678b6c22c30e6e493d5c7:kak/O
         ryo:664dd2c3bb879b868ad2d6daefa4eee9:end-of-line
         ryo:668f75bcd7cc5940f6e9313b1717b5b5:beginning-of-buffer
@@ -173,6 +179,8 @@
         ryo:70e73419d6581ec46daef14b98265a98:kakoune-d
         ryo:78ae37e0597b744a01e030137a4a62a5:forward-same-syntax
         ryo:8072e5733a19233579c94e6c32064d09:kak/select-up-to-char
+        ryo:817a5b765fdf01848c4ddc3d6c429ce3:forward-char
+        ryo:84add2bad8357d09bca5bf83aca33f70:end-of-line
         ryo:852c571a517d85538a1f9b56f60a68f3:backward-same-syntax
         ryo:8ab5d0830a9c4685f6b642216b9c72bd:forward-char
         ryo:8e022ec1dd956ebb75e780e711bf370d:avy-goto-char-in-line
@@ -187,13 +195,16 @@
         ryo:bc3c9c55c5e3830a7708366cb8aef9c0:kill-line
         ryo:bd01dafd864b73f282864790f7d77e3c:kak/d
         ryo:c44301a1d93e869c777c4e24d9131cb5:er/expand-region
+        ryo:c58dcad6440ad74cbff176e8af19aaa4:beginning-of-line
         ryo:ce23f3bf4d226c8c8a7280b45c0c8ac3:backward-word
         ryo:d1dd1223b7a7caa4a871db9e9e2bff6c:backward-same-syntax
         ryo:d7762b250433e384b77e82019e29e7d6:move-end-of-line
         ryo:d840b8a94a20ad9f5899e616d2cdb76b:beginning-of-line
         ryo:d90fcccac9ed9f6087bc94e7a229b598:kak/select-to-char
         ryo:ddfec1226be377cadae87b4d7da0b634:kak/backward-same-syntax
+        ryo:def128110b11a9acbb59092b21c84622:back-to-indentation
         ryo:df3281848c0970ceb11792154ad9d8fe:forward-same-syntax
+        ryo:df85778363cd69d94694c7cdcf939f1f:kakoune-backward-same-syntax
         ryo:e4fe141b0e119b6d1fa1fce3dfa14784:end-of-line
         ryo:e5884e5d9e03a92b8a235a1d72c9947a:next-line
         ryo:e5dbb354d557462cb65bb1d6bb3fa5af:evilnc-comment-or-uncomment-lines
@@ -203,6 +214,7 @@
         ryo:eac1488896d62c02d1ece92d73bb9d26:kak/o
         ryo:efdebd9b62a393eaec270c14ff58e96b:org-promote-subtree
         ryo:f373378c24f87b7c18ea00255b859322:beginning-of-line
+        ryo:f445b9686f57e9ffe7293bcd79dbec1b:next-line
         ryo:fc42e686ca18a791f17ec994c6dca72c:beginning-of-line
         ryo:fc7eefa7332e9195f27e3ba02ec62ae7:beginning-of-line
         shm/del
@@ -294,9 +306,12 @@
         eldoc-eval-expression
         electric-pair-delete-pair
         eval-print-last-sexp
+        gif-screencast-start-or-stop
         idris-load-file
         iedit-switch-to-mc-mode
         insert-register
+        kakoune-shell-command
+        kakoune-shell-pipe
         mc/split-region
         mouse-appearance-menu
         mouse-set-region

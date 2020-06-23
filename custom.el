@@ -11,11 +11,17 @@
  '(dired-auto-revert-buffer t)
  '(dired-clean-confirm-killing-deleted-buffers nil)
  '(dired-dwim-target t)
+ '(dired-listing-switches "-alh")
  '(dired-recursive-copies 'always)
  '(dired-recursive-deletes 'always)
+ '(doom-themes-padded-modeline t)
  '(electric-indent-mode nil)
+ '(gif-screencast-convert-program
+   "/nix/store/s9zgyg06sqlnk6mss6ixwc5n40bk3rf9-imagemagick-6.9.10-71/bin/convert" t)
+ '(gif-screencast-program "scrot" t)
+ '(gif-screencast-scale-factor 2 t)
  '(haskell-literate-default 'tex)
- '(lsp-ui-sideline-enable nil)
+ '(lsp-ui-sideline-enable t)
  '(notmuch-saved-searches
    '((:name "inbox" :query "tag:inbox" :key "i")
      (:name "unread" :query "tag:unread" :key "u")
@@ -30,7 +36,11 @@
  '(peed-dired-cleanup-on-disable t t)
  '(peep-dired-enable-on-directories t t)
  '(safe-local-variable-values
-   '((projectile-project-compile-cmd . "nix-shell --run 'make lantern")
+   '((dante-repl-command-line "nix-shell" "--pure" "--run" "cabal repl valor-test")
+     (dante-repl-command-line "nix-shell" "--pure" "--run" "cabal repl  --builddir=dist/dante")
+     (dante-command-line "nix-shell" "--pure" "--run" "cabal v2-repl  --builddir=dist/dante")
+     (dante-target . "test:Testall")
+     (projectile-project-compile-cmd . "nix-shell --run 'make lantern")
      (projectile-project-run-cmd . "nix-shell --run 'make lantern && ./lantern -uiaddr=\":58735\" -headless'")
      (checkdoc-package-keywords-flag)
      (projectile-project-run-cmd . "make lantern && ./lantern -uiaddr=\":58735\" -headless")
@@ -84,6 +94,8 @@
  '(send-mail-function 'smtpmail-send-it)
  '(smtpmail-smtp-server "smtp.gmail.com")
  '(smtpmail-smtp-service 25)
+ '(solarized-scale-org-mode-headlines nil t)
+ '(solarized-use-mode-italic t t)
  '(swiper-goto-start-of-match t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
