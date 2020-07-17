@@ -141,6 +141,7 @@
         pspecial-pop-tag-mark
         pspecial-self-insert-command
         pspecial-undo
+        purescript-indentation-delete-backward-char
         reindent-then-newline-and-indent
         ryo-enter
         ryo-leave
@@ -196,6 +197,7 @@
         ryo:bd01dafd864b73f282864790f7d77e3c:kak/d
         ryo:c44301a1d93e869c777c4e24d9131cb5:er/expand-region
         ryo:c58dcad6440ad74cbff176e8af19aaa4:beginning-of-line
+        ryo:cc6355566df88f2c0da940a8205e6830:counsel-yank-pop
         ryo:ce23f3bf4d226c8c8a7280b45c0c8ac3:backward-word
         ryo:d1dd1223b7a7caa4a871db9e9e2bff6c:backward-same-syntax
         ryo:d7762b250433e384b77e82019e29e7d6:move-end-of-line
@@ -327,6 +329,7 @@
         ryo:7383f6bec9b60a5d69520a6dc68ea1f2:mc/mark-all-like-this
         ryo:73ac12fcb39da89064b04736b28f5f0f:mc/mark-next-like-this
         ryo:9668f7b8424ef98fc7eed0e23d2b6bc3:scroll-down-command
+        ryo:a34369470e7c02270a46e6f03505c5f7:beginning-of-buffer
         ryo:b1589c12e9cf3a7dadf52ae6a5e3c310:rust-format-buffer
         ryo:c8439fcc4371f6b9c5ebcbb0b776616b:avy-goto-char-timer
         ryo:f27938a88c89decb111731da89fe4793:vr/mc-mark

@@ -865,6 +865,9 @@ reformatting), so we restore a (false) modified state."
               (flycheck-mode)
               (turn-on-purescript-indentation))))
 
+;;;; Dhall
+(use-package dhall-mode)
+
 ;;;; Yaml
 (use-package yaml-mode
   :config
@@ -971,6 +974,8 @@ reformatting), so we restore a (false) modified state."
 (use-package fish-mode)
 ;;;; Zig
 (use-package zig-mode)
+;;;; Salt
+(use-package salt-mode)
 
 ;;;; Org
 (straight-use-package '(org :type built-in))
