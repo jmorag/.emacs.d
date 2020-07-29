@@ -198,6 +198,7 @@
         ryo:c44301a1d93e869c777c4e24d9131cb5:er/expand-region
         ryo:c58dcad6440ad74cbff176e8af19aaa4:beginning-of-line
         ryo:cc6355566df88f2c0da940a8205e6830:counsel-yank-pop
+        ryo:ccbc2d71618d8ae96a67ee3542b4d1b3:kakoune-O
         ryo:ce23f3bf4d226c8c8a7280b45c0c8ac3:backward-word
         ryo:d1dd1223b7a7caa4a871db9e9e2bff6c:backward-same-syntax
         ryo:d7762b250433e384b77e82019e29e7d6:move-end-of-line

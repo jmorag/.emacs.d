@@ -638,6 +638,9 @@ _l_: move border right      _L_: swap border right
 
 ;;;; Linting
 (use-package flycheck
+  :config
+  (setq flycheck-python-flake8-executable "flake8")
+  (setq flycheck-python-pylint-executable "pylint")
   :ryo
   ("SPC" (("a t" flycheck-mode :name "Flycheck toggle")))
   ("] e" flycheck-next-error :first '(deactivate-mark))
