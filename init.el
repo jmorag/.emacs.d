@@ -733,68 +733,22 @@ _l_: move border right      _L_: swap border right
 (use-package haskell-mode
   :custom (haskell-literate-default 'tex)
   :hook (haskell-mode . haskell-decl-scan-mode))
-
-(use-package dante
-  :commands 'dante-mode
-  :init
-  (add-hook 'haskell-mode-hook 'flycheck-mode)
-  (add-hook 'haskell-mode-hook 'dante-mode)
-  ;; Doom
-  (setq dante-load-flags '(;; defaults:
-                           "+c"
-                           "-Wwarn=missing-home-modules"
-                           "-fno-diagnostics-show-caret"
-                           ;; neccessary to make attrap-attrap useful:
-                           "-Wall"
-                           ;; I don't care if you default to Integer
-                           "-Wno-type-defaults"
-                           ;; Overloaded strings can break type inference very often
-                           ;; "-XOverloadedStrings"
-                           "-XQuasiQuotes"
-                           "-XTemplateHaskell"
-                           "-XRankNTypes"
-                           "-XFlexibleContexts"
-                           "-XFlexibleInstances"
-                           "-XGADTs"
-                           "-XTypeApplications"
-                           ;; necessary to make company completion useful:
-                           "-fdefer-typed-holes"
-                           "-fdefer-type-errors"))
+(use-package lsp-haskell
+  :hook (haskell-mode . lsp)
+  :custom
+  ((lsp-haskell-process-path-hie "ghcide")
+   (lsp-haskell-process-args-hie '()))
+  ;; Comment/uncomment this line to see interactions between lsp client/server.
   :config
-  (flycheck-add-next-checker 'haskell-dante '(warning . haskell-hlint))
-  (defun +haskell*restore-modified-state (orig-fn &rest args)
-    "Dante quietly saves the current buffer (without triggering save hooks) before
-invoking flycheck, unexpectedly leaving the buffer in an unmodified state. This
-is annoying if we depend on save hooks to do work on the buffer (like
-reformatting), so we restore a (false) modified state."
-    (let ((modified-p (buffer-modified-p)))
-      (apply orig-fn args)
-      (if modified-p (set-buffer-modified-p t))))
-  (advice-add #'dante-async-load-current-buffer :around #'+haskell*restore-modified-state)
-
-  :bind
-  (:map dante-mode-map
-        ("C-c C-c" . dante-eval-block))
-  :ryo
-  (:mode 'haskell-mode)
-  ("SPC m t" dante-type-at)
-  ("SPC m i" dante-info)
-  ("SPC m e" dante-eval-block))
-
-(use-package attrap
-  :ryo
-  (:mode 'haskell-mode)
-  ("SPC m f" attrap-attrap))
+  (setq lsp-log-io t))
 
 (use-package ormolu
   :custom (ormolu-extra-args '("--ghc-opt" "-XTypeApplications"))
   :straight (ormolu :host github :repo "vyorkin/ormolu.el")
+  :hook (haskell-mode . ormolu-format-on-save-mode)
   :bind
   (:map haskell-mode-map
-        ("C-c r" . ormolu-format-region))
-  :ryo
-  (:mode 'haskell-mode)
-  ("SPC =" ormolu-format-buffer))
+        ("C-c r" . ormolu-format-region)))
 
 (use-package shakespeare-mode)
 (use-package shm
