@@ -879,6 +879,7 @@ _l_: move border right      _L_: swap border right
 
 ;;;; Ocaml
 (use-package tuareg)
+(use-package dune)
 
 (let ((opam-share (ignore-errors (car (process-lines "opam" "config" "var" "share"))))
       (ocamlmerlin-command (ignore-errors (car (process-lines "which" "ocamlmerlin")))))
@@ -899,10 +900,6 @@ _l_: move border right      _L_: swap border right
   (add-hook 'tuareg-mode-hook 'flycheck-mode))
 
 ;;;; Python (superceded by lsp)
-;; (use-package ein
-;;   :ryo
-;;   (:mode 'ein:notebook-multilang-mode)
-;;   ("," ein:notebook-save-notebook-command))
 (use-package lpy
   :straight (lpy :host github :repo "abo-abo/lpy")
   :ryo
@@ -939,7 +936,16 @@ _l_: move border right      _L_: swap border right
 (use-package org
   :straight nil
   :hook (org . ryo-modal-mode)
+  :bind
+  ("C-c a" . org-agenda-list)
+  (:map org-agenda-mode-map
+        ("h" . org-agenda-earlier)
+        ("j" . org-agenda-next-line)
+        ("k" . org-agenda-previous-line)
+        ("l" . org-agenda-later))
   :config
+  (setq org-agenda-files '("~/Dropbox (Maestral)/Agenda/"))
+  (setq org-agenda-span 'month)
   (require 'ox-md nil t)
   (setq org-confirm-babel-evaluate nil)
   (org-babel-do-load-languages
