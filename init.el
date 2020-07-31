@@ -984,15 +984,12 @@ _l_: move border right      _L_: swap border right
 (use-package adoc-mode)
 
 ;;;; Lilypond
-(when (and (executable-find "lilypond") (eq system-type 'darwin))
-  (use-package lilypond-mode
-    :straight
-    (:local-repo "/usr/local/Cellar/lilypond/2.18.2/share/emacs/site-lisp/lilypond/"
-                 :files ("lilypond*.el"))
-    :config
-    (add-to-list 'auto-mode-alist '("\\.ly\\'" . LilyPond-mode))
-    :hook
-    (lilypond . ryo-modal-mode)))
+(use-package lilypond-mode
+  :straight nil
+  :custom
+  (LilyPond-pdf-command "zathura")
+  :hook (LilyPond-mode . ryo-modal-mode)
+  :mode ("\\.ly\\'" . LilyPond-mode))
 
 ;;;; Vimscript (lol)
 (use-package vimrc-mode)
