@@ -19,9 +19,12 @@
         ctrlf-forward
         electric-newline-and-maybe-indent
         er/mark-inside-pairs
+        er/mark-inside-quotes
+        er/mark-word
         haskell-indentation-common-electric-command
         holy-exchange
         indent-for-tab-command
+        insert-char
         kak/Gl
         kak/H
         kak/L
@@ -102,6 +105,7 @@
         org-end-of-line
         org-force-self-insert
         org-kill-line
+        org-return-indent
         org-self-insert-command
         org-yank
         outshine-kbd-TAB
@@ -158,6 +162,7 @@
         ryo:2f73978d4422e540c99388f1d7bf31b6:kakoune-o
         ryo:300555b81489d6e4d63e3d91a3f97d8e:kakoune-backward-same-syntax
         ryo:3384a614304dd5324a6aa723d5ed9e5e:previous-line
+        ryo:365dfa6015156761448d08034657cf43:undo-fu-only-undo
         ryo:3a1fea3126694e285a71c97002c4afe1:forward-same-syntax
         ryo:3a8ba329f32aa4ca26aedb4e0096966d:backward-char
         ryo:3bb381c903c6cfa663a851920ee9f42e:undo-tree-undo
@@ -185,6 +190,7 @@
         ryo:852c571a517d85538a1f9b56f60a68f3:backward-same-syntax
         ryo:8ab5d0830a9c4685f6b642216b9c72bd:forward-char
         ryo:8e022ec1dd956ebb75e780e711bf370d:avy-goto-char-in-line
+        ryo:92e1075e7ac943bbb11889e342f1c341:org-demote-subtree
         ryo:934fcd130f5f2ad6db92d3fce1489dc5:kakoune-backward-same-syntax
         ryo:a147c9a24b4efc5e3424c4618b0aa58a:end-of-line
         ryo:a6f467289ba024bc2b8a77c16834b94d:back-to-indentation
