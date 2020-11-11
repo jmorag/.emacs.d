@@ -57,7 +57,8 @@
   :config (key-chord-mode 1))
 (use-package key-seq)
 (use-package ryo-modal
-  :straight (ryo-modal :host github :repo "jmorag/ryo-modal")
+  :straight (ryo-modal :host github :repo "Kungsgeten/ryo-modal"
+                       :fork (:host github :repo "jmorag/ryo-modal"))
   :config
   (defun ryo-enter () (interactive) (ryo-modal-mode 1))
   (key-seq-define-global "fd" 'ryo-enter)
@@ -65,6 +66,7 @@
 
 (use-package kakoune
   :straight (kakoune :local-repo "~/Projects/kakoune.el/" :files ("*.el"))
+  :demand t
   :bind (("C-z" . ryo-modal-mode)
          ("C-<left>" . windmove-left)
          ("C-<down>" . windmove-down)
@@ -72,15 +74,18 @@
          ("C-<right>" . windmove-right)
          ("<XF86Tools>" . er/expand-region))
   :init
-  (kakoune-setup-keybinds)
-  :config
-  (defun my/goto-init () (interactive) (find-file (expand-file-name "init.el" user-emacs-directory)))
+  (require 'kakoune)
+  (defun my/goto-init () (interactive)
+         (find-file (expand-file-name "init.el" user-emacs-directory)))
   (setq ryo-modal-cursor-type 'box)
   (add-hook 'prog-mode-hook #'ryo-modal-mode)
   (define-key ryo-modal-mode-map (kbd "SPC h") 'help-command)
+  ;; Try using this for bookmarks instead
   ;; Access all C-x bindings easily
-  (define-key ryo-modal-mode-map (kbd "z") ctl-x-map)
+  ;; (define-key ryo-modal-mode-map (kbd "z") ctl-x-map)
+  (kakoune-setup-keybinds)
   (ryo-modal-keys
+   (:mc-all 0)
    ("," save-buffer)
    ("m" mc/mark-next-like-this)
    ("M" mc/skip-to-next-like-this)
