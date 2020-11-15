@@ -33,11 +33,12 @@
      (:name "lists" :query "tag:lists")
      (:name "recurse" :query "to:@lists.community.recurse.com")))
  '(org-export-backends '(ascii html icalendar latex md odt moderncv))
- '(ormolu-extra-args '("--ghc-opt" "-XTypeApplications") t)
+ '(ormolu-extra-args '("--ghc-opt" "-XTypeApplications"))
  '(peed-dired-cleanup-on-disable t t)
  '(peep-dired-enable-on-directories t t)
  '(safe-local-variable-values
-   '((eval add-hook 'before-save-hook
+   '((lsp-haskell-server-path . "ghcide")
+     (eval add-hook 'before-save-hook
            (lambda nil
              (haskell-mode-buffer-apply-command "cabal-fmt"))
            nil t)

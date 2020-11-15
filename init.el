@@ -129,18 +129,13 @@
 	     ("C-r" . phi-search-backward)))
 
 ;;;; Sane undo and redo
-(use-package undo-tree
-  :config
-  (global-undo-tree-mode)
+(use-package undo-fu
+  :custom
+  ((undo-fu-ignore-keyboard-quit t)
+   (undo-fu-allow-undo-in-region t))
   :ryo
-  ("u" undo-tree-undo)
-  ("U" undo-tree-redo)
-  ("SPC u" undo-tree-visualize)
-  :bind (:map undo-tree-visualizer-mode-map
-	          ("h" . undo-tree-visualize-switch-branch-left)
-	          ("j" . undo-tree-visualize-redo)
-	          ("k" . undo-tree-visualize-undo)
-	          ("l" . undo-tree-visualize-switch-branch-right)))
+  ("u" undo-fu-only-undo)
+  ("U" undo-fu-only-redo))
 
 ;;; Mac specific
 (use-package exec-path-from-shell
@@ -167,7 +162,6 @@
 
 ;; Required for dashboard
 (use-package page-break-lines
-  :demand t
   :config (global-page-break-lines-mode))
 
 ;; Nice start screen
@@ -306,7 +300,7 @@ _l_: move border right      _L_: swap border right
 (use-package crux
   :ryo
   ("g U" crux-view-url)
-  ("g u" browse-url-chrome))
+  ("g u" browse-url-chromium))
 
 ;;; Interface management
 (use-package which-key
@@ -392,6 +386,48 @@ _l_: move border right      _L_: swap border right
 (ryo-modal-key "] w" 'winner-redo)
 (ryo-modal-key "[ w" 'winner-undo)
 
+;; Bookmarks - https://github.com/joodland/bm
+(use-package bm
+  :custom
+  ((bm-cycle-all-buffers t)
+   (bm-marker 'bm-marker-right))
+  :ryo
+  ("z" bm-toggle)
+  ("] z" bm-next)
+  ("[ z" bm-previous)
+  :config
+  ;; Loading the repository from file when on start up.
+  (add-hook 'after-init-hook 'bm-repository-load)
+
+  ;; Saving bookmarks
+  (add-hook 'kill-buffer-hook #'bm-buffer-save)
+
+  ;; Saving the repository to file when on exit.
+  ;; kill-buffer-hook is not called when Emacs is killed, so we
+  ;; must save all bookmarks first.
+  (add-hook 'kill-emacs-hook #'(lambda nil
+                                 (bm-buffer-save-all)
+                                 (bm-repository-save)))
+
+  ;; The `after-save-hook' is not necessary to use to achieve persistence,
+  ;; but it makes the bookmark data in repository more in sync with the file
+  ;; state.
+  (add-hook 'after-save-hook #'bm-buffer-save)
+
+  ;; Restoring bookmarks
+  (add-hook 'find-file-hooks   #'bm-buffer-restore)
+  (add-hook 'after-revert-hook #'bm-buffer-restore)
+
+  ;; The `after-revert-hook' is not necessary to use to achieve persistence,
+  ;; but it makes the bookmark data in repository more in sync with the file
+  ;; state. This hook might cause trouble when using packages
+  ;; that automatically reverts the buffer (like vc after a check-in).
+  ;; This can easily be avoided if the package provides a hook that is
+  ;; called before the buffer is reverted (like `vc-before-checkin-hook').
+  ;; Then new bookmarks can be saved before the buffer is reverted.
+  ;; Make sure bookmarks is saved before check-in (and revert-buffer)
+  (add-hook 'vc-before-checkin-hook #'bm-buffer-save))
+
 ;;; Autocompletion
 ;;;; Company
 (use-package company
@@ -401,7 +437,7 @@ _l_: move border right      _L_: swap border right
   :config
   (company-tng-configure-default)
   (setq company-minimum-prefix-length 2)
-  (setq company-idle-delay 0.1)
+  (setq company-idle-delay 0.2)
   (define-key company-active-map "\C-j" 'company-select-next)
   (define-key company-active-map "\C-k" 'company-select-previous)
   (define-key company-active-map (kbd "<down>") 'company-select-next)
@@ -409,12 +445,15 @@ _l_: move border right      _L_: swap border right
   (define-key company-active-map (kbd "TAB") nil)
   (define-key company-active-map (kbd "<tab>") nil))
 
+;; quite slow :(
+;; (use-package company-box
+;;   :hook (company-mode . company-box-mode))
+
 ;; Add fuzzy backend to company
 (use-package company-flx
   :after company
   :config
-  (with-eval-after-load 'company
-    (company-flx-mode +1))
+  (company-flx-mode +1)
   (setq company-flx-limit 250))
 
 ;; Remember completions
@@ -427,7 +466,7 @@ _l_: move border right      _L_: swap border right
   :config
   (use-package pos-tip)
   (company-quickhelp-mode)
-  (setq company-quickhelp-delay 1))
+  (setq company-quickhelp-delay 1.0))
 
 ;; https://emacs.stackexchange.com/questions/10431/get-company-to-show-suggestions-for-yasnippet-names
 ;; Add yasnippet support for all company backends
@@ -454,7 +493,6 @@ _l_: move border right      _L_: swap border right
   (defalias #'describe-symbol #'helpful-symbol))
 
 ;;;; Snippets
-;; Yasnipet
 (use-package yasnippet
   :commands
   (yas/expand)
@@ -525,13 +563,14 @@ _l_: move border right      _L_: swap border right
   (dired-listing-switches "-alh"))
 
 ;;;; Treemacs
-(use-package treemacs
-  :ryo ("\\" treemacs)
-  :config (treemacs-follow-mode)
-  :bind (:map treemacs-mode-map
-              ("j" . treemacs-next-line)
-              ("k" . treemacs-previous-line)
-              ("\\" . treemacs-quit)))
+;; I never use this...
+;; (use-package treemacs
+;;   :ryo ("\\" treemacs)
+;;   :config (treemacs-follow-mode)
+;;   :bind (:map treemacs-mode-map
+;;               ("j" . treemacs-next-line)
+;;               ("k" . treemacs-previous-line)
+;;               ("\\" . treemacs-quit)))
 ;;;; Disk Usage
 (use-package disk-usage
   :bind (:map disk-usage-mode-map
@@ -641,6 +680,10 @@ _l_: move border right      _L_: swap border right
   :config
   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 
+(use-package highlight-indent-guides
+  :custom (highlight-indent-guides-method 'character)
+  :hook (shakespeare-hamlet-mode . highlight-indent-guides-mode))
+
 ;;;; Linting
 (use-package flycheck
   :config
@@ -678,6 +721,7 @@ _l_: move border right      _L_: swap border right
   ("SPC '" evilnc-comment-or-uncomment-paragraphs))
 
 ;;;; Eshell
+(setq explicit-shell-file-name "fish")
 (use-package eshell-toggle
   :straight (:host github :repo "4DA/eshell-toggle")
   :bind
@@ -702,10 +746,10 @@ _l_: move border right      _L_: swap border right
 ;;;; LSP
 (setq lsp-keymap-prefix "M-l")
 (use-package lsp-mode
-  :straight (lsp-mode :host github :repo "emacs-lsp/lsp-mode")
+  :straight (lsp-mode :host github :repo "emacs-lsp/lsp-mode" :files (:defaults "clients/*.el"))
+  :custom ((lsp-auto-configure t)
+           (lsp-idle-delay 0.500))
   :hook ((go-mode . lsp)
-         (python-mode . lsp)
-         ;; (clojure-mode . lsp) ;; too slow
          (lua-mode . lsp)
          (rust-mode . lsp)
          (js-mode . lsp)
@@ -713,39 +757,42 @@ _l_: move border right      _L_: swap border right
          (web-mode . lsp)
          (lsp-mode . flycheck-mode)
          (lsp-mode . lsp-enable-which-key-integration))
-  :commands lsp
   :config
+  (add-to-list 'lsp-language-id-configuration '(shakespeare-julius-mode . "javascript"))
   (setq lsp-rust-analyzer-server-command '("/home/joseph/.cargo/bin/rust-analyzer"))
   (setq lsp-pyls-plugins-pycodestyle-ignore t))
 (use-package lsp-ui
-  :custom
-  (lsp-ui-sideline-enable t))
-(use-package company-lsp :commands company-lsp)
+  :config
+  (setq lsp-ui-doc-show-with-cursor nil)
+  (setq lsp-ui-sideline-show-diagnostics nil)
+  (setq lsp-ui-sideline-show-hover nil))
 (use-package lsp-ivy
   :straight (lsp-ivy :host github :repo "emacs-lsp/lsp-ivy")
   :commands lsp-ivy-workspace-symbol)
-(use-package lsp-treemacs
-  :straight (lsp-treemacs :host github :repo "emacs-lsp/lsp-treemacs" :files ("lsp-treemacs.el"))
-  :config (lsp-treemacs-sync-mode 1))
 
 ;;;; Dash Documentation
-(use-package dash-docs
-  :straight (dash-docs :host github :repo "dash-docs-el/dash-docs"))
-(use-package counsel-dash
-  :after dash-docs)
+;; (use-package dash-docs
+;;   :straight (dash-docs :host github :repo "dash-docs-el/dash-docs"))
+;; (use-package counsel-dash
+;;   :after dash-docs)
 ;;; Language specific programming concerns
 ;;;; Haskell
 (use-package haskell-mode
   :custom (haskell-literate-default 'tex)
-  :hook (haskell-mode . haskell-decl-scan-mode))
+  :hook ((haskell-mode . haskell-decl-scan-mode)
+         (haskell-mode . interactive-haskell-mode))
+  :ryo
+  (:mode 'haskell-mode)
+  ("," save-buffer)
+  )
 (use-package lsp-haskell
   :hook (haskell-mode . lsp)
-  :custom
-  ((lsp-haskell-process-path-hie "ghcide")
-   (lsp-haskell-process-args-hie '()))
-  ;; Comment/uncomment this line to see interactions between lsp client/server.
+  ;; :custom
+  ;; ((lsp-haskell-process-path-hie "haskell-language-server")
+  ;;  (lsp-haskell-process-args-hie '()))
   :config
-  (setq lsp-log-io t))
+  (setq lsp-log-io nil)
+  (setq lsp-haskell-set-hlint-on t))
 
 (use-package ormolu
   :custom (ormolu-extra-args '("--ghc-opt" "-XTypeApplications"))
@@ -756,13 +803,13 @@ _l_: move border right      _L_: swap border right
         ("C-c r" . ormolu-format-region)))
 
 (use-package shakespeare-mode)
-(use-package shm
-  :after haskell-mode
-  :bind (:map shm-map
-              ("C-0" . shm/goto-last-point))
-  :ryo
-  (:mode 'haskell-mode)
-  ("SPC m s" structured-haskell-mode))
+;; (use-package shm
+;;   :after haskell-mode
+;;   :bind (:map shm-map
+;;               ("C-0" . shm/goto-last-point))
+;;   :ryo
+;;   (:mode 'haskell-mode)
+;;   ("SPC m s" structured-haskell-mode))
 
 ;;;; Idris
 (use-package idris-mode
@@ -786,15 +833,14 @@ _l_: move border right      _L_: swap border right
 ;;;; Rust
 (use-package rust-mode
   :after (projectile)
+  :mode ("\\.rs\\'" . rust-mode)
   :config
-  (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
   (projectile-register-project-type 'rust-cargo '("Cargo.toml")
                                     :compile "cargo build"
                                     :test "cargo test"
                                     :run "cargo run"))
 (use-package cargo
   :hook ((rust-mode . cargo-minor-mode)))
-
 
 ;;;; Go
 (use-package go-mode)
@@ -803,14 +849,14 @@ _l_: move border right      _L_: swap border right
 ;; emacs 27 natively parses jsx correctly
 (when (< emacs-major-version 27)
   (use-package rjsx-mode
+    :mode ("\\.js\\'" . rjsx-mode)
     :config
     (add-hook 'rjsx-mode-hook #'flycheck-mode)
     (add-hook 'rjsx-mode-hook #'company-mode)
-    (add-to-list 'auto-mode-alist '("\\.js\\'" . rjsx-mode))
     (setq js2-strict-missing-semi-warning nil)))
-(add-to-list 'auto-mode-alist '("\\.tsx\\'" . js-mode))
 (use-package json-mode)
-(use-package typescript-mode)
+(use-package typescript-mode
+  :mode ("\\.tsx\\'" . typescript-mode))
 (use-package rainbow-mode)
 
 (use-package web-mode)
@@ -828,14 +874,17 @@ _l_: move border right      _L_: swap border right
               (turn-on-purescript-indentation))))
 
 ;;;; Dhall
-(use-package dhall-mode)
+(use-package dhall-mode
+  :hook (dhall-mode . lsp))
 
 ;;;; Yaml
 (use-package yaml-mode
-  :config
-  (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
-  :hook
-  (yaml-mode . ryo-modal-mode))
+  :mode ("\\.yml\\'" . yaml-mode)
+  :hook (yaml-mode . ryo-modal-mode))
+
+;;;; i3
+(use-package i3wm-config-mode
+  :straight (:host github :repo "Alexander-Miller/i3wm-Config-Mode"))
 
 ;;;; Lisps
 (defconst lisp-modes
@@ -872,15 +921,14 @@ _l_: move border right      _L_: swap border right
 (use-package hy-mode)
 
 ;;;; Nix
-(use-package nix-mode)
+(use-package nix-mode
+  :hook (nix-mode . lsp))
 (use-package nix-env-install
-  :straight (nix-env-install :host github :repo "akirak/nix-env-install"))
+  :straight (nix-env-install :host github :repo "akirak/nix-env-install")
+  :custom (nix-env-install-npm-node2nix-options "--nodejs-14"))
 
 ;;;; Elm
-;; (use-package reformatter
-;;   :straight (reformatter :host github :repo "purcell/reformatter.el"))
-;; (use-package elm-mode
-;;   :straight (elm-mode :host github :repo "jcollard/elm-mode"))
+(use-package elm-mode)
 
 ;;;; Ocaml
 (use-package tuareg)
@@ -904,7 +952,10 @@ _l_: move border right      _L_: swap border right
   (flycheck-ocaml-setup)
   (add-hook 'tuareg-mode-hook 'flycheck-mode))
 
-;;;; Python (superceded by lsp)
+;;;; Python
+(use-package lsp-pyright
+  :straight (lsp-pyright :host github :repo "emacs-lsp/lsp-pyright")
+  :hook (python-mode . (lambda () (require 'lsp-pyright) (lsp))))
 (use-package lpy
   :straight (lpy :host github :repo "abo-abo/lpy")
   :ryo
@@ -940,17 +991,11 @@ _l_: move border right      _L_: swap border right
 (straight-use-package '(org :type built-in))
 (use-package org
   :straight nil
-  :hook (org . ryo-modal-mode)
-  :bind
-  ("C-c a" . org-agenda-list)
-  (:map org-agenda-mode-map
-        ("h" . org-agenda-earlier)
-        ("j" . org-agenda-next-line)
-        ("k" . org-agenda-previous-line)
-        ("l" . org-agenda-later))
+  :hook (org-mode . ryo-modal-mode)
+  :bind ("C-c a" . org-agenda-list)
   :config
   (setq org-agenda-files '("~/Dropbox (Maestral)/Agenda/"))
-  (setq org-agenda-span 'month)
+  (setq org-agenda-span 'week)
   (require 'ox-md nil t)
   (setq org-confirm-babel-evaluate nil)
   (org-babel-do-load-languages
@@ -961,9 +1006,17 @@ _l_: move border right      _L_: swap border right
   (">" org-demote-subtree)
   ("<" org-promote-subtree))
 
+(use-package org-agenda
+  :straight nil
+  :bind
+  (:map org-agenda-mode-map
+        ("h" . org-agenda-earlier)
+        ("j" . org-agenda-next-line)
+        ("k" . org-agenda-previous-line)
+        ("l" . org-agenda-later)))
+
 (use-package org-bullets
-  :hook (org . org-bullets-mode)
-  :after org)
+  :hook (org-mode . org-bullets-mode))
 
 (use-package ox-moderncv
   :commands (org-mode)
@@ -979,11 +1032,9 @@ _l_: move border right      _L_: swap border right
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown")
-  :hook
-  ((markdown-mode gfm-mode) . ryo-modal-mode))
+  :hook ((markdown-mode gfm-mode) . ryo-modal-mode))
 (use-package apib-mode
-  :config
-  (add-to-list 'auto-mode-alist '("\\.apib\\'" . apib-mode)))
+  :mode ("\\.apib\\'" . apib-mode))
 
 ;;;; Asciidoc
 (use-package adoc-mode)
@@ -1021,9 +1072,6 @@ _l_: move border right      _L_: swap border right
               ("C-s" . isearch-forward)
               ("C-r" . isearch-backward)
               ("O" . pdf-outline)
-              ;; :map pdf-outline-buffer-mode-map
-              ;; ("j" . next-line)
-              ;; ("k" . previous-line)
               )
   :ryo
   (:mode 'pdf-view-mode)
@@ -1033,9 +1081,14 @@ _l_: move border right      _L_: swap border right
   ("h" image-backward-hscroll)
   ("O" pdf-outline))
 
+(use-package pdf-outline
+  :straight nil
+  :bind (:map pdf-outline-buffer-mode-map
+              ("j" . next-line)
+              ("k" . previous-line)))
+
 (use-package nov
-  :config
-  (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode)))
+  :mode ("\\.epub\\'" . nov-mode))
 
 ;;;; Gif recording
 (use-package gif-screencast
@@ -1146,21 +1199,23 @@ _l_: move border right      _L_: swap border right
   (:mode 'tex-mode)
   ("=" preview-at-point)
   ("+" preview-clearout))
-(use-package calctex
-  :straight (calctex :host github :repo "johnbcoughlin/calctex"))
+;; (use-package calctex
+;;   :straight (calctex :host github :repo "johnbcoughlin/calctex"))
 (use-package company-auctex
   :config
   (company-auctex-init))
 (use-package company-reftex
+  :after (company)
   :config
-  (eval-after-load "company"
-    '(add-to-list 'company-backends '(company-reftex-citations company-reftex-labels))))
+  (add-to-list 'company-backends '(company-reftex-citations company-reftex-labels)))
 
 ;;;; Passwords
 (use-package ivy-pass)
 
 ;;;; Email
+(use-package org-mime)
 (use-package notmuch
+  :straight nil
   :config
   (setq notmuch-search-oldest-first nil
         send-mail-function 'sendmail-sent-it
@@ -1170,6 +1225,8 @@ _l_: move border right      _L_: swap border right
         user-full-name "Joseph Morag"
         notmuch-poll-script "/home/joseph/Mail/checkmail.sh"
         notmuch-show-logo nil
+        mm-text-html-renderer 'links
+        notmuch-multipart/alternative-discouraged '()
         notmuch-always-prompt-for-sender t)
   ;; The following stolen from evil-collection
   (defun notmuch-toggle-tag (tag mode &optional next-function)
@@ -1232,9 +1289,6 @@ _l_: move border right      _L_: swap border right
    (";" . notmuch-jump-search)
    ("K" . notmuch-tag-jump)))
 
-;;;; Calendar
-;; todo
-
 ;;;; Twitter
 (use-package twittering-mode
   :commands twit
@@ -1265,7 +1319,7 @@ _l_: move border right      _L_: swap border right
     :name "flashlight"
     :path '("~/Projects/go/src/github.com/getlantern/flashlight")
     :command "lantern"
-    :args '("-uiaddr" ":58735" "-headless")
+    :args '("-uiaddr" ":16823" "-headless")
     :stop-signal 'sigint
     :cwd "~/Projects/go/src/github.com/getlantern/flashlight"
     :tags '(go lantern))

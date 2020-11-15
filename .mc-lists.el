@@ -151,81 +151,14 @@
         ryo-leave
         ryo-modal-mode
         ryo-modal-repeat
-        ryo:05cf1b18d95ef5a653397ec40f07e7e6:forward-same-syntax
-        ryo:07a1551edff338532c86f629c151f7d4:next-line
-        ryo:09202ff11a377f569aa1a6ec973f8565:previous-line
-        ryo:09f9e866cc2a04767fa15b05a4a197f6:forward-same-syntax
-        ryo:0bb4aa504aadfd9c58c187b14d5806d6:embrace-commander
-        ryo:0f4ba9b740d668fbf21d8f44ea58eefc:eyebrowse-switch-to-window-config-2
-        ryo:1f824378cd608ad59429e475834c37bf:forward-same-syntax
-        ryo:2ca75fbe69f21223f194a1b0549c853e:end-of-line
-        ryo:2f73978d4422e540c99388f1d7bf31b6:kakoune-o
-        ryo:300555b81489d6e4d63e3d91a3f97d8e:kakoune-backward-same-syntax
-        ryo:3384a614304dd5324a6aa723d5ed9e5e:previous-line
-        ryo:365dfa6015156761448d08034657cf43:undo-fu-only-undo
-        ryo:3a1fea3126694e285a71c97002c4afe1:forward-same-syntax
-        ryo:3a8ba329f32aa4ca26aedb4e0096966d:backward-char
-        ryo:3bb381c903c6cfa663a851920ee9f42e:undo-tree-undo
-        ryo:3c2e1db31deeda45cc2b39b079c6c9d1:forward-word
-        ryo:3d738d4315c2c23e69c7a6b7358e52f2:forward-char
-        ryo:3f299e8e98e725fccebe25262de2a036:forward-char
-        ryo:418ebea3d3c17d65f1caa6d22c93577a:forward-char
-        ryo:42f606a03331e6ec0b254a5086c1e672:kak/select-up-to-char
-        ryo:445b8d530ee1df2ba439d177ab178368:kakoune-backward-same-syntax
-        ryo:456ddb3bb8e95dedc67e391ef55ce5bb:kakoune-select-up-to-char
-        ryo:4ba44c9869d838fd0f93ea2dabc09909:backward-char
-        ryo:5afdf8eb96b1ba206f89586c7bde6655:back-to-indentation
-        ryo:5e524bd331365c42b20ee5f8baa6d8a4:backward-char
-        ryo:5fa0e76c510678b6c22c30e6e493d5c7:kak/O
-        ryo:664dd2c3bb879b868ad2d6daefa4eee9:end-of-line
-        ryo:668f75bcd7cc5940f6e9313b1717b5b5:beginning-of-buffer
-        ryo:6b7f269a0c9f62ded5e6ef76672f3722:forward-same-syntax
-        ryo:6eb92d470ae10c8dd8e9bd39f484d6d5:kakoune-select-up-to-char
-        ryo:7082fb59b5d5de08c355c52b4893b905:vr/replace
-        ryo:70e73419d6581ec46daef14b98265a98:kakoune-d
-        ryo:78ae37e0597b744a01e030137a4a62a5:forward-same-syntax
-        ryo:8072e5733a19233579c94e6c32064d09:kak/select-up-to-char
-        ryo:817a5b765fdf01848c4ddc3d6c429ce3:forward-char
-        ryo:84add2bad8357d09bca5bf83aca33f70:end-of-line
-        ryo:852c571a517d85538a1f9b56f60a68f3:backward-same-syntax
-        ryo:8ab5d0830a9c4685f6b642216b9c72bd:forward-char
-        ryo:8e022ec1dd956ebb75e780e711bf370d:avy-goto-char-in-line
-        ryo:92e1075e7ac943bbb11889e342f1c341:org-demote-subtree
-        ryo:934fcd130f5f2ad6db92d3fce1489dc5:kakoune-backward-same-syntax
-        ryo:a147c9a24b4efc5e3424c4618b0aa58a:end-of-line
-        ryo:a6f467289ba024bc2b8a77c16834b94d:back-to-indentation
-        ryo:afa43d3f76a1cd6565c5d033d560f21c:forward-word
-        ryo:afbbc9ea2ae90f1c40fa71ac17a956d5:backward-char
-        ryo:b217f924e4069372c5cc60e9b4b5359a:next-line
-        ryo:b219ebd046736cb61e7239c837f2a722:emacs-surround
-        ryo:bb81d76943a66066379de793522f5418:backward-char
-        ryo:bc3c9c55c5e3830a7708366cb8aef9c0:kill-line
-        ryo:bd01dafd864b73f282864790f7d77e3c:kak/d
-        ryo:c44301a1d93e869c777c4e24d9131cb5:er/expand-region
-        ryo:c58dcad6440ad74cbff176e8af19aaa4:beginning-of-line
-        ryo:cc6355566df88f2c0da940a8205e6830:counsel-yank-pop
-        ryo:ccbc2d71618d8ae96a67ee3542b4d1b3:kakoune-O
-        ryo:ce23f3bf4d226c8c8a7280b45c0c8ac3:backward-word
-        ryo:d1dd1223b7a7caa4a871db9e9e2bff6c:backward-same-syntax
-        ryo:d7762b250433e384b77e82019e29e7d6:move-end-of-line
-        ryo:d840b8a94a20ad9f5899e616d2cdb76b:beginning-of-line
-        ryo:d90fcccac9ed9f6087bc94e7a229b598:kak/select-to-char
-        ryo:ddfec1226be377cadae87b4d7da0b634:kak/backward-same-syntax
-        ryo:def128110b11a9acbb59092b21c84622:back-to-indentation
-        ryo:df3281848c0970ceb11792154ad9d8fe:forward-same-syntax
-        ryo:df85778363cd69d94694c7cdcf939f1f:kakoune-backward-same-syntax
-        ryo:e4fe141b0e119b6d1fa1fce3dfa14784:end-of-line
-        ryo:e5884e5d9e03a92b8a235a1d72c9947a:next-line
-        ryo:e5dbb354d557462cb65bb1d6bb3fa5af:evilnc-comment-or-uncomment-lines
-        ryo:e7a5212c33f50d09246829cc7289a6d2:forward-char
-        ryo:e947d70d27198067ad4e4c1ea4303452:forward-same-syntax
-        ryo:ea80f75f66a07fe88fd0f8f1e98f3fa9:backward-word
-        ryo:eac1488896d62c02d1ece92d73bb9d26:kak/o
-        ryo:efdebd9b62a393eaec270c14ff58e96b:org-promote-subtree
-        ryo:f373378c24f87b7c18ea00255b859322:beginning-of-line
-        ryo:f445b9686f57e9ffe7293bcd79dbec1b:next-line
-        ryo:fc42e686ca18a791f17ec994c6dca72c:beginning-of-line
-        ryo:fc7eefa7332e9195f27e3ba02ec62ae7:beginning-of-line
+        ryo:17d1b2daaa28b52a4fcd13ccb0e4bc6c:next-line
+        ryo:2873eb81541425ef2ee572becce927ac:previous-line
+        ryo:4c187934ced262ae00c3cf72f5b72a2d:forward-char
+        ryo:9c6e51a552cc9626579c71fbed17ee0b:forward-char
+        ryo:ac49703ec5ac17a847fa48f0f8954870:previous-line
+        ryo:d95b0a6dc36d3bcb579253b88b77b84f:next-line
+        ryo:efa3063ea0f182600dabb5b0704de8ba:backward-char
+        ryo:f6f1ac7d6415cc8be93d77fb66643f23:backward-char
         shm/del
         special-digit-argument
         special-lh-knight/body
@@ -316,11 +249,10 @@
         electric-pair-delete-pair
         eval-print-last-sexp
         gif-screencast-start-or-stop
+        haskell-interactive-mode-space
         idris-load-file
         iedit-switch-to-mc-mode
         insert-register
-        kakoune-shell-command
-        kakoune-shell-pipe
         mc/split-region
         mouse-appearance-menu
         mouse-set-region
@@ -339,6 +271,7 @@
         ryo:a34369470e7c02270a46e6f03505c5f7:beginning-of-buffer
         ryo:b1589c12e9cf3a7dadf52ae6a5e3c310:rust-format-buffer
         ryo:c8439fcc4371f6b9c5ebcbb0b776616b:avy-goto-char-timer
+        ryo:f1c0b5e79a686856880fa11e0028a456:save-buffer
         ryo:f27938a88c89decb111731da89fe4793:vr/mc-mark
         wdired-finish-edit
         wgrep-change-to-wgrep-mode
